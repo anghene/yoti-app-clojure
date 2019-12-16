@@ -6,6 +6,7 @@
    [taoensso.timbre :as timbre]
    [clj-http.client :as http]
    [buddy.core.nonce :refer [random-nonce]]
+   [kemplittle.config :refer [env]]
    [clojure.data.json :as json])
   (:import java.util.UUID))
 
@@ -15,13 +16,15 @@
 (defn into-data-field [payload]
   (assoc {} :data payload))
 
-(def sdkid "e2ce1112-1514-43b4-9c07-604ba1165685")
+(def sdkid (env :client-sdk))
 
 (def my-server-urls
-  {:sdk_config {:success_url "https://identity.kemplittle.com/success"
-                :error_url "https://identity.kemplittle.com/error"}
-   :notifications {:endpoint "https://identity.kemplittle.com/updates"
-                   :auth_token "yotiupdate:3HHXmXZJfJT1fX@Yd6#r2%0nG"}})
+  {:sdk_config {:success_url (env :success-url)
+                :error_url (env :error-url)}
+   :notifications {:endpoint (env :webhook-url)
+                   :auth_token (str (env :webhook-usr) ":" (env :webhook-pw))}})
+
+(timbre/info "my-server-urls: " my-server-urls)
 
 (defn get-digest [request]
   (sign request))

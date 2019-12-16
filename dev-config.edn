@@ -7,4 +7,9 @@
  ;; when :nrepl-port is set the application starts the nREPL server on load
  :nrepl-port 7000
  :client-sdk "e2ce1112-1514-43b4-9c07-604ba1165685"
- :database-url "jdbc:sqlite:kemplittle_dev.db"}
+ :database-url "jdbc:sqlite:kemplittle_dev.db"
+ :success-url "https://identity.kemplittle.com/success"
+ :error-url "https://identity.kemplittle.com/error"
+ :webhook-url "https://identity.kemplittle.com/updates"
+ :webhook-usr "yotiupdate"
+ :webhook-pw "3HHXmXZJfJT1fX@Yd6#r2%0nG"}

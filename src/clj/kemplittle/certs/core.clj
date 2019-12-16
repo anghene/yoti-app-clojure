@@ -4,6 +4,7 @@
             [clojure.data.json :refer [write-str read-json]]
             [buddy.core.codecs :as codecs]
             [taoensso.timbre :as timbre]
+            [kemplittle.config :refer [env]]
             [buddy.core.dsa :as dsa])
   )
 
@@ -39,7 +40,7 @@
   Nonces are UUID strings.")
 
 ;; Create keys instances
-(def privkey (keys/private-key "privkey.pem"))
+(def privkey (keys/private-key (env :privkeypath)))
 
 (defn base64encode [to-encode]
   (codecs/bytes->str (encode to-encode)))
