@@ -40,7 +40,7 @@
   Nonces are UUID strings.")
 
 ;; Create keys instances
-(def privkey (keys/private-key (env :privkeypath)))
+(def privkey (keys/private-key (:privkeypath env)))
 
 (defn base64encode [to-encode]
   (codecs/bytes->str (encode to-encode)))
