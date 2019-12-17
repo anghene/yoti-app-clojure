@@ -16,13 +16,13 @@
 (defn into-data-field [payload]
   (assoc {} :data payload))
 
-(def sdkid (env :client-sdk))
+(def sdkid (:client-sdk env))
 
 (def my-server-urls
-  {:sdk_config {:success_url (env :success-url)
-                :error_url (env :error-url)}
-   :notifications {:endpoint (env :webhook-url)
-                   :auth_token (str (env :webhook-usr) ":" (env :webhook-pw))}})
+  {:sdk_config {:success_url (:success-url env)
+                :error_url (:error-url env)}
+   :notifications {:endpoint (:webhook-url env)
+                   :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}})
 
 (timbre/info "my-server-urls: " my-server-urls)
 

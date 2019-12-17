@@ -62,7 +62,6 @@
              :uberjar-name "kemplittle.jar"
              :source-paths ["env/prod/clj"]
              :resource-paths ["env/prod/resources"]}
-
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
@@ -73,7 +72,6 @@
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.5"]]
-
                   :source-paths ["env/dev/clj"]
                   :resource-paths ["env/dev/resources"]
                   :repl-options {:init-ns user}

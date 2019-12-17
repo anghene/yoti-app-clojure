@@ -5,7 +5,8 @@
             [buddy.core.codecs :as codecs]
             [taoensso.timbre :as timbre]
             [kemplittle.config :refer [env]]
-            [buddy.core.dsa :as dsa])
+            [buddy.core.dsa :as dsa]
+            [mount.core :as mount])
   )
 
 (comment
@@ -40,7 +41,8 @@
   Nonces are UUID strings.")
 
 ;; Create keys instances
-(def privkey (keys/private-key (:privkeypath env)))
+(def privkey (when (mount/start #'kemplittle.config/env)
+               (keys/private-key (:privkeypath env))))
 
 (defn base64encode [to-encode]
   (codecs/bytes->str (encode to-encode)))

@@ -6,7 +6,6 @@
     [luminus-migrations.core :as migrations]
     [kemplittle.config :refer [env]]
     [clojure.tools.cli :refer [parse-opts]]
-
     [mount.core :as mount])
   )
 
@@ -56,6 +55,7 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
+  (start-app args)
   (mount/start #'kemplittle.config/env)
   (cond
     (nil? (:database-url env))
