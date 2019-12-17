@@ -47,7 +47,7 @@
   (codecs/bytes->str (decode to-decode)))
 
 (defn sign [request]
-  (let [key-to-use (keys/private-key (:privkeypath env))
+  (let [key-to-use (keys/private-key (:priv-key-path env))
         signed (-> (dsa/sign request {:key key-to-use :alg :rsassa-pkcs15+sha256})
                    (base64encode))]
     #_(timbre/info "signature: " signed)
