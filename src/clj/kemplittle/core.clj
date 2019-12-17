@@ -55,7 +55,6 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
-  (start-app args)
   (mount/start #'kemplittle.config/env)
   (cond
     (nil? (:database-url env))

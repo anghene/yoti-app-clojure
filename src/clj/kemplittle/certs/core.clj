@@ -40,10 +40,6 @@
 
   Nonces are UUID strings.")
 
-;; Create keys instances
-(def privkey (when (mount/start #'kemplittle.config/env)
-               (keys/private-key (:privkeypath env))))
-
 (defn base64encode [to-encode]
   (codecs/bytes->str (encode to-encode)))
 
@@ -51,7 +47,7 @@
   (codecs/bytes->str (decode to-decode)))
 
 (defn sign [request]
-  (let [key-to-use privkey
+  (let [key-to-use (keys/private-key (:privkeypath env))
         signed (-> (dsa/sign request {:key key-to-use :alg :rsassa-pkcs15+sha256})
                    (base64encode))]
     #_(timbre/info "signature: " signed)

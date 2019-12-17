@@ -16,21 +16,19 @@
 (defn into-data-field [payload]
   (assoc {} :data payload))
 
-(def sdkid (:client-sdk env))
-
-(def my-server-urls
-  {:sdk_config {:success_url (:success-url env)
-                :error_url (:error-url env)}
-   :notifications {:endpoint (:webhook-url env)
-                   :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}})
-
-(timbre/info "my-server-urls: " my-server-urls)
+(def )
 
 (defn get-digest [request]
   (sign request))
 
 (defn get-session []
-  (let [usertracking-uuid (.toString (java.util.UUID/randomUUID))
+  (let [sdkid (:client-sdk env)
+        my-server-urls
+        {:sdk_config {:success_url (:success-url env)
+                      :error_url (:error-url env)}
+         :notifications {:endpoint (:webhook-url env)
+                         :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}}
+        usertracking-uuid (.toString (java.util.UUID/randomUUID))
         base-url "https://api.yoti.com/idverify/v1"
         json-payload (slurp (clojure.java.io/file "resources/request"))
         payload (-> (read-json json-payload)
@@ -47,8 +45,7 @@
                   uri-path "?"
                   q-string)
         request (str method "&" endpoint "&" (base64encode payload))
-        options {
-                 :url (str base-url endpoint)
+        options {:url (str base-url endpoint)
                  :method "POST"
                  :body payload
                  :user-agent "User-Agent-string"
