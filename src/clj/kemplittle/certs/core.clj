@@ -4,7 +4,7 @@
             [clojure.data.json :refer [write-str read-json]]
             [buddy.core.codecs :as codecs]
             [taoensso.timbre :as timbre]
-            [kemplittle.config :refer [env]]
+            [environ.core :refer [env]]
             [buddy.core.dsa :as dsa]
             [mount.core :as mount])
   )
@@ -47,8 +47,9 @@
   (codecs/bytes->str (decode to-decode)))
 
 (defn sign [request]
-  (let [key-to-use (keys/private-key (:priv-key-path env))
+  (let [priv-key-path (:priv-key-path env)
+        key-to-use (keys/private-key priv-key-path)
         signed (-> (dsa/sign request {:key key-to-use :alg :rsassa-pkcs15+sha256})
                    (base64encode))]
-    #_(timbre/info "signature: " signed)
+    (timbre/info "signature: " signed)
     signed))

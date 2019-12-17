@@ -1,7 +1,7 @@
 (ns kemplittle.client.session
   (:require
    [clojure.data.json :refer [write-str read-json]]
-   [kemplittle.config :refer [env]]
+   [environ.core :refer [env]]
    [kemplittle.certs.core :refer [sign base64encode]]
    [taoensso.timbre :as timbre]
    [clj-http.client :as http]
@@ -18,7 +18,7 @@
 (defn get-digest [request]
   (sign request))
 
-(defn get-session []
+(defn get-new-session []
   (let [sdkid (:client-sdk env)
         my-server-urls
         {:sdk_config {:success_url (:success-url env)
@@ -49,10 +49,37 @@
                  :headers {"X-Yoti-Auth-Digest" (get-digest request)
                            "Content-Type" "application/json"}}
         http-response (http/request options)]
-    #_(timbre/info "endpoint: " endpoint)
-    #_(timbre/info "Request for signing: " request)
-    #_(timbre/info "to send payload: " payload)
-    #_(timbre/info "nonce: " nonce)
-    #_(timbre/info "time: " timestamp)
+    ; (timbre/info "endpoint: " endpoint)
+    ; (timbre/info "Request for signing: " request)
+    ; (timbre/info "to send payload: " payload)
+    ; (timbre/info "nonce: " nonce)
+    ; (timbre/info "time: " timestamp)
     (-> (:body http-response)
+        read-json)))
+
+
+(defn session-details [session]
+  (let [sdkid (:client-sdk env)
+        usertracking-uuid (.toString (java.util.UUID/randomUUID))
+        base-url "https://api.yoti.com/idverify/v1"
+        nonce (.toString (java.util.UUID/randomUUID))
+        timestamp (System/currentTimeMillis)
+        method "GET"
+        uri-path (str "/sessions" "/" session)
+        q-string (str "sdkId=" sdkid "&nonce=" nonce "&timestamp=" timestamp)
+        endpoint (str
+                  uri-path "?"
+                  q-string)
+        request (str method "&" endpoint)
+        options {:url (str base-url endpoint)
+                 :method method
+                 :user-agent "User-Agent-string"
+                 :headers {"X-Yoti-Auth-Digest" (get-digest request)
+                           }}]
+    ; (timbre/info "endpoint: " endpoint)
+    ; (timbre/info "Request for signing: " request)
+    ; (timbre/info "to send payload: " payload)
+    ; (timbre/info "nonce: " nonce)
+    ; (timbre/info "time: " timestamp)
+    (-> (:body (http/request options))
         read-json)))

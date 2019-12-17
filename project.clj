@@ -15,6 +15,7 @@
                  [conman "0.8.4"]
                  [cprop "0.1.14"]
                  [expound "0.8.1"]
+                 [environ "1.1.0"]
                  [funcool/struct "1.4.0"]
                  [http-kit "2.4.0-alpha4"]
                  [luminus-http-kit "0.1.6"]

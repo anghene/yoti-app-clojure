@@ -11,16 +11,19 @@
    [ring.util.http-response :as response]
    [taoensso.timbre :as timbre]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
-   [kemplittle.client.session :refer [get-session]])
+   [kemplittle.client.session :refer [get-new-session]])
   )
 
 (defn home-page [request]
-  (layout/render request "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
+  (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
+
+(defn yotiapp-page [request]
+  (layout/render request "yotiapp.html" {:docs (-> "docs/yotiapp.md" io/resource slurp)}))
 
 (defn about-page [request]
-  (let [session (get-session)]
+  (let [session (get-new-session)]
     (timbre/info "session:" session)
-    (layout/render request "about.html" {:session {:id (:session_id session)
+    (layout/render request "docscan.html" {:session {:id (:session_id session)
                                                    :token (:client_session_token session)}})))
 
 (defn updates-routes []
@@ -34,5 +37,6 @@
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
-   ["/about" {:get about-page}]])
+   ["/yotiapp" {:get yotiapp-page}]
+   ["/docscan" {:get about-page}]])
 
