@@ -6,7 +6,6 @@
    [taoensso.timbre :as timbre]
    [clj-http.client :as http]
    [buddy.core.nonce :refer [random-nonce]]
-   [kemplittle.config :refer [env]]
    [clojure.data.json :as json])
   (:import java.util.UUID))
 
