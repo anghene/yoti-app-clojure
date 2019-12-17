@@ -16,8 +16,6 @@
 (defn into-data-field [payload]
   (assoc {} :data payload))
 
-(def )
-
 (defn get-digest [request]
   (sign request))
 
