@@ -1,6 +1,7 @@
 (ns kemplittle.client.yotiapp
   (:require [environ.core :refer [env]]
-             )
+            [taoensso/timbre :as timbre]
+            )
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder]
            [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse]))
