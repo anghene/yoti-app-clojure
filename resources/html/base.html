@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kemplittle - identity verification</title>
-
+    <script src="https://www.yoti.com/share/client/"></script>
     <!-- styles -->
     {% style "/assets/bulma/css/bulma.min.css" %} {% style "/assets/material-icons/css/material-icons.min.css" %} {% style "/css/screen.css" %}
 </head>
@@ -29,7 +29,6 @@
                 <div class="navbar-start">
                     <a href="/" class="navbar-item{% ifequal page " home.html " %} is-active{%endifequal%}">Home</a>
                     <a href="/docscan" class="navbar-item{% ifequal page " docscan.html " %} is-active{%endifequal%}">Use Yoti Docscan</a>
-                    <a href="/yotiapp" class="navbar-item{% ifequal page " y.html " %} is-active{%endifequal%}">Login with Yoti</a>
                 </div>
             </div>
         </div>
@@ -51,6 +50,34 @@
                 nav.classList.toggle('is-active');
             });
         })();
+    </script>
+
+    <div id="yotiapp"></div>
+
+    <!-- This script snippet will also be required in your HTML body -->
+    <script>
+        window.Yoti.Share.init({
+            elements: [{
+                domId: "yotiapp",
+                scenarioId: "15f775ff-b8c4-42e7-b8d1-3c2df8e9010c",
+                clientSdkId: "8d26c691-0b72-4ddd-9b33-59a79f51eb96",
+                button: {
+                    label: "Use Yoti",
+                    align: "center", // "left" | "right"
+                    width: "full" // "auto"
+                },
+                modal: {
+                    zIndex: 9999 // default to 9999, min of 0 - max of 2147483647
+                },
+                shareComplete: {
+                    closeDelay: 4000, // default to 4000, min of 500 - max of 10000
+                    tokenHandler: (token, done) => {
+                        console.log(`Received the token: ${token}`);
+                        done(); //done() will overwrite the closeDelay
+                    }
+                }
+            }]
+        });
     </script>
 
 

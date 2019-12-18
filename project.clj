@@ -44,11 +44,10 @@
                  [ring/ring-defaults "0.3.2"]
                  [ring-basic-authentication "1.0.5"]
                  [selmer "1.12.17"]
-                 ]
+                 [com.yoti/yoti-sdk-impl "2.6.0"]]
 
   :min-lein-version "2.0.0"
   :java-source-paths ["src/java/" "test/java"]
-
   :source-paths ["src/clj"]
   :test-paths ["test/clj"]
   :resource-paths ["resources"]

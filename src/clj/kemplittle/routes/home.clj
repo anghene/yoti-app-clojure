@@ -12,13 +12,23 @@
    [taoensso.timbre :as timbre]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [kemplittle.client.session :refer [get-new-session]])
+  (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
+            HumanProfile Image YotiClient YotiClientBuilder]
+           )
   )
+
+(def client
+  (let [ycb (. YotiClientBuilder newInstance)
+        forapp (doto ycb (.forApplication "e2ce1112-1514-43b4-9c07-604ba1165685"))
+        wkp (. forapp withKeyPair (FileKeyPairSource/fromFile
+                                   (java.io.File. "/c/Users/VladAndrei/yotiapp.pem")))]
+    (.build wkp)))
 
 (defn home-page [request]
   (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
 
 (defn yotiapp-page [request]
-  (layout/render request "yotiapp.html" {:docs (-> "docs/yotiapp.md" io/resource slurp)}))
+  (timbre/info "Got request from Yoti servers: " (:query-params request)))
 
 (defn about-page [request]
   (let [session (get-new-session)]
