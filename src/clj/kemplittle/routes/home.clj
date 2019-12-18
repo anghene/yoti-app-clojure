@@ -29,7 +29,7 @@
   (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
 
 (defn yotiapp-page [request]
-  (timbre/info "Got request from Yoti servers: " (:query-params request)))
+  (timbre/info "Got request from Yoti servers: " request))
 
 (defn about-page [request]
   (let [session (get-new-session)]
