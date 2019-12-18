@@ -52,8 +52,6 @@
         })();
     </script>
 
-    <div id="yotiapp"></div>
-
     <!-- This script snippet will also be required in your HTML body -->
     <script>
         window.Yoti.Share.init({
@@ -64,7 +62,7 @@
                 button: {
                     label: "Use Yoti",
                     align: "center", // "left" | "right"
-                    width: "auto" // "auto"
+                    width: "full" // "auto"
                 },
                 modal: {
                     zIndex: 9999 // default to 9999, min of 0 - max of 2147483647
@@ -79,6 +77,7 @@
             }]
         });
     </script>
+
 
 
     {% block page-scripts %} {% endblock %}

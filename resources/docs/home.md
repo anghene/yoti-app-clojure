@@ -6,5 +6,3 @@ This page will help guide you through the first steps of verifying your identity
 You can choose to verify either with the Yoti app or with DocScan (includes a liveness test)
 
 #### Verify your identity
-
-<a class="btn btn-primary" href="/yotiapp"><img src="img/yotibutton.jpg"></a>
