@@ -19,7 +19,7 @@
   (sign request))
 
 (defn get-new-session []
-  (let [sdkid (:client-sdk env)
+  (let [sdkid (:docscan-sdk-id env)
         my-server-urls
         {:sdk_config {:success_url (:success-url env)
                       :error_url (:error-url env)}
@@ -59,7 +59,7 @@
 
 
 (defn session-details [session]
-  (let [sdkid (:client-sdk env)
+  (let [sdkid (:docscan-sdk-id env)
         usertracking-uuid (.toString (java.util.UUID/randomUUID))
         base-url "https://api.yoti.com/idverify/v1"
         nonce (.toString (java.util.UUID/randomUUID))

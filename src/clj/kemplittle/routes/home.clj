@@ -8,6 +8,7 @@
    [clojure.java.io :as io]
    [kemplittle.middleware :as middleware]
    [ring.util.response]
+   [environ.core :refer [env]]
    [ring.util.http-response :as response]
    [taoensso.timbre :as timbre]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
@@ -19,9 +20,9 @@
 
 (def client
   (let [ycb (. YotiClientBuilder newInstance)
-        forapp (doto ycb (.forApplication "e2ce1112-1514-43b4-9c07-604ba1165685"))
+        forapp (doto ycb (.forApplication (:yotiapp-sdk-id env)))
         wkp (. forapp withKeyPair (FileKeyPairSource/fromFile
-                                   (java.io.File. "/c/Users/VladAndrei/yotiapp.pem")))]
+                                   (java.io.File. (:yotiapp-priv-key-path env))))]
     (.build wkp)))
 
 (defn home-page [request]

@@ -47,7 +47,7 @@
   (codecs/bytes->str (decode to-decode)))
 
 (defn sign [request]
-  (let [priv-key-path (:priv-key-path env)
+  (let [priv-key-path (:docscan-priv-key-path env)
         key-to-use (keys/private-key priv-key-path)
         signed (-> (dsa/sign request {:key key-to-use :alg :rsassa-pkcs15+sha256})
                    (base64encode))]
