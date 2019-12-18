@@ -22,7 +22,9 @@
 (defn yotiapp-page [{:keys [params]}]
   (timbre/info "Got request from Yoti servers: " (:token params))
   (yotiapp/pass-token (:token params))
-  (response/ok))
+   {:status  200
+    :headers {"Content-Type" "text/html; charset=utf-8"}
+    :body    "ok"})
 
 (defn about-page [request]
   (let [session (get-new-session)]

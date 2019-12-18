@@ -7,7 +7,7 @@
 
 (def max-id (atom 0))
 
-(def (atom users {}))
+(def users (atom {}))
 
 (def client
   (let [ycb (. YotiClientBuilder newInstance)
