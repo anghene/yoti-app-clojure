@@ -1,0 +1,3 @@
+2019-12-18 22:11:43,682 [main] DEBUG c.y.a.c.s.r.SecureYotiClientFactory - Creating SecureYotiClient for application '8d26c691-0b72-4ddd-9b33-59a79f51eb96' from 'file: /home/yotiadmin/yotiapp.pem' 
+2019-12-18 22:11:43,711 [main] DEBUG c.y.a.c.spi.remote.SecureYotiClient - Loading key pair from 'file: /home/yotiadmin/yotiapp.pem' 
+2019-12-18 22:11:43,724 [main] DEBUG c.y.a.c.ServiceLocatorYotiClientBuilder - Found Yoti client: com.yoti.api.client.spi.remote.SecureYotiClient 

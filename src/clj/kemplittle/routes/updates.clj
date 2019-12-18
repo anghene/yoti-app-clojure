@@ -1,6 +1,7 @@
 (ns kemplittle.routes.updates
   (:require
    [taoensso.timbre :as timbre]
+   [buddy.core.codecs :as codecs]
    ))
 
 (defn is-admin? [name pass]
@@ -15,4 +16,7 @@
     false))
 
 (defn notification-handler [req]
-  (timbre/info "got update: " req))
+  (timbre/info "got params on webhook: " (slurp (:body req)))
+  {:status  200
+    :headers {"Content-Type" "application/json"}
+    :body    "Thanks for the update Yoti"})

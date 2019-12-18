@@ -31,7 +31,6 @@
         payload (-> (read-json json-payload)
                     (assoc :user_tracking_id usertracking-uuid)
                     (add-my-server-confs my-server-urls)
-                    (dissoc :notifications)
                     (write-str :escape-slash false))
         nonce (.toString (java.util.UUID/randomUUID))
         timestamp (System/currentTimeMillis)
