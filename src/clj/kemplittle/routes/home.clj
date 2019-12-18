@@ -5,6 +5,7 @@
    [kemplittle.db.core :as db]
    [kemplittle.certs.core :as certs]
    [kemplittle.client.session :as session]
+   [kemplittle.client.yotiapp :as yotiapp]
    [clojure.java.io :as io]
    [kemplittle.middleware :as middleware]
    [ring.util.response]
@@ -13,24 +14,15 @@
    [taoensso.timbre :as timbre]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [kemplittle.client.session :refer [get-new-session]])
-  (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
-            HumanProfile Image YotiClient YotiClientBuilder]
-           [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse]
-           )
   )
-
-(def client
-  (let [ycb (. YotiClientBuilder newInstance)
-        forapp (doto ycb (.forApplication (:yotiapp-sdk-id env)))
-        wkp (. forapp withKeyPair (FileKeyPairSource/fromFile
-                                   (java.io.File. (:yotiapp-priv-key-path env))))]
-    (.build wkp)))
 
 (defn home-page [request]
   (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
 
-(defn yotiapp-page [request]
-  (timbre/info "Got request from Yoti servers: " request))
+(defn yotiapp-page [{:keys [params]}]
+  (timbre/info "Got request from Yoti servers: " (:token params))
+  (yotiapp/pass-token (:token params))
+  (response/ok))
 
 (defn about-page [request]
   (let [session (get-new-session)]
