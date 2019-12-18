@@ -15,6 +15,7 @@
    [kemplittle.client.session :refer [get-new-session]])
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder]
+           [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse]
            )
   )
 
