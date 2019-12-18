@@ -26,6 +26,10 @@
     :headers {"Content-Type" "text/html; charset=utf-8"}
     :body    "ok"})
 
+(defn thankyou-page [request]
+  (let [session (get-new-session)]
+    (layout/render request "thankyou.html")))
+
 (defn about-page [request]
   (let [session (get-new-session)]
     (timbre/info "session:" session)
@@ -44,5 +48,6 @@
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
    ["/yotiapp" {:get yotiapp-page}]
+   ["/thankyou" {:get thankyou-page}]
    ["/docscan" {:get about-page}]])
 

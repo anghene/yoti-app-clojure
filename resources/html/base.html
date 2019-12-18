@@ -71,6 +71,10 @@
                     closeDelay: 4000, // default to 4000, min of 500 - max of 10000
                     tokenHandler: (token, done) => {
                         console.log(`Received the token: ${token}`);
+                        let xhr = new XMLHttpRequest();
+                        let endpoint = 'yotiapp?token=' + token;
+                        xhr.open("GET", endpoint);
+                        xhr.send();
                         done(); //done() will overwrite the closeDelay
                     }
                 }

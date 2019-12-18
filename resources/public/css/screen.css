@@ -307,14 +307,7 @@ svg {
 
 @font-face {
     font-family: gteesti_display;
-    src: url(assets/fonts/GT-Eesti-Display-Bold.eot?#iefix) format("embedded-opentype"), url(assets/fonts/GT-Eesti-Display-Bold.ttf) format("truetype");
+    src: url(ahttps://identity.kemplittle.com/css/assets/fonts/GT-Eesti-Display-Regular.eot) format("embedded-opentype"), url(https://identity.kemplittle.com/css/assets/fonts/GT-Eesti-Display-Regular.ttf) format("truetype");
     font-weight: 600;
-    font-display: swap
-}
-
-@font-face {
-    font-family: gteesti_display;
-    src: url(assets/fonts/GT-Eesti-Display-Regular.eot?#iefix) format("embedded-opentype"), url(assets/fonts/GT-Eesti-Display-Regular.ttf) format("truetype");
-    font-weight: 400;
     font-display: swap
 }

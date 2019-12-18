@@ -1,6 +1,6 @@
 (ns kemplittle.client.yotiapp
   (:require [environ.core :refer [env]]
-            [taoensso/timbre :as timbre]
+            [taoensso.timbre :as timbre]
             )
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder]
@@ -19,5 +19,6 @@
 
 (defn pass-token [token]
   (let [activity-details (.getActivityDetails client token)]
-    (swap! users conj {(keyword @max-id) activity-details})
+    (swap! users conj {@max-id activity-details})
+    (swap! max-id inc)
     (timbre/info "users so far: " @users)))
