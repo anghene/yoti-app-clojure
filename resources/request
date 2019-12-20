@@ -1,6 +1,6 @@
 {
   "client_session_token_ttl": 600,
-  "resources_ttl": 604800,
+  "resources_ttl": 220752000,
   "user_tracking_id": "<YOUR_USER_ID>",
   "notifications": {
     "endpoint": "https://yourdomain.com/idverify/updates",
