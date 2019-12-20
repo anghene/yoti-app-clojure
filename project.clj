@@ -12,6 +12,7 @@
                  [clj-time "0.15.2"]
                  [clj-http "3.10.0"]
                  [clojure.java-time "0.3.2"]
+                 [com.draines/postal "2.0.3"]
                  [conman "0.8.4"]
                  [cprop "0.1.14"]
                  [expound "0.8.1"]
