@@ -24,7 +24,7 @@
     (swap! max-id inc)
     (timbre/info "users so far: " @users)))
 
-(comment 
+(comment
 "
 String parentRememberMeId = activityDetails.getParentRememberMeId();
 Date timestamp = activityDetails.getTimestamp();
