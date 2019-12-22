@@ -13,6 +13,10 @@
 (conman/bind-connection *db* "sql/queries.sql")
 
 
+(def max-id (atom 0))
+
+(def users (atom {}))
+
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Timestamp
   (result-set-read-column [v _2 _3]

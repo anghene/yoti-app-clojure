@@ -16,10 +16,20 @@
       (= ssl "tls") (assoc base-params :tls true)
       :else base-params)))
 
-(defn send-contact-message! [name email message]
-  (postal/send-message
-   (smtp-settings) {:from "yoti@kemplittle.com"
-                    :to "vlad.anghene@gmail.com"
-                    :subject "TEST"
-                    :body [{:type "text/plain"
-                            :content (format "From: %s\n Email: %s\n %s" name email message)}]}))
+(defn send-messages! [contacts client-name validation-result]
+  (map
+   #(postal/send-message
+     (smtp-settings) {:from "yoti@kemplittle.com"
+                      :to (:email %)
+                      :subject "TEST"
+                      :body [{:type "text/plain"
+                              :content (format "Regarding: %s\n Validation result: %s\n %s" client-name validation-result)}]})
+   contacts))
+
+; {:type "text/html"
+;  :content (parser/render-file
+;            "welcome.email.html"
+;            {:user user
+;             :password password
+;             :loginurl (str "https://" (env :chp-host) "/login")})}
+

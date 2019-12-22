@@ -3,7 +3,7 @@
    [kemplittle.routes.updates :refer [authenticated? notification-handler]]
    [kemplittle.layout :as layout]
    [kemplittle.mail :as mail]
-   [kemplittle.db.core :as db]
+   [kemplittle.db.core :as db :refer [max-id users]]
    [kemplittle.certs.core :as certs]
    [kemplittle.client.session :as session]
    [kemplittle.client.yotiapp :as yotiapp]
