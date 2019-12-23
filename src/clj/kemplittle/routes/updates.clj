@@ -26,7 +26,7 @@
 
 (defn notification-handler [req]
 ;   (timbre/info "got params on webhook: " (slurp (:body req)))
-  (let [webhook (slurp (:body req))]
+  (let [webhook (read-json (slurp (:body req)))]
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
             media-id (text-check-id session-id)
