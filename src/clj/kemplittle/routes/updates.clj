@@ -25,13 +25,12 @@
   (timbre/info "Persisted a docscan user to state."))
 
 (defn notification-handler [req]
-;   (timbre/info "got params on webhook: " (slurp (:body req)))
   (let [webhook (read-json (slurp (:body req)))]
+    (timbre/info "got params on webhook: " webhook)
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
             media-id (text-check-id session-id webhook)
-            user-profile (read-json
-                          (media-details session-id media-id))]
+            user-profile (media-details session-id media-id)]
         (persist-to-state! session-id user-profile))
       (timbre/info "users thus far: " @users))
     {:status  200
