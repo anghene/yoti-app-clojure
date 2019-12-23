@@ -1,5 +1,6 @@
 (ns kemplittle.routes.updates
   (:require
+   [environ.core :refer [env]]
    [taoensso.timbre :as timbre]
    [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
@@ -29,9 +30,14 @@
     (timbre/info "got params on webhook: " webhook)
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
-            media-id (text-check-id session-id webhook)
-            user-profile (media-details session-id media-id)]
-        (persist-to-state! session-id user-profile))
+            media-id (text-check-id webhook)
+            user (media-details session-id media-id)]
+        (when (:send-emails env)
+          (try (mail/send-messages!
+                (-> user :user-details :full_name)
+                (str "SUCCESFUL VALIDATION with " (:type user)))
+               (catch Exception e (timbre/info (str "Error sending emails : " e)))))
+        (persist-to-state! session-id user))
       (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}
