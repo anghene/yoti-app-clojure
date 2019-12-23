@@ -59,39 +59,82 @@
     (-> (:body http-response)
         read-json)))
 
-(defn session-details [{:keys [is-media? media-id]} session]
-  (let [sdkid (:docscan-sdk-id env)
-        usertracking-uuid (.toString (java.util.UUID/randomUUID))
-        base-url "https://api.yoti.com/idverify/v1"
-        nonce (.toString (java.util.UUID/randomUUID))
-        timestamp (System/currentTimeMillis)
-        method "GET"
-        uri-path (str "/sessions" "/" session)
-        uri-path (if is-media? (str uri-path "/media/" media-id "/content") uri-path)
-        q-string (str "sdkId=" sdkid "&nonce=" nonce "&timestamp=" timestamp)
-        endpoint (str
-                  uri-path "?"
-                  q-string)
-        request (str method "&" endpoint)
-        options {:url (str base-url endpoint)
-                 :method method
-                 :user-agent "User-Agent-string"
-                 :headers {"X-Yoti-Auth-Digest" (get-digest request)}}
-        req (try (http/request options)
-                 (catch Exception e (str "Error: " e)))
-        parse-resp (fn [maybe-body]
-                     (try (read-json maybe-body)
-                          (catch Exception e maybe-body)))]
-    (timbre/info "endpoint: " endpoint)
-    (timbre/info "Request for signing: " request)
+(defn session-details
+  ([session-id]
+   (session-details nil session-id))
+  ([{:keys [is-media? media-id]} session]
+   (let [sdkid (:docscan-sdk-id env)
+         usertracking-uuid (.toString (java.util.UUID/randomUUID))
+         base-url "https://api.yoti.com/idverify/v1"
+         nonce (.toString (java.util.UUID/randomUUID))
+         timestamp (System/currentTimeMillis)
+         method "GET"
+         uri-path (str "/sessions" "/" session)
+         uri-path (if is-media? (str uri-path "/media/" media-id "/content") uri-path)
+         q-string (str "sdkId=" sdkid "&nonce=" nonce "&timestamp=" timestamp)
+         endpoint (str
+                   uri-path "?"
+                   q-string)
+         request (str method "&" endpoint)
+         options {:url (str base-url endpoint)
+                  :method method
+                  :user-agent "User-Agent-string"
+                  :headers {"X-Yoti-Auth-Digest" (get-digest request)}}
+         req (try (http/request options)
+                  (catch Exception e (str "Error: " e)))
+         parse-resp (fn [maybe-body]
+                      (try (read-json maybe-body)
+                           (catch Exception e maybe-body)))]
+     (timbre/info "endpoint: " endpoint)
+     (timbre/info "Request for signing: " request)
     ; (timbre/info "to send payload: " payload)
     ; (timbre/info "nonce: " nonce)
     ; (timbre/info "time: " timestamp)
-    (some-> req
-            (get :body req)
-            parse-resp)))
+     (some-> req
+             (get :body req) ; either get :body req or return full req
+             parse-resp))))
 
-(defn with-media [sid mid]
+(defn media-details [sid mid]
   (session-details {:is-media? true
                     :media-id mid}
                    sid))
+
+; (filter (= (:type (:checks resp)) "ID_DOCUMENT_TEXT_DATA_CHECK"))
+; get (:generated_media (:checks resp))
+
+
+(defn is-completed?
+  ([webhook]
+   (= (:topic webhook) "check_completion"))
+  ([session-id webhook]
+   (and (= (:session_id webhook)
+           session-id)
+        (= (:topic webhook)
+           "check_completion"))))
+
+(defn is-approved-and-done? [check]
+  (and (= (:state check) "DONE")
+       (= (-> check :report :recommendation :value) "APPROVE")))
+
+(defn text-check-id [session-id webhook]
+  (let [details (session-details session-id)]
+    (when (is-completed? session-id webhook)
+      (let [text-check (filter
+                        #(and is-approved-and-done?
+                              (= (:type %)
+                                 "ID_DOCUMENT_TEXT_DATA_CHECK"))
+                        (:checks details))
+            result (some-> text-check
+                           first
+                           :generated_media
+                           first
+                           :id)]
+        result))))
+
+(defn user-profile [media-request]
+  (read-json media-request))
+
+
+; if state done and report recommendation value is approve
+;    where id of checks is last id given where topic check completion
+;   get first id of generated media of checks where type ID_DOCUMENT_TEXT_DATA_CHECK

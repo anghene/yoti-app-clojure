@@ -1,10 +1,10 @@
 (ns kemplittle.routes.updates
   (:require
    [taoensso.timbre :as timbre]
-   [buddy.core.codecs :as codecs]
+   [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
+   [kemplittle.client.session :refer [is-completed? text-check-id media-details]]
    [kemplittle.mail :as mail]))
-
 
 (defn is-admin? [name pass]
   (and (= name "yotiupdate")
@@ -17,13 +17,23 @@
       true)
     false))
 
+(defn persist-to-state! [session-id user]
+  (swap! users conj {@max-id session-id
+                     :type :docscan
+                     :user-details user})
+  (swap! max-id inc)
+  (timbre/info "Persisted a docscan user to state."))
+
 (defn notification-handler [req]
-  (timbre/info "got params on webhook: " (slurp (:body req)))
-  (let [upd (slurp (:body req))]
-    (swap! users conj {@max-id {:client-session (:session_id upd)
-                                :client-session-token (:client_session_token upd)
-                                :type :docscan}})
-    (swap! max-id inc)
+;   (timbre/info "got params on webhook: " (slurp (:body req)))
+  (let [webhook (slurp (:body req))]
+    (when (is-completed? webhook)
+      (let [session-id (:session_id webhook)
+            media-id (text-check-id session-id)
+            user-profile (read-json
+                          (media-details session-id media-id))]
+        (persist-to-state! session-id user-profile))
+      (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}
      :body    "Thanks for the update Yoti"}))
