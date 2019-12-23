@@ -29,7 +29,7 @@
   (let [webhook (read-json (slurp (:body req)))]
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
-            media-id (text-check-id session-id)
+            media-id (text-check-id session-id webhook)
             user-profile (read-json
                           (media-details session-id media-id))]
         (persist-to-state! session-id user-profile))
