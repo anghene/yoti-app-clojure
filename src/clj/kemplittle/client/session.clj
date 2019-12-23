@@ -85,8 +85,8 @@
          parse-resp (fn [maybe-body]
                       (try (read-json maybe-body)
                            (catch Exception e maybe-body)))]
-     (timbre/info "endpoint: " endpoint)
-     (timbre/info "Request for signing: " request)
+   ;   (timbre/info "endpoint: " endpoint)
+   ;   (timbre/info "Request for signing: " request)
     ; (timbre/info "to send payload: " payload)
     ; (timbre/info "nonce: " nonce)
     ; (timbre/info "time: " timestamp)
@@ -129,6 +129,7 @@
                            :generated_media
                            first
                            :id)]
+        (timbre/info "text-check: " text-check)
         result))))
 
 (defn user-profile [media-request]
