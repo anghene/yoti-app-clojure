@@ -5,9 +5,6 @@
   "notifications": {
     "endpoint": "https://yourdomain.com/idverify/updates",
     "topics": [
-      "resource_update",
-      "task_completion",
-      "check_completion",
       "session_completion"
     ],
     "auth_token": "username:password"
