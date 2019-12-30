@@ -1,7 +1,6 @@
 (ns kemplittle.env
   (:require
     [selmer.parser :as parser]
-
     [kemplittle.dev-middleware :refer [wrap-dev]]))
 
 (def defaults

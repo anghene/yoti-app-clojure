@@ -1,0 +1,71 @@
+{:deps
+ {uix.core {:git/url "https://github.com/roman01la/uix.git"
+            :deps/root "core"
+            :sha "1ec2d922d5654204e34fccc6e6c77b201d17d2b0"}
+  uix.dom {:git/url "https://github.com/roman01la/uix.git"
+           :deps/root "dom"
+           :sha "1ec2d922d5654204e34fccc6e6c77b201d17d2b0"}
+  uix.rn {:git/url "https://github.com/roman01la/uix.git"
+          :deps/root "rn"
+          :sha "1ec2d922d5654204e34fccc6e6c77b201d17d2b0"}
+  vladanghene/tailwind-clj {:git/url "https://github.com/vladanghene/tailwind-clj.git"
+                            :deps/root "."
+                            :sha "7a91ce922bdc4010c6ba82b9e3eb8eb4d36a5794"}
+  buddy/buddy-auth {:mvn/version "2.2.0"}
+  buddy/buddy-core {:mvn/version "1.6.0"}
+  buddy/buddy-hashers {:mvn/version "1.4.0"}
+  buddy/buddy-sign {:mvn/version "3.1.0"}
+;  ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
+  cheshire {:mvn/version "5.7.0"}
+  clj-http {:mvn/version "3.10.0"}
+  clj-time {:mvn/version "0.15.2"}
+  cljsjs/emotion {:mvn/version "10.0.6-0"}
+  clojure.java-time {:mvn/version "0.3.2"}
+  compojure {:mvn/version "1.6.1"}
+  com.bhauman/figwheel-main {:mvn/version "0.2.3"}
+  com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+  com.draines/postal {:mvn/version "2.0.3"}
+  com.fasterxml.jackson.core/jackson-core {:mvn/version "2.10.0"}
+  com.taoensso/nippy {:mvn/version "2.11.1"}
+  com.taoensso/timbre {:mvn/version "4.10.0"}
+  com.yoti/yoti-sdk-impl {:mvn/version "2.6.0"}
+  conman {:mvn/version "0.8.4"}
+  cprop {:mvn/version "0.1.14"}
+  environ {:mvn/version "1.1.0"}
+  expound {:mvn/version "0.7.0"}
+  fipp {:mvn/version "0.6.22"}
+  funcool/struct {:mvn/version "1.4.0"}
+  http-kit {:mvn/version "2.4.0-alpha4"}
+  luminus-http-kit {:mvn/version "0.1.6"}
+  luminus-migrations {:mvn/version "0.6.6"}
+  luminus-transit {:mvn/version "0.1.2"}
+  luminus/ring-ttl-session {:mvn/version "0.3.3"}
+  markdown-clj {:mvn/version "1.10.0"}
+  metosin/muuntaja {:mvn/version "0.6.6" :exclusions [com.fasterxml.jackson.core]}
+  metosin/reitit {:mvn/version "0.3.10" :exclusions [com.fasterxml.jackson.core/jackson-core]}
+  metosin/ring-http-response {:mvn/version "0.9.1"}
+  mount {:mvn/version "0.1.16"}
+  nrepl {:mvn/version "0.6.0"}
+  org.clojure-android/data.json {:mvn/version "0.2.6-SNAPSHOT"}
+  org.clojure/clojure {:mvn/version "1.10.0"}
+  org.clojure/clojurescript {:mvn/version "1.10.597"}
+  org.clojure/tools.cli {:mvn/version "0.4.2"}
+  org.clojure/tools.logging {:mvn/version "0.5.0"}
+  org.clojure/tools.reader {:mvn/version "1.3.2"}
+  org.webjars.npm/bulma {:mvn/version "0.8.0"}
+  org.webjars.npm/material-icons {:mvn/version "0.3.1"}
+  org.webjars/webjars-locator {:mvn/version "0.38"}
+  org.xerial/sqlite-jdbc {:mvn/version "3.28.0"}
+  reagent {:mvn/version "0.9.0-rc4"}
+  ring-basic-authentication {:mvn/version "1.0.5"}
+  ring-webjars {:mvn/version "0.2.0"}
+  ring/ring-core {:mvn/version "1.8.0"}
+  ring/ring-defaults {:mvn/version "0.3.2"}
+  ring/ring-jetty-adapter {:mvn/version "1.8.0"}
+  selmer {:mvn/version "1.12.17"}}
+
+
+ :paths ["src" "src-cljs" "target" "resources"]
+ ;; setup a helpful alias to start the build
+ :aliases {:build-dev
+           {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}
