@@ -113,8 +113,10 @@
 (defn pass-token
   "activated when received a token via yoti digital id"
   [token]
-  (let [activity-details (.getActivityDetails client token)]
-    (->> activity-details
-         get-user
-         (persist-to-state! activity-details))
+  (let [activity-details (.getActivityDetails client token)
+        user (get-user activity-details)]
+    (persist-to-state! activity-details user)
+    (when (:send-emails env)
+      (try (mail/send-messages! (-> user :user-details :name) (str "SUCCESFUL VALIDATION with " (:type user)))
+           (catch Exception e (timbre/info (str "Error sending emails : " e)))))
     (timbre/info "users so far: " @users)))

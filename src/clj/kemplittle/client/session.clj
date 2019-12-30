@@ -102,10 +102,9 @@
 ; (filter (= (:type (:checks resp)) "ID_DOCUMENT_TEXT_DATA_CHECK"))
 ; get (:generated_media (:checks resp))
 
-
 (defn is-completed?
   ([webhook]
-   (= (:topic webhook) "check_completion"))
+   (= (:topic webhook) "session_completion"))
   ([session-id webhook]
    (and (= (:session_id webhook)
            session-id)
@@ -116,21 +115,20 @@
   (and (= (:state check) "DONE")
        (= (-> check :report :recommendation :value) "APPROVE")))
 
-(defn text-check-id [session-id webhook]
-  (let [details (session-details session-id)]
-    (when (is-completed? session-id webhook)
-      (let [text-check (filter
-                        #(and is-approved-and-done?
-                              (= (:type %)
-                                 "ID_DOCUMENT_TEXT_DATA_CHECK"))
-                        (:checks details))
-            result (some-> text-check
-                           first
-                           :generated_media
-                           first
-                           :id)]
-        (timbre/info "text-check: " text-check)
-        result))))
+(defn text-check-id [webhook]
+  (when (is-completed? webhook)
+    (let [text-check (filter
+                      #(and (is-approved-and-done? %)
+                            (= (:type %)
+                               "ID_DOCUMENT_TEXT_DATA_CHECK"))
+                      (:checks (session-details (:session_id webhook))))
+          result (-> text-check
+                     first
+                     :generated_media
+                     first
+                     :id)]
+      (timbre/info "text-check: " text-check)
+      result)))
 
 (defn user-profile [media-request]
   (read-json media-request))
