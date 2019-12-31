@@ -5,12 +5,10 @@
    [reitit.frontend.controllers :as rfc]
    [kemplittle.routes :as rts :refer [routes log-fn]]
    [uix.dom.alpha :as uix.dom]
-   [uix.core.alpha :as uix :refer [defui]]
+   [uix.core.alpha :as uix]
    [taoensso.timbre :refer [info]]
    [xframe.core.alpha :as xf :refer [<sub]]
    [tailwind.core :refer [tw tw! spit-css!]]))
-
-(spit-css! "resources/public/css/kl.css")
 
 ;; Subscriptions
 (xf/reg-sub :db/app-state
@@ -33,7 +31,13 @@
                                       :view kemplittle.pages.frontpage/front-page
                                       :controllers [{:start (log-fn "start" "frontpage controller")
                                                      :stop (log-fn "stop" "frontpage controller")}]}}
-                :error "wow!"}}))
+                :error nil}}))
+;; Init database
+(spit-css! "resources/public/css/kl.css")
+
+(defonce init-db
+  (do (info "initializing db.")
+      (xf/dispatch [:db/init])))
 
 (xf/reg-event-db
  :set-value
@@ -69,21 +73,22 @@
       (-> (dissoc attrs :css)
           (assoc :class class)))))
 
-
 ;; UI components
 
 (defn app []
   (let [match (<sub [:current-page])
         error (<sub [:error])]
-    [:div {:class (tw! "flex flex-col items-center p-4")}
-     [kemplittle.pages.frontpage/header]
-     ((log-fn "current-match: " match))
+    (info "match: " match)
+    [:<>
+     [:div {:class (tw! "flex flex-col items-center")}
+      [kemplittle.pages.frontpage/header]]
+     (when error
+       [:div {:class (tw! "w-1/6 m-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative") :role "alert"}
+        error])
      (if match
        (let [view (:view (:data match))]
          [view match]))
-     (when error
-       [:div {:class (tw! "bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative") :role "alert"}
-        error])]))
+     [kemplittle.pages.frontpage/footer]]))
 
 (defn init! []
   (rfe/start!
@@ -96,9 +101,3 @@
   (uix.dom/render [app] js/root))
 
 (init!)
-
-;; Init database
-
-(defonce init-db
-  (do (info "initializing db.")
-      (xf/dispatch [:db/init])))
