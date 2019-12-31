@@ -2,14 +2,18 @@
   "Userspace functions you can run by default in your local REPL."
   (:require
    [kemplittle.config :refer [env]]
-    [clojure.pprint]
-    [clojure.spec.alpha :as s]
-    [expound.alpha :as expound]
-    [mount.core :as mount]
-    [kemplittle.core :refer [start-app]]
-    [kemplittle.db.core]
-    [conman.core :as conman]
-    [luminus-migrations.core :as migrations]))
+   [clojure.pprint]
+   [clojure.spec.alpha :as s]
+   [expound.alpha :as expound]
+   [mount.core :as mount]
+   [kemplittle.core :refer [start-app]]
+   [kemplittle.db.core]
+   [conman.core :as conman]
+   [hickory.core :as hick]
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]
+   [taoensso.timbre :refer [info]]
+   [luminus-migrations.core :as migrations]))
 
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 
@@ -60,4 +64,5 @@
   [name]
   (migrations/create name (select-keys env [:database-url])))
 
-
+(defn read-file [file]
+  (some-> file io/resource slurp))
