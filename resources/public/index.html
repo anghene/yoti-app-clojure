@@ -4,11 +4,27 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="https://www.kemplittle.com/wp-content/themes/kemplittle/style.css?ver=1.0">
 	<link rel="stylesheet" href="css/kl.css">
 	<title>Document</title>
 </head>
 <body>
 	<div id="root"></div>
 	<script src="cljs-out/dev-main.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script type='text/javascript' src='https://www.kemplittle.com/wp-content/themes/kemplittle/js/slick.min.js?ver=1.6.0'></script>
+	<script>
+		$(document).ready(function(){
+			$('.slick-track').slick({
+				arrows: true,
+      		dots: false,
+      		focusOnSelect: true,
+				lazyLoad: 'ondemand',
+  				slidesToShow: 8,
+				slidesToScroll: 1
+			});
+		});
+	</script>
 </body>
 </html>
