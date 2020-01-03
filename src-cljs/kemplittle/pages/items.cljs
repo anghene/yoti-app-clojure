@@ -1,11 +1,8 @@
 (ns kemplittle.pages.items
   (:require
-   [clojure.string :as str]
-   [uix.dom.alpha :as uix.dom]
-   [uix.core.alpha :as uix.core]
    [reitit.frontend.easy :as rfe]
-   [tailwind.core :refer [tw tw! spit-css!]]
-   [reagent.core :as r]))
+   [taoensso.timbre :refer [info]]
+   [tailwind.core :refer [tw tw! spit-css!]]))
 
 (defn item-page [match]
   (let [{:keys [path query]} (:parameters match)

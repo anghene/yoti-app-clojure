@@ -1,24 +1,25 @@
 (ns kemplittle.middleware
   (:require
-    [kemplittle.env :refer [defaults]]
-    [cheshire.generate :as cheshire]
-    [cognitect.transit :as transit]
+   [kemplittle.env :refer [defaults]]
+   [cheshire.generate :as cheshire]
+   [cognitect.transit :as transit]
 
-    [kemplittle.layout :refer [error-page]]
-    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-    [kemplittle.middleware.formats :as formats]
-    [muuntaja.middleware :refer [wrap-format wrap-params]]
-    [kemplittle.config :refer [env]]
-    [ring-ttl-session.core :refer [ttl-memory-store]]
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-            [buddy.auth.accessrules :refer [restrict]]
-            [buddy.auth :refer [authenticated?]]
-    [buddy.auth.backends.session :refer [session-backend]]
-    [buddy.auth.backends.token :refer [jwe-backend]]
-            [buddy.sign.jwt :refer [encrypt]]
-            [buddy.core.nonce :refer [random-bytes]]
-            [clj-time.core :refer [plus now minutes]])           )
+   [kemplittle.layout :refer [error-page]]
+   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+   [kemplittle.middleware.formats :as formats]
+   [muuntaja.middleware :refer [wrap-format wrap-params]]
+   [kemplittle.config :refer [env]]
+   [ring-ttl-session.core :refer [ttl-memory-store]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring.middleware.cors :refer [wrap-cors]]
+   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+   [buddy.auth.accessrules :refer [restrict]]
+   [buddy.auth :refer [authenticated?]]
+   [buddy.auth.backends.session :refer [session-backend]]
+   [buddy.auth.backends.token :refer [jwe-backend]]
+   [buddy.sign.jwt :refer [encrypt]]
+   [buddy.core.nonce :refer [random-bytes]]
+   [clj-time.core :refer [plus now minutes]])           )
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -77,7 +78,9 @@
   (-> ((:middleware defaults) handler)
       wrap-auth
       (wrap-defaults
-        (-> site-defaults
-            (assoc-in [:security :anti-forgery] false)
-            (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
+       (-> site-defaults
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
+      (wrap-cors :access-control-allow-origin [#"http://localhost"]
+                 :access-control-allow-methods [:get :put :post :delete])
       wrap-internal-error))

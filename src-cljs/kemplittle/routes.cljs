@@ -1,15 +1,13 @@
 (ns kemplittle.routes
   (:require
    [reitit.frontend :as rf]
-   [reitit.frontend.easy :as rfe]
-   [reitit.frontend.controllers :as rfc]
-   [reagent.core :as r]
    [reitit.coercion.schema :as rsc]
    [schema.core :as s]
    [kemplittle.pages.frontpage :as kf]
+   [kemplittle.pages.docscan :refer [docscan-page]]
+   [kemplittle.state :as state]
    [kemplittle.pages.items :as ki]
-   [uix.core.alpha :as uix]
-   ))
+   [xframe.core.alpha :as xf]))
 
 (defn log-fn [& params]
   (fn [_]
@@ -23,6 +21,12 @@
       :view kf/front-page
       :controllers [{:start (log-fn "start" "frontpage controller")
                      :stop (log-fn "stop" "frontpage controller")}]}]
+    ["docscan"
+     {:name ::docscan
+      :view docscan-page
+      :controllers [{:start
+                       (xf/dispatch [:fetch-session])
+                     :stop (log-fn "stop" "docscan controller")}]}]
     ["items"
       ;; Shared data for sub-routes
      {:view ki/item-page

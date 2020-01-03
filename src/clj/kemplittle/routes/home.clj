@@ -14,8 +14,8 @@
    [ring.util.http-response :as response]
    [taoensso.timbre :as timbre]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
-   [kemplittle.client.session :refer [get-new-session]])
-  )
+   [kemplittle.client.session :refer [get-new-session]]
+   [clojure.data.json :refer [write-str read-json]]))
 
 (defn home-page [request]
   (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
@@ -59,6 +59,15 @@
     (layout/render request "docscan.html" {:session {:id (:session_id session)
                                                    :token (:client_session_token session)}})))
 
+(defn new-session [request]
+  (let [sess (session/get-new-session)
+        id (:session_id sess)
+        tkn (:client_session_token sess)]
+    (timbre/info "served new session : " sess)
+    {:status (:status request)
+     :headers {"Content-Type" "application/json"}
+     :body (write-str {:id id :tkn tkn})}))
+
 (defn updates-routes []
   ["/updates"
    {:middleware [#(-> % (wrap-basic-authentication authenticated?))]}
@@ -69,6 +78,7 @@
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
    ["/" {:get home-page}]
+   ["/getsession" {:get new-session}]
    ["/yotiapp" {:get yotiapp-page}]
    ["/thankyou" {:get thankyou-page}]
    ["/error" {:get error-page}]
