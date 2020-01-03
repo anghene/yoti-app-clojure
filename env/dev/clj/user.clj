@@ -65,4 +65,11 @@
   (migrations/create name (select-keys env [:database-url])))
 
 (defn read-file [file]
-  (some-> file io/resource slurp))
+  (-> file io/resource slurp))
+
+(defn parse-as-hiccup [file]
+  (-> file
+      read-file
+      (hick/parse)
+      (hick/as-hiccup)
+      ))
