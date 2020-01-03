@@ -1,0 +1,511 @@
+#site_footer {
+    display: block;
+    clear: both;
+    background: #333333;
+    position: relative;
+    z-index: 4;
+    font: 0.875em/150% "Gotham A", "Gotham B", sans-serif;
+    color: #fff;
+    line-height: 170%;
+    -webkit-font-smoothing: antialiased;
+    /**** height: 100%; ****/
+}
+
+
+/** 14px **/
+
+#site_footer .container_capped {
+    max-width: 1320px;
+}
+
+#site_footer_top {
+    padding: 25px 0;
+    line-height: 9px;
+}
+
+#site_footer_top * {
+    color: #fff;
+}
+
+#footer_logo {
+    float: left;
+}
+
+#footer_logo img {
+    width: 72px;
+    height: 72px;
+    margin: 0 40px 0 0;
+}
+
+#footer_strapline {
+    float: left;
+    margin-top: -3px;
+    padding: 0 20px 0 0;
+    font-weight: bold;
+    max-width: 170px;
+    line-height: 140%;
+}
+
+#footer_toggle {
+    display: block;
+    float: right;
+    font-weight: normal !important;
+    padding: 33px 30px 5px 0;
+    background: url(https://kemplittle.com/wp-content/themes/kemplittle/images/arrow_down_w.png) 100% 31px no-repeat;
+    background-size: 12px 13px;
+    text-decoration: none;
+}
+
+#footer_toggle.open {
+    background-image: url(https://kemplittle.com/wp-content/themes/kemplittle/images/arrow_up_w.png);
+}
+
+#footer_sra {
+    float: right;
+    width: 121px;
+    margin: 0 25px 0 0;
+}
+
+#footer_sra_mobile {
+    display: none;
+    width: 130px;
+    padding: 25px 0 0 0;
+    clear: both;
+}
+
+#footer_reveal {
+    clear: both;
+    padding: 20px 0;
+    display: none;
+}
+
+#footer_reveal,
+#footer_reveal * {
+    transition: all .3s ease;
+    -o-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -webkit-transition: all .3s ease;
+}
+
+#footer_reveal_wrapper {
+    padding: 20px 0 0 0;
+}
+
+.footer_col {
+    float: left;
+    width: 20%;
+    padding: 0 20px 0 0;
+}
+
+.footer_col:last-child {
+    padding-right: 0;
+}
+
+.footer_col h3,
+.footer_col p,
+.footer_col li {
+    font-size: 0.850em;
+    line-height: 130%;
+}
+
+.footer_col a {
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.footer_col a:hover {
+    text-decoration: underline;
+}
+
+.footer_col p {
+    line-height: 155%;
+}
+
+.footer_col ul {
+    margin: 0;
+    padding: 2px 0 0 0;
+    list-style-image: none;
+    list-style: none;
+}
+
+.footer_col ul li {
+    margin: 0;
+    padding: 0 0 4px 0;
+}
+
+.footer_col ul .li_gap {
+    padding-top: 18px;
+}
+
+.footer_smallprint {
+    display: block;
+    clear: both;
+    padding: 20px 0 0 0;
+}
+
+.footer_smallprint p {
+    padding: 0;
+    font-size: 0.86em;
+    line-height: 160%;
+}
+
+.footer_smallprint p a {
+    text-decoration: underline;
+    font-weight: normal;
+}
+
+.footer_smallprint p a:hover {
+    text-decoration: none;
+}
+
+#site_footer_base {
+    background: #fff;
+}
+
+#footer_logos {
+    padding: 0 50px;
+}
+
+#footer_logos li .logo_table {
+    display: table;
+    width: 100%;
+}
+
+#footer_logos li .logo_cell {
+    display: table-cell;
+    width: 100%;
+    height: 130px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 15px 0;
+}
+
+#footer_logos li .logo_cell img {
+    /** width: 60px; height: auto; **/
+    height: 64px;
+    width: auto;
+    margin: 0 auto;
+}
+
+#footer_logos .slick-arrow {
+    background-image: url(https://kemplittle.com/wp-content/themes/kemplittle/images/arrow-left-black.png);
+    background-size: 16px auto;
+}
+
+#footer_logos .slick-next.slick-arrow {
+    background-image: url(https://kemplittle.com/wp-content/themes/kemplittle/images/arrow-right-black.png);
+}
+
+.error404 #page_default.container_capped {
+    max-width: 760px;
+    padding-bottom: 50px;
+}
+
+.error404 #page_default.container_capped p {
+    font-size: 1.429em;
+    line-height: 140%;
+}
+
+.page-template-default #page_default {
+    padding-bottom: 60px;
+    max-width: 840px;
+}
+
+.um-page-loggedout h1,
+.um-page-loggedin h1,
+.register-lorca h1 {
+    text-align: center;
+    /** text-transform: lowercase; **/
+}
+
+.page-template-default .um-button {
+    /** text-transform: lowercase !important; **/
+    border: none !important;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+}
+
+.page-template-default .um input[type=submit].um-button {
+    background: #7a60aa;
+    background: #62c9e2;
+}
+
+.page-template-default .um input[type=submit].um-button:hover {
+    background: #f05a78;
+}
+
+.page-template-default .um-field-type_terms_conditions {
+    padding-bottom: 15px !important;
+}
+
+.um-gdpr-content {
+    padding-bottom: 20px;
+}
+
+.um-account-meta {
+    display: none;
+}
+
+div.uimob800 .um-account-main {
+    max-width: none !important;
+}
+
+.page-template-default .um .um-form input[type=text],
+.page-template-default .um .um-form input[type=tel],
+.page-template-default .um .um-form input[type=number],
+.page-template-default .um .um-form input[type=password],
+.page-template-default .um .um-form textarea {
+    border: none !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+.page-template-default .um .upload-progress,
+.page-template-default .select2-container .select2-choice,
+.page-template-default .select2-drop,
+.page-template-default .select2-container-multi .select2-choices,
+.page-template-default .select2-drop-active,
+.page-template-default .select2-drop.select2-drop-above {
+    border: 1px solid #333 !important;
+}
+
+.page-template-default input {
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+}
+
+.page-template-default .um-field-label {
+    margin: 0 !important;
+}
+
+.um-field-error,
+p.um-notice.err {
+    background: #f05a78 !important;
+    color: #e2e430 !important;
+}
+
+.um-field-arrow {
+    color: #f05a78 !important;
+}
+
+.um .um-button.um-alt:hover,
+.um input[type=submit].um-button.um-alt:hover {
+    background: #333 !important;
+    color: #fff !important;
+}
+
+#cn-notice-text a {
+    color: #fff;
+}
+
+#cookie-notice .button {
+    color: #e2e430;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+a img {
+    border: none;
+    outline: none;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 100%;
+    padding: 0 20px;
+}
+
+.container_capped {
+    max-width: 1260px;
+}
+
+#site_footer_top {
+    padding: 25px 0;
+    line-height: 9px;
+}
+
+
+/* Slider */
+
+.slick-slider {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -ms-touch-action: pan-y;
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.slick-list {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.slick-list:focus {
+    outline: none;
+}
+
+.slick-list.dragging {
+    cursor: pointer;
+    cursor: hand;
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+
+.slick-track {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: block;
+}
+
+.slick-track:before,
+.slick-track:after {
+    display: table;
+    content: '';
+}
+
+.slick-track:after {
+    clear: both;
+}
+
+.slick-loading .slick-track {
+    visibility: hidden;
+}
+
+.slick-slide {
+    display: none;
+    float: left;
+    height: 100%;
+    min-height: 1px;
+    margin: 0;
+}
+
+[dir='rtl'] .slick-slide {
+    float: right;
+}
+
+.slick-slide img {
+    display: block;
+}
+
+.slick-slide.slick-loading img {
+    display: none;
+}
+
+.slick-slide.dragging img {
+    pointer-events: none;
+}
+
+.slick-initialized .slick-slide {
+    display: block;
+}
+
+.slick-loading .slick-slide {
+    visibility: hidden;
+}
+
+.slick-vertical .slick-slide {
+    display: block;
+    height: auto;
+    border: 1px solid transparent;
+}
+
+.slick-arrow.slick-hidden {
+    display: none;
+}
+
+.slick-arrow {
+    position: absolute;
+    top: 50%;
+    margin-top: -22px;
+    z-index: 10;
+    opacity: 0.4;
+    background: url("https://www.kemplittle.com/wp-content/themes/kemplittle/images/arrow-left-black.png") center no-repeat;
+    background-size: 61px auto;
+    border: none;
+    outline: none;
+    text-indent: -9999px;
+    width: 61px;
+    height: 61px;
+    cursor: pointer;
+    transition: all .3s ease;
+    -o-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -webkit-transition: all .3s ease;
+}
+
+.slick-arrow:hover {
+    opacity: 1;
+}
+
+.slick-prev.slick-arrow {
+    left: 0;
+}
+
+.slick-next.slick-arrow {
+    right: 0;
+    background-image: url("https://www.kemplittle.com/wp-content/themes/kemplittle/images/arrow-right-black.png")
+}
+
+.slick-dots {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    list-style-image: none;
+}
+
+.slick-dots li {
+    margin: 0;
+    padding: 0 7px;
+    display: inline-block;
+}
+
+.slick-dots li button {
+    cursor: pointer;
+    background: #333;
+    text-indent: -9999px;
+    outline: none;
+    border: none;
+    padding: 0;
+    width: 15px;
+    height: 15px;
+    line-height: 9px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    transition: all .3s ease;
+    -o-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -webkit-transition: all .3s ease;
+}
+
+.slick-dots li button:hover,
+.slick-dots li.slick-active button {
+    background: #00ab8b;
+}
+
+.version_desktop {}
+
+.version_mobile {
+    display: none;
+}
