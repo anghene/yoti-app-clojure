@@ -7,10 +7,10 @@
 (defn docscan-page [match]
   (let [{:keys [path query]} (:parameters match)
         {:keys [id]} path
-        session (<sub [:session])
-        idsess (:id session)
-        tkn (:tkn session)]
-    (info "session: " session)
+        session (<sub [:session :docscan])
+        idsess (-> session :docscan :id)
+        tkn (-> session :docscan :tkn)]
+    (info "got session as : " session)
     ; (info "id: " id " & tkn: " tkn)
     [:div {:class (tw! "w-full m-auto p-6")}
      [:h1 {:class (tw! "text-lg font-semibold")} "Verify your identity with Doc Scan powered by Yoti"]
