@@ -1,10 +1,14 @@
 (ns kemplittle.components.utils
   (:require
    [tailwind.core :refer [tw tw! spit-css!]]
-   [reitit.frontend.easy :as rfe]
    [cljsjs.emotion]
+   [reitit.frontend.easy :as rfe]
    [uix.core.alpha :as uix]
    [taoensso.timbre :refer [info]]))
+
+(defn not-found []
+  (info "gets here")
+  [:div "error page not found"])
 
 (defn header []
   [:nav {:class (tw! "w-full flex items-center justify-between flex-wrap bg-klgreen-100 p-6")}
@@ -22,8 +26,8 @@
             :viewBox "0 0 20 20"
             :xmlns   "http://www.w3.org/2000/svg"}
       [:title "Menu"]
-      [:path {:d "M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"}]]]]
-   ])
+      [:path {:d "M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"}]]]]])
+
 
 (defn footer []
   (let [expanded? (uix/state false)]
@@ -270,4 +274,3 @@
          [:span {:class "logo_table"}
           [:span {:class "logo_cell"}
            [:img {:src "https://www.kemplittle.com/wp-content/uploads/2019/02/Chambers-fintech-logo-bw.jpg"}]]]]]]]]))
-
