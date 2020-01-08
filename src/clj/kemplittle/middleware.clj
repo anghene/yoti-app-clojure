@@ -1,25 +1,29 @@
 (ns kemplittle.middleware
   (:require
-   [kemplittle.env :refer [defaults]]
-   [cheshire.generate :as cheshire]
-   [cognitect.transit :as transit]
-
-   [kemplittle.layout :refer [error-page]]
-   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-   [kemplittle.middleware.formats :as formats]
-   [muuntaja.middleware :refer [wrap-format wrap-params]]
-   [kemplittle.config :refer [env]]
-   [ring-ttl-session.core :refer [ttl-memory-store]]
-   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-   [ring.middleware.cors :refer [wrap-cors]]
-   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+   [buddy.auth :refer [authenticated? throw-unauthorized]]
    [buddy.auth.accessrules :refer [restrict]]
-   [buddy.auth :refer [authenticated?]]
    [buddy.auth.backends.session :refer [session-backend]]
    [buddy.auth.backends.token :refer [jwe-backend]]
-   [buddy.sign.jwt :refer [encrypt]]
+   [buddy.auth.backends.token :refer [jws-backend]]
+   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
    [buddy.core.nonce :refer [random-bytes]]
-   [clj-time.core :refer [plus now minutes]])           )
+   [buddy.sign.jwt :as jwt]
+   [buddy.sign.jwt :refer [encrypt]]
+   [cheshire.generate :as cheshire]
+   [clj-time.core :refer [plus now minutes]]
+   [cognitect.transit :as transit]
+   [kemplittle.config :refer [env]]
+   [kemplittle.env :refer [defaults]]
+   [kemplittle.layout :refer [error-page]]
+   [kemplittle.middleware.formats :as formats]
+   [taoensso.timbre :refer [info]]
+   [muuntaja.middleware :refer [wrap-format wrap-params]]
+   [ring-ttl-session.core :refer [ttl-memory-store]]
+   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+   [ring.middleware.cors :refer [wrap-cors]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+   ))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -47,32 +51,24 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(defn on-error [request response]
-  (error-page
-    {:status 403
-     :title (str "Access to " (:uri request) " is not authorized")}))
-
-(defn wrap-restricted [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error on-error}))
-
-(def secret (random-bytes 32))
+(def secret "verystupidsecret")
 
 (def token-backend
-  (jwe-backend {:secret secret
-                :options {:alg :a256kw
-                          :enc :a128gcm}}))
+  (jws-backend {:secret secret :options {:alg :hs512}}))
 
-(defn token [username]
-  (let [claims {:user (keyword username)
-                :exp (plus (now) (minutes 60))}]
-    (encrypt claims secret {:alg :a256kw :enc :a128gcm})))
+(defn wrap-json-resp [handler]
+  (-> handler
+      (wrap-json-response {:pretty false})
+      (wrap-json-body {:keywords? true :bigdecimals? true})))
 
-(defn wrap-auth [handler]
+(defn wrap-auth
+  "Wrapper to check for auth jws token in header and return nice json"
+  [handler]
   (let [backend token-backend]
     (-> handler
         (wrap-authentication backend)
-        (wrap-authorization backend))))
+        (wrap-authorization backend)
+        wrap-json-resp)))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
@@ -81,6 +77,6 @@
        (-> site-defaults
            (assoc-in [:security :anti-forgery] false)
            (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
-      (wrap-cors :access-control-allow-origin [#"http://localhost"]
+      (wrap-cors :access-control-allow-origin [#"http://localhost:9500"]
                  :access-control-allow-methods [:get :put :post :delete])
       wrap-internal-error))
