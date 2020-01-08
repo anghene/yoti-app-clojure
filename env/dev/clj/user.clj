@@ -68,8 +68,9 @@
   (-> file io/resource slurp))
 
 (defn parse-as-hiccup [file]
-  (-> file
-      read-file
-      (hick/parse)
-      (hick/as-hiccup)
-      ))
+  (->> file
+       read-file
+       (hick/parse-fragment)
+       (map hick/as-hiccup)
+       first
+       ))
