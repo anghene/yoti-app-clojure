@@ -14,7 +14,8 @@
             [lein-cljsbuild "1.1.7"]]
   :middleware [lein-tools-deps.plugin/resolve-dependencies-with-deps-edn]
   :lein-tools-deps/config {:config-files [:install :user :project]}
-
+  :exclusions [ch.qos.logback/logback-classic
+               org.slf4j.impl.StaticLoggerBinder]
   :profiles
   {:uberjar {:omit-source true
              :aot :all
@@ -24,8 +25,7 @@
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {
-                  :jvm-opts ["-Dconf=dev-config.edn"]
+   :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[cheshire "5.9.0"]
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2019-07-08"]
