@@ -5,6 +5,8 @@
    [schema.core :as s]
    [kemplittle.pages.frontpage :as kf]
    [kemplittle.pages.docscan :refer [docscan-page]]
+   [kemplittle.pages.admin :refer [login-form]]
+   [kemplittle.components.utils :refer [not-found]]
    [kemplittle.state :as state]
    [kemplittle.pages.items :as ki]
    [xframe.core.alpha :as xf]))
@@ -25,14 +27,13 @@
      {:name ::docscan
       :view docscan-page
       :controllers [{:start
-                       (xf/dispatch [:fetch-session])
+                     (xf/dispatch [:fetch-session])
                      :stop (log-fn "stop" "docscan controller")}]}]
     ["items"
       ;; Shared data for sub-routes
      {:view ki/item-page
       :controllers [{:start (log-fn "start" "items controller")
                      :stop (log-fn "stop" "items controller")}]}
-
      [""
       {:name ::item-list
        :controllers [{:start (log-fn "start" "item-list controller")
@@ -45,7 +46,18 @@
                       :start (fn [{:keys [path]}]
                                (js/console.log "start" "item controller" (:id path)))
                       :stop (fn [{:keys [path]}]
-                              (js/console.log "stop" "item controller" (:id path)))}]}]]]
+                              (js/console.log "stop" "item controller" (:id path)))}]}]]
+    ["admin"
+     {:name ::admin
+      :view login-form
+      :controllers [{:start (log-fn "start" "admin controller")
+                     :stop (log-fn "stop" "admin controller")}]}]
+    ["/not-found"
+     {:name ::not-found
+      :view not-found
+      :controllers [{:start (log-fn "start" "error 404 controller")
+                     :stop (log-fn "stop" "error 404 controller")}]}]
+    ]
    {:data {:controllers [{:start (log-fn "start" "root-controller")
                           :stop (log-fn "stop" "root controller")}]
            :coercion rsc/coercion}}))

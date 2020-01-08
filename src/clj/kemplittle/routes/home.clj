@@ -12,7 +12,7 @@
    [ring.util.response]
    [environ.core :refer [env]]
    [ring.util.http-response :as response]
-   [taoensso.timbre :as timbre]
+   [taoensso.timbre :as timbre :refer [info]]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [kemplittle.client.session :refer [get-new-session]]
    [clojure.data.json :refer [write-str read-json]]))
