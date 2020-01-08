@@ -13,9 +13,10 @@
    {:app-state {:current-page {:data {:name :kemplittle.routes/frontpage
                                       :view fp/main-page
                                       :controllers [{:start nil
-                                                     :stop nil}]}}
+                                                     :stop nil}]}}}
                 :error nil
-                :session nil}}))
+                :session nil
+                :admin nil}))
 
 ;; Init database
 
@@ -40,22 +41,77 @@
             (fn []
               (:session (xf/<- [:db/app-state]))))
 
+(xf/reg-sub :admin-details
+            (fn []
+              (:admin (xf/<- [:db/app-state]))))
+
 ;; Effect handlers
 (xf/reg-fx
+ :http-post
+ (fn [_ [_ {:keys [url form-data on-ok on-failed]}]]
+   (let [opts {:method "POST"
+               :body (-> form-data bean/->js js/JSON.stringify)
+               :headers {:Content-Type "application/json"}
+               :cors "no-cors"}
+         promise (js/fetch url (bean/->js opts))
+         status (.then promise #(.-ok %))]
+     (.then promise
+            (fn [response]
+              (let [status-code (-> response .-status bean/->clj)]
+                (if (.-ok response)
+                  (-> promise
+                      (.then #(.json %))
+                      (.then bean/->clj)
+                      (.then #(xf/dispatch [on-ok %])))
+                  (-> promise
+                      (.then #(.json %))
+                      (.then bean/->clj)
+                      (.then #(xf/dispatch [on-failed %]))))))))))
+
+(xf/reg-fx
  :http
- (fn [_ [_ {:keys [url on-ok on-failed]}]]
-   (-> (js/fetch url)
-       (.then #(if (.-ok %)
-                 (.json %)
-                 (xf/dispatch [on-failed %])))
-       (.then bean/->clj)
-       (.then #(xf/dispatch [on-ok %])))))
+ (fn [_ [_ {:keys [url on-ok on-failed tkn]}]]
+   (let [opts (if tkn
+                {:headers {:Authorization (str "Token " tkn)}}
+                nil)
+         promise (js/fetch url (if (not (nil? opts)) 
+                                 (bean/->js opts)))
+         status (.then promise #(.-ok %))]
+     (.then promise
+            (fn [response]
+              (let [status-code (-> response .-status bean/->clj)]
+                (if (.-ok response)
+                  (-> promise
+                      (.then #(.json %))
+                      (.then bean/->clj)
+                      (.then #(xf/dispatch [on-ok %])))
+                  (-> promise
+                      (.then #(.json %))
+                      (.then bean/->clj)
+                      (.then #(xf/dispatch [on-failed %]))))))))))
 
 ;; Event handlers
+(xf/reg-event-fx
+ :fetch-admin-token
+ (fn [db [_ uname pass]]
+   {:http-post {:url (str "http://localhost:3000/login")
+                :form-data {:username uname :password pass}
+                :on-ok :fetch-admin-ok
+                :on-failed :fetch-admin-failed}}))
+
 (xf/reg-event-db
  :set-value
  (fn [db [_ value]]
    (assoc-in db [:repos :value] value)))
+
+(xf/reg-event-fx
+ :fetch-admin-page
+ (fn [db [_ token]]
+   (info "fetch-admin-page called: " token)
+   {:http {:url (str "http://localhost:3000/api/get-info")
+           :on-ok :fetch-adminpage-ok
+           :on-failed :fetch-adminpage-failed
+           :tkn token}}))
 
 (xf/reg-event-fx
  :fetch-session
@@ -76,15 +132,67 @@
                      (-> db :app-state :current-page :controllers)
                      value)))))
 
-(xf/reg-event-db :fetch-session-ok
-                 (fn [db [_ session]]
-                     (info session)
-                     (update db :app-state
-                             assoc :session
-                             {:id (:id session)
-                              :tkn (:tkn session)
-                              :error nil})))
+(xf/reg-event-db
+ :nomatch-error
+ (fn [db [_ value]]
+   (assoc-in db [:app-state :error]
+             "Not found")))
 
-(xf/reg-event-db :fetch-session-failed
-                 (fn [db [_ error]]
-                   (update db :error error)))
+(xf/reg-event-db
+ :no-error
+ (fn [db [_ value]]
+   (assoc-in db [:app-state :error]
+             nil)))
+
+(xf/reg-event-db
+ :fetch-session-ok
+ (fn [db [_ response]]
+   (update db :app-state
+           assoc-in [:session :docscan]
+           {:id (:id response)
+            :tkn (:tkn response)
+            :error nil})))
+
+(xf/reg-event-db
+ :fetch-session-failed
+ (fn [db [_ error]]
+   (info "gets to failed with: " error)
+   (update db :app-state assoc
+           :error error
+           :admin {:tkn nil})))
+
+(xf/reg-event-db
+ :fetch-admin-ok
+ (fn [db [_ response]]
+   (do (info "fetch admin ok triggered: " response)
+       (update db :app-state
+               assoc :admin
+               {:is-admin? true
+                :tkn (:token response)}
+               :error "Login successful"))))
+
+(xf/reg-event-db
+ :fetch-admin-failed
+ (fn [db [_ response]]
+   (do (info "fetch admin failed triggered: " response)
+       (update db :app-state
+               assoc
+               :admin {:tkn nil
+                       :is-admin? false}
+               :error (:message response)))))
+
+(xf/reg-event-db
+ :fetch-adminpage-ok
+ (fn [db [_ response]]
+   (do (info "fetch admin-page ok triggered: " response)
+       (update db :app-state
+               assoc :admin
+               {:greeting (:message response)}))))
+
+(xf/reg-event-db
+ :fetch-adminpage-failed
+ (fn [db [_ response]]
+   (do (info "fetch admin-page failed triggered: " response)
+       (update db :app-state
+               assoc
+               :error (:message response)))))
