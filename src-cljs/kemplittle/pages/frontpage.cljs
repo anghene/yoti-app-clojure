@@ -36,3 +36,5 @@
      (let [view (:view (:data match))]
          [view match]))
    [footer]]))
+
+(spit-css! "resources/public/css/kl.css")

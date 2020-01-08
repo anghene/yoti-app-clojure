@@ -74,7 +74,7 @@
    (let [opts (if tkn
                 {:headers {:Authorization (str "Token " tkn)}}
                 nil)
-         promise (js/fetch url (if (not (nil? opts)) 
+         promise (js/fetch url (if (not (nil? opts))
                                  (bean/->js opts)))
          status (.then promise #(.-ok %))]
      (.then promise

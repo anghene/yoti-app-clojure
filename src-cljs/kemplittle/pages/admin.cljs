@@ -66,3 +66,5 @@
        [:button {:class (tw! "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
                  :type  "submit"} "Sign In"]
        ]]]))
+
+(spit-css! "resources/public/css/kl.css")
