@@ -3,6 +3,7 @@
     [kemplittle.middleware :as middleware]
     [kemplittle.layout :refer [error-page]]
     [kemplittle.routes.home :refer [home-routes updates-routes]]
+    [kemplittle.routes.admin :refer [admin-routes login-route]]
     [reitit.ring :as ring]
     [ring.middleware.content-type :refer [wrap-content-type]]
     [ring.middleware.webjars :refer [wrap-webjars]]
@@ -17,7 +18,10 @@
   :start
   (ring/ring-handler
     (ring/router
-      [(home-routes)(updates-routes)])
+      [(home-routes)
+       (updates-routes)
+       (login-route)
+       (admin-routes)])
     (ring/routes
       (ring/create-resource-handler
         {:path "/"})
