@@ -71,6 +71,5 @@
   ["/login"
    ["" {:post login}]])
 
-(spit-css! "resources/public/css/kl.css")
 
 
