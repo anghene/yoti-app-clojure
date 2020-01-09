@@ -2,7 +2,7 @@
   (:require
    [xframe.core.alpha :as xf :refer [<sub]]
    [taoensso.timbre :refer [info]]
-   [tailwind.core :refer [tw tw! spit-css!]]))
+   [tailwind.core :refer [tw tw! ]]))
 
 (defn docscan-page [match]
   (let [{:keys [path query]} (:parameters match)

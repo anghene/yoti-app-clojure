@@ -14,7 +14,7 @@
                                       :view fp/main-page
                                       :controllers [{:start nil
                                                      :stop nil}]}}}
-                :error nil
+                :flash nil
                 :session nil
                 :admin nil}))
 
@@ -29,9 +29,9 @@
             (fn []
               (:app-state (xf/<- [::xf/db]))))
 
-(xf/reg-sub :error
+(xf/reg-sub :flash
             (fn []
-              (:error (xf/<- [:db/app-state]))))
+              (:flash (xf/<- [:db/app-state]))))
 
 (xf/reg-sub :current-page
             (fn []
@@ -46,6 +46,13 @@
               (:admin (xf/<- [:db/app-state]))))
 
 ;; Effect handlers
+
+(xf/reg-fx
+ :clear-flash (fn [db [_ _]]
+                (info "db was: " db)
+                (update db assoc :flash
+                        "new nil")))
+
 (xf/reg-fx
  :http-post
  (fn [_ [_ {:keys [url form-data on-ok on-failed]}]]
@@ -113,6 +120,19 @@
            :on-failed :fetch-adminpage-failed
            :tkn token}}))
 
+; (xf/reg-event-fx
+;  :clear-flash
+;  (fn [db [_ _]])
+;  )
+
+(xf/reg-event-fx
+ :no-flash
+
+   (fn [db [_ _]]
+     (info "db was: " db)
+    {:db (assoc-in db [:app-state :flash]
+                   nil)}))
+
 (xf/reg-event-fx
  :fetch-session
  (fn [db [_ _]]
@@ -135,14 +155,9 @@
 (xf/reg-event-db
  :nomatch-error
  (fn [db [_ value]]
-   (assoc-in db [:app-state :error]
-             "Not found")))
-
-(xf/reg-event-db
- :no-error
- (fn [db [_ value]]
-   (assoc-in db [:app-state :error]
-             nil)))
+   (update db assoc :flash
+             {:msg "Not found"
+              :type "error"})))
 
 (xf/reg-event-db
  :fetch-session-ok
@@ -150,15 +165,15 @@
    (update db :app-state
            assoc-in [:session :docscan]
            {:id (:id response)
-            :tkn (:tkn response)
-            :error nil})))
+            :tkn (:tkn response)})))
 
 (xf/reg-event-db
  :fetch-session-failed
  (fn [db [_ error]]
    (info "gets to failed with: " error)
    (update db :app-state assoc
-           :error error
+           :flash {:msg error
+                   :type "error"}
            :admin {:tkn nil})))
 
 (xf/reg-event-db
@@ -169,7 +184,8 @@
                assoc :admin
                {:is-admin? true
                 :tkn (:token response)}
-               :error "Login successful"))))
+               :flash {:msg "Login successful"
+                       :type "success"}))))
 
 (xf/reg-event-db
  :fetch-admin-failed
@@ -179,7 +195,8 @@
                assoc
                :admin {:tkn nil
                        :is-admin? false}
-               :error (:message response)))))
+               :flash {:msg (:message response)
+                       :type "error"}))))
 
 (xf/reg-event-db
  :fetch-adminpage-ok
@@ -187,7 +204,8 @@
    (do (info "fetch admin-page ok triggered: " response)
        (update db :app-state
                assoc :admin
-               {:greeting (:message response)}))))
+               {:greeting {:msg (:message response)
+                           :type "success"}}))))
 
 (xf/reg-event-db
  :fetch-adminpage-failed
@@ -195,4 +213,5 @@
    (do (info "fetch admin-page failed triggered: " response)
        (update db :app-state
                assoc
-               :error (:message response)))))
+               :flash {:msg (:message response)
+                       :type "error"}))))

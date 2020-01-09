@@ -9,8 +9,6 @@
    [xframe.core.alpha :as xf :refer [<sub]]
    [tailwind.core :refer [tw tw! spit-css!]]))
 
-(spit-css! "resources/public/css/kl.css")
-
 (defn css-uix-transform [attrs]
   (if-not (contains? attrs :css)
     attrs
@@ -39,3 +37,5 @@
 
 (uix/add-transform-fn css-uix-transform)
 (uix.dom/render [app] js/root)
+
+(spit-css! "resources/public/css/kl.css")

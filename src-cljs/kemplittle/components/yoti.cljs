@@ -1,6 +1,6 @@
 (ns kemplittle.components.yoti
   (:require
-   [tailwind.core :refer [tw tw! spit-css!]]
+   [tailwind.core :refer [tw tw! ]]
    [reitit.frontend.easy :as rfe]
    [cljsjs.emotion]
    [uix.core.alpha :as uix]

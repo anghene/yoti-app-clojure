@@ -2,7 +2,7 @@
   (:require
    [reitit.frontend.easy :as rfe]
    [taoensso.timbre :refer [info]]
-   [tailwind.core :refer [tw tw! spit-css!]]))
+   [tailwind.core :refer [tw tw! ]]))
 
 (defn item-page [match]
   (let [{:keys [path query]} (:parameters match)
@@ -15,5 +15,6 @@
        [:h2 "Selected item " id])
      (if (:foo query)
        [:p "Optional foo query param: " (:foo query)])]))
+
 
 

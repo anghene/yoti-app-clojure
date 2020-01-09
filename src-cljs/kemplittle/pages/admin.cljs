@@ -1,6 +1,6 @@
 (ns kemplittle.pages.admin
   (:require
-   [tailwind.core :refer [tw tw! spit-css!]]
+   [tailwind.core :refer [tw tw! ]]
    [uix.core.alpha :as uix]
    [taoensso.timbre :refer [info]]
    [xframe.core.alpha :as xf]
@@ -19,30 +19,27 @@
 (defn derive-state [ref path]
   (uix/memo #(Cursor. ref path) [ref path]))
 
-(defn login-form []
+(defn admin-panel [adm-det]
+  (let [greeting (:greeting adm-det)]
+    (info "adm-det: " adm-det)
+    [:div
+     [:p "This is the admin panel"]]))
+
+(defn login-form [is-admin? auth-token]
   (let [state* (uix/state {:user "" :pass ""})
         user* (derive-state state* [:user])
         pass* (derive-state state* [:pass])
-        adm-det (<sub [:admin-details])
-        error (<sub [:error])
-        greeting (:greeting adm-det)
-        is-admin? (:is-admin? adm-det)
-        auth-token (:tkn adm-det)
         ]
-    (info "error: " error)
-    (info "token: " auth-token)
-    (info "is-admin?: " is-admin?)
     [:div
      {:class "w-1/6 max-w-xs m-auto"}
      [:form {:class (tw! "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
              :on-submit #(do
                            (.preventDefault %)
                            (xf/dispatch [:fetch-admin-token @user* @pass*]))}
-      (if is-admin?
+      (if (and (not is-admin?) auth-token)
           (xf/dispatch
            [:fetch-admin-page
             auth-token]))
-      [:div greeting]
       [:div {:class (tw! "mb-4")}
        [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
                 :for   "username"} "Username"]
@@ -67,4 +64,11 @@
                  :type  "submit"} "Sign In"]
        ]]]))
 
-(spit-css! "resources/public/css/kl.css")
+(defn show-admin-page []
+  (let [adm-det (<sub [:admin-details])
+        is-admin? (:is-admin? adm-det)
+        auth-token (:tkn is-admin?)]
+    (if (not is-admin?)
+      [:div {:class (tw! "m-20")}
+       [login-form [is-admin? auth-token]]]
+      [admin-panel adm-det])))
