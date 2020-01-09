@@ -127,7 +127,7 @@
                      :generated_media
                      first
                      :id)]
-      (timbre/info "text-check: " text-check)
+      ; (timbre/info "text-check: " text-check)
       result)))
 
 (defn user-profile [media-request]
