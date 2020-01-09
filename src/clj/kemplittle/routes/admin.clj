@@ -32,14 +32,53 @@
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
-    (ok {:status "Logged" :message (str "hello logged user "
-                                        (:identity request))})))
+    (ok {:status "Logged"
+         :message (str "Hello "
+                       (-> request
+                           :identity
+                           :name))})))
+
+(defn get-user-data
+  [request]
+  (if-not (authenticated? request)
+    (unauthorized {:message "Unauthorized"})
+    (ok {:status "User Data"
+         :message "Status OK"
+         :user-data (-> request
+                        :identity
+                        )})))
+
+(defn show-connected
+  [request]
+  (if-not (authenticated? request)
+    (unauthorized {:message "Unauthorized"})
+    (ok {:status "Clients"
+         :message "Status OK"
+         :user-data (-> request
+                        :identity
+                        )})))
 
 ;; Global var that stores valid users with their
 ;; respective passwords.
 
-(def authdata {:admin "open4me"
-               :dolores "secret"})
+(def authdata {:admin {:password "open4me"
+                       :email "vlad.anghene@gmail.com"
+                       :name "Vlad"}
+               :secretary1 {:password "secret"
+                            :email ""
+                            :name "John"}
+               :secretary2 {:password "nuclear"
+                            :email ""
+                            :name "John"}
+               :secretary3 {:password "thisthat"
+                            :email ""
+                            :name "John"}
+               :chris {:password "whitesnow"
+                       :email ""
+                       :name "Chris"}
+               :gerard {:password "greentree"
+                        :email "Gerard.Frith @kemplittle.com"
+                        :name "Gerard"}})
 
 ;; Authenticate Handler
 ;; Responds to post requests in same url as login and is responsible for
@@ -53,10 +92,13 @@
         password (get-in request [:body :password])
         valid? (some-> authdata
                        (get (keyword username))
+                       :password
                        (= password))]
     (if valid?
       (let [claims {:user (keyword username)
-                    :exp (time/plus (time/now) (time/seconds 3600))}
+                    :exp (time/plus (time/now) (time/seconds 3600))
+                    :email (get-in authdata [(keyword username) :email])
+                    :name (get-in authdata [(keyword username) :name])}
             token (jwt/sign claims secret {:alg :hs512})]
         (ok (-> {:token token}
                 )))
