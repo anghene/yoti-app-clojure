@@ -24,6 +24,7 @@
    ])
 
 (defn send-messages! [dest-id client-name validation-result]
+  (info "send-messages! gets dest-id:" dest-id "client-name:" client-name " validation-result: " validation-result)
   (doall (map
           #(do (postal/send-message
                 (smtp-settings) {:from "vlad@anghene.com"
