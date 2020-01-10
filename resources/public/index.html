@@ -30,6 +30,8 @@
                 slidesToScroll: 1
             });
         });
+        var urlParams = new URLSearchParams(window.location.search);
+        console.log("Logging url param: ", urlParams.get('ref')); // "ref"
         window.Yoti.Share.init({
             elements: [{
                 domId: "yotiapp",
@@ -48,7 +50,7 @@
                     tokenHandler: (token, done) => {
                         console.log(`Received the token: ${token}`);
                         let xhr = new XMLHttpRequest();
-                        let endpoint = 'yotiapp?token=' + token;
+                        let endpoint = 'yotiapp?token=' + token + '&ref=' + urlParams.get('ref');
                         xhr.open("GET", endpoint);
                         xhr.send();
                         done(); //done() will overwrite the closeDelay
