@@ -66,7 +66,7 @@
   (let [sess (session/get-new-session (:ref params))
         id (:session_id sess)
         tkn (:client_session_token sess)]
-    (timbre/info "(:ref params) asked for a new session and got : " sess)
+    (timbre/info (:ref params) " asked for a new session and got : " sess)
     {:status (:status request)
      :headers {"Content-Type" "application/json"}
      :body (write-str {:id id :tkn tkn})}))
