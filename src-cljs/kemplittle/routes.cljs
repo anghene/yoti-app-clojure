@@ -9,7 +9,10 @@
    [kemplittle.components.utils :refer [not-found]]
    [kemplittle.state :as state]
    [kemplittle.pages.items :as ki]
-   [xframe.core.alpha :as xf]))
+   [taoensso.timbre :refer [info]]
+   [xframe.core.alpha :as xf]
+   [tailwind.core :refer [spit-css!]]
+   ))
 
 (defn log-fn [& params]
   (fn [_]
@@ -21,18 +24,23 @@
     [""
      {:name ::frontpage
       :view kf/front-page
-      :controllers [{:start (do
-                              (log-fn "start" "frontpage controller")
-                              )
+      :parameters {:path {(s/optional-key :id) s/Int}
+                   :query {(s/optional-key :ref) s/Keyword}}
+      :controllers [{:parameters {:query [:path]}
+                     :start (fn [a]
+                              (js/console.log "start" "item controller"))
                      :stop (log-fn "stop" "frontpage controller")
                      }]}]
     ["docscan"
      {:name ::docscan
+      :parameters {:query {(s/optional-key :ref) s/Keyword}}
       :view docscan-page
-      :controllers [{:start
-                     (xf/dispatch [:fetch-session])
-                     :stop (log-fn "stop" "docscan controller")
-                     }]}]
+      :controllers [{:params (fn [match]
+                               (:query (:parameters match)))
+                     :start
+                     (fn [params]
+                       (xf/dispatch [:fetch-session (:ref params)]))
+                     :stop (log-fn "stop" "docscan controller")}]}]
     ["items"
       ;; Shared data for sub-routes
      {:view ki/item-page
@@ -46,7 +54,7 @@
                       }]}]
      ["/:id"
       {:name ::item
-       :parameters {:path {:id s/Int}
+       :parameters {:path {(s/optional-key :id) s/Int}
                     :query {(s/optional-key :foo) s/Keyword}}
        :controllers [{:parameters {:path [:id]}
                       :start (fn [{:keys [path]}]
@@ -57,10 +65,8 @@
      {:name ::admin
       :view show-admin-page
       :controllers [{:start (do
-                              (xf/dispatch [:no-flash])
                               (log-fn "start" "admin-page controller"))
                      :stop (do
-                             (xf/dispatch [:no-flash])
                              (log-fn "stop" "admin-page controller")
                              )
                      }]}]
@@ -76,3 +82,5 @@
                                   (log-fn "stop" "root controller")
                                   )}]
            :coercion rsc/coercion}}))
+
+(spit-css! "resources/public/css/kl.css")

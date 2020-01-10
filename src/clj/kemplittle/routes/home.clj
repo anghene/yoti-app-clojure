@@ -17,15 +17,18 @@
    [kemplittle.client.session :refer [get-new-session]]
    [clojure.data.json :refer [write-str read-json]]))
 
-(defn home-page [request]
+(defn home-page [{:keys [params query-params] :as request}]
   (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
 
-(defn yotiapp-page [{:keys [params]}]
+(defn yotiapp-page
+  "This route is used by the Yoti.Share.init() function on frontend,
+   to send a token so we can retrieve a user from SDK."
+  [{:keys [params]}]
   (timbre/info "Got request from Yoti servers: " (:token params))
-  (yotiapp/pass-token (:token params))
-   {:status  200
-    :headers {"Content-Type" "text/html; charset=utf-8"}
-    :body    "ok"})
+  (yotiapp/pass-token (:token params) (:ref params))
+  {:status  200
+   :headers {"Content-Type" "text/html; charset=utf-8"}
+   :body    "ok"})
 
 (defn error-page [{:keys [params query-params] :as request}]
   (let [error (get params :yotiErrorCode)
@@ -53,17 +56,17 @@
 (defn thankyou-page [request]
     (layout/render request "thankyou.html"))
 
-(defn docscan-page [request]
-  (let [session (get-new-session)]
+(defn docscan-page [{:keys [params query-params] :as request}]
+  (let [session (get-new-session (:ref params))]
     (timbre/info "session:" session)
     (layout/render request "docscan.html" {:session {:id (:session_id session)
                                                    :token (:client_session_token session)}})))
 
-(defn new-session [request]
-  (let [sess (session/get-new-session)
+(defn new-session [{:keys [params query-params] :as request}]
+  (let [sess (session/get-new-session (:ref params))
         id (:session_id sess)
         tkn (:client_session_token sess)]
-    (timbre/info "served new session : " sess)
+    (timbre/info "(:ref params) asked for a new session and got : " sess)
     {:status (:status request)
      :headers {"Content-Type" "application/json"}
      :body (write-str {:id id :tkn tkn})}))
