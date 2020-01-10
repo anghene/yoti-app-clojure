@@ -39,7 +39,7 @@
                                         :source-paths ["src-cljs"]
                                         :compiler {:asset-path "/js/out-prod"
                                                    :output-dir "resources/public/out-main"
-                                                   :output-to "resources/public/main.js"
+                                                   :output-to "resources/public/cljs-out/dev-main.js"
                                                    :optimizations :advanced
                                                    :pretty-print false}}]}
                   :resource-paths ["env/dev/resources"]
