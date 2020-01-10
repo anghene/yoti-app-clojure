@@ -18,7 +18,7 @@
 
 (def contacts
   [
-   {:email "vlad.anghene@gmail.com"}
+   {:id 1 :email "vlad.anghene@gmail.com"}
   ;  {:email "gerard.Frith@kemplittle.com"}
    ])
 
@@ -31,11 +31,12 @@
                                  :body [{:type "text/plain"
                                          :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
                (timbre/info "Sent a mail to: " (:email %)))
-          contacts)))
+          (first (filter #(= (:id %) dest) contacts)))))
 
-(defn send-validation-mail [user type]
+(defn send-validation-mail [dest-id user type]
   (when (= "true" (:send-emails env))
     (send-messages!
+     dest-id
      user
      (str "SUCCESSFUL VALIDATION with " type))))
 

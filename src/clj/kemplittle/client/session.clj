@@ -28,7 +28,7 @@
                       :error_url (:error-url env)}
          :notifications {:endpoint (:webhook-url env)
                          :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}}
-        usertracking-uuid (.toString (java.util.UUID/randomUUID))
+        usertracking-uuid (str ref)
         base-url "https://api.yoti.com/idverify/v1"
         json-payload (slurp (clojure.java.io/file "resources/request"))
         payload (-> (read-json json-payload)
@@ -64,7 +64,6 @@
    (session-details nil session-id))
   ([{:keys [is-media? media-id]} session]
    (let [sdkid (:docscan-sdk-id env)
-         usertracking-uuid (.toString (java.util.UUID/randomUUID))
          base-url "https://api.yoti.com/idverify/v1"
          nonce (.toString (java.util.UUID/randomUUID))
          timestamp (System/currentTimeMillis)
@@ -117,18 +116,19 @@
 
 (defn text-check-id [webhook]
   (when (is-completed? webhook)
-    (let [text-check (filter
+    (let [session-details (session-details (:session_id webhook))
+          text-check (filter
                       #(and (is-approved-and-done? %)
                             (= (:type %)
                                "ID_DOCUMENT_TEXT_DATA_CHECK"))
-                      (:checks (session-details (:session_id webhook))))
+                      (:checks session-details))
           result (-> text-check
                      first
                      :generated_media
                      first
                      :id)]
       ; (timbre/info "text-check: " text-check)
-      result)))
+      {:media-id result :ref (:user_tracking_id session-details)})))
 
 (defn user-profile [media-request]
   (read-json media-request))
