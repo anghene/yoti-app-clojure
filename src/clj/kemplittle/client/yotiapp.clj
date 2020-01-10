@@ -112,10 +112,12 @@
 
 (defn pass-token
   "activated when received a token via yoti digital id"
-  [token]
+  [token ref]
   (let [activity-details (.getActivityDetails client token)
         user (get-user activity-details)]
-    (timbre/info "[YOTIAPP] user to persist : " user)
+    (info ref " asked for a New YotiApp user.")
     (persist-to-state! activity-details user)
-    (send-validation-mail  (-> user :name) "YOTI-APP"))
-  (timbre/info "users so far: " @users))
+    (when (:send-emails env)
+            (try (mail/send-messages! (-> user :user-details :name) (str "SUCCESFUL VALIDATION with " (:type user)))
+                            (catch Exception e (timbre/info (str "Error sending emails : " e)))))
+        (timbre/info "users so far: " @users)))

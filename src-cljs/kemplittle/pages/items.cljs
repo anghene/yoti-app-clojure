@@ -2,7 +2,7 @@
   (:require
    [reitit.frontend.easy :as rfe]
    [taoensso.timbre :refer [info]]
-   [tailwind.core :refer [tw tw! ]]))
+   [tailwind.core :refer [tw tw! spit-css!]]))
 
 (defn item-page [match]
   (let [{:keys [path query]} (:parameters match)
@@ -16,5 +16,4 @@
      (if (:foo query)
        [:p "Optional foo query param: " (:foo query)])]))
 
-
-
+(spit-css! "resources/public/css/kl.css")

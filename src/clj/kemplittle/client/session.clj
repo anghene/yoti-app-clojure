@@ -21,7 +21,7 @@
 (defn get-digest [request]
   (sign request))
 
-(defn get-new-session []
+(defn get-new-session [ref]
   (let [sdkid (:docscan-sdk-id env)
         my-server-urls
         {:sdk_config {:success_url (:success-url env)

@@ -101,7 +101,7 @@
 (xf/reg-event-fx
  :fetch-admin-token
  (fn [db [_ uname pass]]
-   {:http-post {:url (str "https://identity.kemplittle.com/login")
+   {:http-post {:url (str "http://localhost:3000/login")
                 :form-data {:username uname :password pass}
                 :on-ok :fetch-admin-ok
                 :on-failed :fetch-admin-failed}}))
@@ -115,7 +115,7 @@
  :fetch-admin-page
  (fn [db [_ token]]
    (info "fetch-admin-page called: " token)
-   {:http {:url (str "https://identity.kemplittle.com/api/get-info")
+   {:http {:url (str "http://localhost:3000/api/get-info")
            :on-ok :fetch-adminpage-ok
            :on-failed :fetch-adminpage-failed
            :tkn token}}))
@@ -127,18 +127,16 @@
 
 (xf/reg-event-fx
  :no-flash
-
-   (fn [db [_ _]]
-     (info "db was: " db)
-    {:db (assoc-in db [:app-state :flash]
-                   nil)}))
+ (fn [db [_ _]]
+   (info "db was: " db)
+   {:db (assoc-in db [:app-state :flash]
+                  nil)}))
 
 (xf/reg-event-fx
  :fetch-session
- (fn [db [_ _]]
-   (info "fetch-session called")
-   {:db (assoc-in db [:session :loading?] true)
-    :http {:url (str "https://identity.kemplittle.com/getsession")
+ (fn [db [_ ref]]
+  ;  (info "fetch-session called with: " (name ref))
+   {:http {:url (str "http://localhost:3000/getsession?ref=" (name ref))
            :on-ok :fetch-session-ok
            :on-failed :fetch-session-failed}}))
 
