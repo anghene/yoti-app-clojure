@@ -33,7 +33,7 @@
                                  :body [{:type "text/plain"
                                          :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
                (timbre/info "Sent a mail to: " (:email %)))
-          (first (filter #(= (:id %) dest-id) contacts)))))
+          (filter #(= (:id %) dest-id) contacts))))
 
 (defn send-validation-mail [dest-id user type]
   (when (= "true" (:send-emails env))
