@@ -32,7 +32,7 @@
       (let [session-id (:session_id webhook)
             text-check-id (text-check-id webhook)
             media-id (:media-id text-check-id)
-            dest (:ref text-check-id)
+            dest-id (:dest-id text-check-id)
             user (media-details session-id media-id)]
         (timbre/info "[DOCSCAN] user to persist: " user)
         (try (send-validation-mail dest (-> user :full_name) "DOCSCAN")

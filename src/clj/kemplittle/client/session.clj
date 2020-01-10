@@ -128,7 +128,7 @@
                      first
                      :id)]
       ; (timbre/info "text-check: " text-check)
-      {:media-id result :ref (:user_tracking_id session-details)})))
+      {:media-id result :dest-id (:user_tracking_id session-details)})))
 
 (defn user-profile [media-request]
   (read-json media-request))

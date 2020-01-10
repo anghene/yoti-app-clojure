@@ -18,7 +18,7 @@
 
 (def contacts
   [
-   {:id 1 :email "vlad.anghene@gmail.com"}
+   {:id "1" :email "vlad.anghene@gmail.com"}
   ;  {:email "gerard.Frith@kemplittle.com"}
    ])
 
