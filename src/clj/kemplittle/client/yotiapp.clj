@@ -117,6 +117,6 @@
         user (get-user activity-details)]
     (info dest-id " asked for a New YotiApp user.")
     (persist-to-state! activity-details user)
-    (try (mail/send-validation-mail dest (-> user :name) "Yoti APP")
+    (try (mail/send-validation-mail dest-id (-> user :name) "Yoti APP")
          (catch Exception e (timbre/info (str "Error sending yotiapp emails : " e))))
     (timbre/info "users so far: " @users)))
