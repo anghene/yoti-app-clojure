@@ -33,7 +33,8 @@
             media-id (text-check-id webhook)
             user (media-details session-id media-id)]
         (timbre/info "[DOCSCAN] user to persist: " user)
-        (send-validation-mail (-> user :full_name) "DOCSCAN")
+        (try (send-validation-mail (-> user :full_name) "DOCSCAN")
+             (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
         (persist-to-state! session-id user))
       (timbre/info "users thus far: " @users))
     {:status  200

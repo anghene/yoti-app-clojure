@@ -117,7 +117,6 @@
         user (get-user activity-details)]
     (info ref " asked for a New YotiApp user.")
     (persist-to-state! activity-details user)
-    (when (= "true" (:send-emails env))
-      (try (mail/send-messages! (-> user :user-details :name) (str "SUCCESFUL VALIDATION with " (:type user)))
-           (catch Exception e (timbre/info (str "Error sending emails : " e)))))
+    (try (mail/send-validation-mail (-> user :user-details :name) (:type user))
+         (catch Exception e (timbre/info (str "Error sending yotiapp emails : " e))))
     (timbre/info "users so far: " @users)))

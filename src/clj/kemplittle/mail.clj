@@ -32,10 +32,10 @@
           contacts)))
 
 (defn send-validation-mail [user type]
-  (timbre/info "gets here")
-  (send-messages!
-   user
-   (str "SUCCESSFUL VALIDATION with " type)))
+  (when (= "true" (:send-emails env))
+    (send-messages!
+     user
+     (str "SUCCESSFUL VALIDATION with " type))))
 
 ; {:type "text/html"
 ;  :content (parser/render-file
