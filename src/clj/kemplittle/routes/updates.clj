@@ -35,7 +35,7 @@
             dest-id (:dest-id text-check-id)
             user (media-details session-id media-id)]
         (timbre/info "[DOCSCAN] user to persist: " user)
-        (try (send-validation-mail dest (-> user :full_name) "DOCSCAN")
+        (try (send-validation-mail dest-id (-> user :full_name) "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
         (persist-to-state! session-id user))
       (timbre/info "users thus far: " @users))
