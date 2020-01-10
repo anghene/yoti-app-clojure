@@ -17,8 +17,10 @@
       :else base-params)))
 
 (def contacts
-  [{:email "vlad.anghene@gmail.com"}
-   {:email "gerard.Frith@kemplittle.com"}])
+  [
+   {:email "vlad.anghene@gmail.com"}
+  ;  {:email "gerard.Frith@kemplittle.com"}
+   ])
 
 (defn send-messages! [client-name validation-result]
   (doall (map
