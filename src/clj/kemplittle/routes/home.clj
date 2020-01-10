@@ -18,7 +18,7 @@
    [clojure.data.json :refer [write-str read-json]]))
 
 (defn home-page [{:keys [params query-params] :as request}]
-  (layout/render request "home.html" {:docs (-> "docs/home.md" io/resource slurp)}))
+  (layout/render request "index.html"))
 
 (defn yotiapp-page
   "This route is used by the Yoti.Share.init() function on frontend,
