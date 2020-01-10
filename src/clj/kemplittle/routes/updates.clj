@@ -26,7 +26,7 @@
   (timbre/info "Persisted a docscan user to state."))
 
 (defn notification-handler [req]
-  (let [webhook (read-json (slurp (:body req)))]
+  (let [webhook (:body req)]
     (timbre/info "got params on webhook: " webhook)
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
