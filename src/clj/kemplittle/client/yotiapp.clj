@@ -1,6 +1,6 @@
 (ns kemplittle.client.yotiapp
   (:require [environ.core :refer [env]]
-            [taoensso.timbre :as timbre]
+            [taoensso.timbre :as timbre :refer [info]]
             [kemplittle.db.core :refer [max-id users]]
             [kemplittle.mail :as mail]
             )
