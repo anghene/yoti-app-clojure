@@ -24,7 +24,7 @@
   "This route is used by the Yoti.Share.init() function on frontend,
    to send a token so we can retrieve a user from SDK."
   [{:keys [params]}]
-  (timbre/info "Got request from Yoti servers: " (:token params))
+  (timbre/info "Got request from Yoti servers: " (:token params) " on behalf of: " (:ref params))
   (yotiapp/pass-token (:token params) (:ref params))
   {:status  200
    :headers {"Content-Type" "text/html; charset=utf-8"}
