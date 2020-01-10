@@ -1,7 +1,7 @@
 (ns kemplittle.mail
  (:require  [postal.core :as postal]
             [selmer.parser :as parser]
-            [taoensso.timbre :as timbre]
+            [taoensso.timbre :as timbre :refer [info]]
             [environ.core :refer [env]]))
 
 (defn smtp-settings []
