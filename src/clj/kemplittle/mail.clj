@@ -22,7 +22,7 @@
   ;  {:email "gerard.Frith@kemplittle.com"}
    ])
 
-(defn send-messages! [client-name validation-result]
+(defn send-messages! [dest-id client-name validation-result]
   (doall (map
           #(do (postal/send-message
                 (smtp-settings) {:from "vlad@anghene.com"
@@ -31,7 +31,7 @@
                                  :body [{:type "text/plain"
                                          :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
                (timbre/info "Sent a mail to: " (:email %)))
-          (first (filter #(= (:id %) dest) contacts)))))
+          (first (filter #(= (:id %) dest-id) contacts)))))
 
 (defn send-validation-mail [dest-id user type]
   (when (= "true" (:send-emails env))
