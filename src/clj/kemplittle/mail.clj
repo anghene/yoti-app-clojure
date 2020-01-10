@@ -18,9 +18,9 @@
 
 (def contacts
   [
-   {:id " 1 " :email "vlad.anghene@gmail.com"}
-   {:id " 3 " :email "Chris.Gray@kemplittle.com"}
-   {:id " 2 " :email "Gerard.Frith@kemplittle.com"}
+   {:id "1" :email "vlad.anghene@gmail.com"}
+   {:id "3" :email "Chris.Gray@kemplittle.com"}
+   {:id "2" :email "Gerard.Frith@kemplittle.com"}
    ])
 
 (defn send-messages! [dest-id client-name validation-result]
