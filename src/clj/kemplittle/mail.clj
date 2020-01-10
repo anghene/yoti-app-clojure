@@ -24,19 +24,16 @@
    ])
 
 (defn send-messages! [dest-id client-name validation-result]
-  (info "send-messages! gets dest-id:" dest-id "client-name:" client-name " validation-result: " validation-result)
-  (let [to-send (doall (filter #(= (:id %) dest-id) contacts))]
-    (info "to-send: " to-send)
-    (doall (map
-            #(do (postal/send-message
-                  (smtp-settings) {:from "vlad@anghene.com"
-                                   :to (:email %)
-                                   :subject "Validation result"
-                                   :body [{:type "text/plain"
-                                           :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
-                 (timbre/info "Sent a mail to: " (:email %)))
-            to-send
-            ))))
+  (info "send-messages! gets dest-id:" dest-id " client-name:" client-name " validation-result:" validation-result)
+  (doall (map
+          #(do (postal/send-message
+                (smtp-settings) {:from "vlad@anghene.com"
+                                 :to (:email %)
+                                 :subject "Validation result"
+                                 :body [{:type "text/plain"
+                                         :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
+               (timbre/info "Sent a mail to: " (:email %)))
+          (filter #(= (:id %) dest-id) contacts))))
 
 (defn send-validation-mail [dest-id user type]
   (when (= "true" (:send-emails env))
