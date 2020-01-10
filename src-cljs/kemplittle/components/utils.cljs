@@ -1,6 +1,6 @@
 (ns kemplittle.components.utils
   (:require
-   [tailwind.core :refer [tw tw!]]
+   [tailwind.core :refer [tw tw! spit-css!]]
    [cljsjs.emotion]
    [reitit.frontend.easy :as rfe]
    [uix.core.alpha :as uix]
@@ -274,3 +274,5 @@
          [:span {:class "logo_table"}
           [:span {:class "logo_cell"}
            [:img {:src "https://www.kemplittle.com/wp-content/uploads/2019/02/Chambers-fintech-logo-bw.jpg"}]]]]]]]]))
+
+(spit-css! "resources/public/css/kl.css")

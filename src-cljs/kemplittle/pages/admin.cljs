@@ -1,6 +1,6 @@
 (ns kemplittle.pages.admin
   (:require
-   [tailwind.core :refer [tw tw! ]]
+   [tailwind.core :refer [tw tw! spit-css!]]
    [uix.core.alpha :as uix]
    [taoensso.timbre :refer [info]]
    [xframe.core.alpha :as xf]
@@ -72,3 +72,5 @@
       [:div {:class (tw! "m-20")}
        [login-form [is-admin? auth-token]]]
       [admin-panel adm-det])))
+
+(spit-css! "resources/public/css/kl.css")
