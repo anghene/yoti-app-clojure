@@ -5,7 +5,7 @@
    [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
    [kemplittle.client.session :refer [is-completed? text-check-id media-details]]
-   [kemplittle.mail :as mail]))
+   [kemplittle.mail :refer [send-validation-mail]]))
 
 (defn is-admin? [name pass]
   (and (= name "yotiupdate")
@@ -32,11 +32,8 @@
       (let [session-id (:session_id webhook)
             media-id (text-check-id webhook)
             user (media-details session-id media-id)]
-        (when (:send-emails env)
-          (try (mail/send-messages!
-                (-> user :user-details :full_name)
-                (str "SUCCESFUL VALIDATION with " (:type user)))
-               (catch Exception e (timbre/info (str "Error sending emails : " e)))))
+        (timbre/info "[DOCSCAN] user to persist: " user)
+        (send-validation-mail (-> user :full_name) "DOCSCAN")
         (persist-to-state! session-id user))
       (timbre/info "users thus far: " @users))
     {:status  200

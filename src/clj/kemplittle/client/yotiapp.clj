@@ -2,7 +2,7 @@
   (:require [environ.core :refer [env]]
             [taoensso.timbre :as timbre :refer [info]]
             [kemplittle.db.core :refer [max-id users]]
-            [kemplittle.mail :as mail]
+            [kemplittle.mail :refer [send-validation-mail]]
             )
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder]
@@ -118,6 +118,6 @@
     (info ref " asked for a New YotiApp user.")
     (persist-to-state! activity-details user)
     (when (:send-emails env)
-      (try (mail/send-messages! (-> user :user-details :name) (str "SUCCESFUL VALIDATION with " (:type user)))
-           (catch Exception e (timbre/info (str "Error sending emails : " e)))))
-    (timbre/info "users so far: " @users)))
+            (try (mail/send-messages! (-> user :user-details :name) (str "SUCCESFUL VALIDATION with " (:type user)))
+                            (catch Exception e (timbre/info (str "Error sending emails : " e)))))
+        (timbre/info "users so far: " @users)))
