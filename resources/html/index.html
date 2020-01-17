@@ -30,8 +30,16 @@
                 slidesToScroll: 1
             });
         });
-        var urlParams = new URLSearchParams(window.location.search);
-        console.log("Logging url param: ", urlParams.get('ref')); // "ref"
+	function getParameterByName(name, url) {
+	    if (!url) url = window.location.href;
+	    name = name.replace(/[\[\]]/g, '\\$&');
+	    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		        results = regex.exec(url);
+	    if (!results) return null;
+	    if (!results[2]) return '';
+	    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	}
+        console.log("Logging url param: ", getParameterByName('ref')); // "ref"
         window.Yoti.Share.init({
             elements: [{
                 domId: "yotiapp",
@@ -50,7 +58,7 @@
                     tokenHandler: (token, done) => {
                         console.log(`Received the token: ${token}`);
                         let xhr = new XMLHttpRequest();
-                        let endpoint = 'yotiapp?token=' + token + '&ref=' + urlParams.get('ref');
+                        let endpoint = 'yotiapp?token=' + token + '&ref=' + getParameterByName('ref');
                         xhr.open("GET", endpoint);
                         xhr.send();
                         done(); //done() will overwrite the closeDelay
