@@ -16,4 +16,4 @@
      (if (:foo query)
        [:p "Optional foo query param: " (:foo query)])]))
 
-(spit-css! "resources/public/css/kl.css")
+

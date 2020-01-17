@@ -30,4 +30,3 @@
       (yoti-logo)
       [:span {:class "yoti-button__text"} text]]]]])
 
-(spit-css! "resources/public/css/kl.css")

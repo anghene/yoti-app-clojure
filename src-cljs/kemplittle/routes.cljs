@@ -5,7 +5,7 @@
    [schema.core :as s]
    [kemplittle.pages.frontpage :as kf]
    [kemplittle.pages.docscan :refer [docscan-page]]
-   [kemplittle.pages.admin :refer [show-admin-page]]
+   [kemplittle.pages.admin :refer [show-dashboard-page]]
    [kemplittle.components.utils :refer [not-found]]
    [kemplittle.state :as state]
    [kemplittle.pages.items :as ki]
@@ -63,7 +63,7 @@
                               (js/console.log "stop" "item controller" (:id path)))}]}]]
     ["admin"
      {:name ::admin
-      :view show-admin-page
+      :view show-dashboard-page
       :controllers [{:start (do
                               (log-fn "start" "admin-page controller"))
                      :stop (do
@@ -83,4 +83,3 @@
                                   )}]
            :coercion rsc/coercion}}))
 
-(spit-css! "resources/public/css/kl.css")
