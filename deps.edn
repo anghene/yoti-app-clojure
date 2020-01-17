@@ -59,6 +59,7 @@
   org.xerial/sqlite-jdbc {:mvn/version "3.28.0"}
   reagent {:mvn/version "0.9.0-rc4"}
   ring-cors {:mvn/version "0.1.13"}
+  ring-middleware-format {:mvn/version "0.7.4"}
   ring-basic-authentication {:mvn/version "1.0.5"}
   ring-webjars {:mvn/version "0.2.0"}
   ring/ring-core {:mvn/version "1.8.0"}

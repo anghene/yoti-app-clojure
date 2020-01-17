@@ -51,7 +51,7 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(def secret "verystupidsecret")
+(def secret "Though Chapter One of the novel famously begins with the words \"Call me Ishmael,\" only once in the whole book is the narrator called Ishmael")
 
 (def token-backend
   (jws-backend {:secret secret :options {:alg :hs512}}))

@@ -23,4 +23,3 @@
        :frameBorder "0"}]
      [:br]]))
 
-(spit-css! "resources/public/css/kl.css")

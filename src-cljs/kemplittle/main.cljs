@@ -38,4 +38,3 @@
 (uix/add-transform-fn css-uix-transform)
 (uix.dom/render [app] js/root)
 
-(spit-css! "resources/public/css/kl.css")

@@ -49,16 +49,18 @@
 
 (xf/reg-fx
  :clear-flash (fn [db [_ _]]
-                (info "db was: " db)
+                (info "db was got: " db)
                 (update db assoc :flash
                         "new nil")))
 
 (xf/reg-fx
  :http-post
- (fn [_ [_ {:keys [url form-data on-ok on-failed]}]]
-   (let [opts {:method "POST"
+ (fn [_ [_ {:keys [url form-data on-ok on-failed tkn]}]]
+   (let [ctype {:Content-Type "application/json"}
+         authheader (if tkn {:Authorization (str "Token " tkn)} nil)
+         opts {:method "POST"
                :body (-> form-data bean/->js js/JSON.stringify)
-               :headers {:Content-Type "application/json"}
+               :headers (merge ctype authheader)
                :cors "no-cors"}
          promise (js/fetch url (bean/->js opts))
          status (.then promise #(.-ok %))]
@@ -112,12 +114,22 @@
    (assoc-in db [:repos :value] value)))
 
 (xf/reg-event-fx
- :fetch-admin-page
+ :initiate-client-action
+ (fn [db [_ token client-email client-name]]
+   (info "initiate client action called got: " token)
+   {:http-post {:url (str "http://localhost:3000/api/start-client")
+                :form-data {:client-email client-email :client-name client-name}
+                :on-ok :initiate-client-action-ok
+                :on-failed :initiate-client-action-failed
+                :tkn token}}))
+
+(xf/reg-event-fx
+ :fetch-admin-access
  (fn [db [_ token]]
-   (info "fetch-admin-page called: " token)
-   {:http {:url (str "http://localhost:3000/api/get-info")
-           :on-ok :fetch-adminpage-ok
-           :on-failed :fetch-adminpage-failed
+   (info "fetch-admin-access called got: " token)
+   {:http {:url (str "http://localhost:3000/api/get-access-level")
+           :on-ok :fetch-admin-access-ok
+           :on-failed :fetch-admin-access-failed
            :tkn token}}))
 
 ; (xf/reg-event-fx
@@ -128,14 +140,14 @@
 (xf/reg-event-fx
  :no-flash
  (fn [db [_ _]]
-   (info "db was: " db)
+   (info "db was got: " db)
    {:db (assoc-in db [:app-state :flash]
                   nil)}))
 
 (xf/reg-event-fx
  :fetch-session
  (fn [db [_ ref]]
-  ;  (info "fetch-session called with: " (name ref))
+  ;  (info "fetch-session called with got: " (name ref))
    {:http {:url (str "http://localhost:3000/getsession?ref=" (name ref))
            :on-ok :fetch-session-ok
            :on-failed :fetch-session-failed}}))
@@ -168,7 +180,7 @@
 (xf/reg-event-db
  :fetch-session-failed
  (fn [db [_ error]]
-   (info "gets to failed with: " error)
+   (info "gets to failed with got: " error)
    (update db :app-state assoc
            :flash {:msg error
                    :type "error"}
@@ -177,38 +189,56 @@
 (xf/reg-event-db
  :fetch-admin-ok
  (fn [db [_ response]]
-   (do (info "fetch admin ok triggered: " response)
+   (do (info "fetch admin ok triggered got: " response)
        (update db :app-state
                assoc :admin
-               {:is-admin? true
-                :tkn (:token response)}
+               {:tkn (:token response)
+                :access (xf/dispatch [:fetch-admin-access (:token response)])}
                :flash {:msg "Login successful"
-                       :type "success"}))))
+                       :type "success"})
+       )))
 
 (xf/reg-event-db
  :fetch-admin-failed
  (fn [db [_ response]]
-   (do (info "fetch admin failed triggered: " response)
+   (do (info "fetch admin failed triggered got: " response)
        (update db :app-state
                assoc
-               :admin {:tkn nil
-                       :is-admin? false}
+               :admin {:tkn nil}
                :flash {:msg (:message response)
                        :type "error"}))))
 
 (xf/reg-event-db
- :fetch-adminpage-ok
+ :initiate-client-action-ok
  (fn [db [_ response]]
-   (do (info "fetch admin-page ok triggered: " response)
+   (do (info "initiate-client-action ok triggered got: " response)
        (update db :app-state
-               assoc :admin
-               {:greeting {:msg (:message response)
-                           :type "success"}}))))
+               assoc
+               :flash {:msg (:message response)
+                       :type "success"}))))
 
 (xf/reg-event-db
- :fetch-adminpage-failed
+ :initiate-client-action-failed
  (fn [db [_ response]]
-   (do (info "fetch admin-page failed triggered: " response)
+   (do (info "initiate-client-action failed triggered got: " response)
+       (update db :app-state
+               assoc
+               :flash {:msg (:message response)
+                       :type "error"}))))
+
+(xf/reg-event-db
+ :fetch-admin-access-ok
+ (fn [db [_ response tkn]]
+   (do
+     (info "fetch admin-access ok triggered got: " response)
+     (update db :app-state
+               (fn[old-db] (assoc-in old-db [:admin :access]
+                                     (:access response)))))))
+
+(xf/reg-event-db
+ :fetch-admin-access-failed
+ (fn [db [_ response]]
+   (do (info "fetch admin-access failed triggered got: " response)
        (update db :app-state
                assoc
                :flash {:msg (:message response)
