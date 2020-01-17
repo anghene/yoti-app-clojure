@@ -80,6 +80,7 @@
 (xf/reg-fx
  :http
  (fn [_ [_ {:keys [url on-ok on-failed tkn]}]]
+   (info "get via http with token: " tkn)
    (let [opts (if tkn
                 {:headers {:Authorization (str "Token " tkn)}}
                 nil)
@@ -145,6 +146,15 @@
                   nil)}))
 
 (xf/reg-event-fx
+ :fetch-admin-logs
+ (fn [db [_ _]]
+   (info "fetch-admin-logs gets token: " (-> db :app-state :admin :tkn))
+   {:http {:url (str "http://localhost:3000/api/get-info")
+           :on-ok :fetch-admin-logs-ok
+           :on-failed :fetch-admin-logs-failed
+           :tkn (-> db :app-state :admin :tkn)}}))
+
+(xf/reg-event-fx
  :fetch-session
  (fn [db [_ ref]]
   ;  (info "fetch-session called with got: " (name ref))
@@ -185,6 +195,25 @@
            :flash {:msg error
                    :type "error"}
            :admin {:tkn nil})))
+
+(xf/reg-event-db
+ :fetch-admin-logs-ok
+ (fn [db [_ response]]
+   (update db :app-state
+           assoc :admin
+           {:tkn (-> db :app-state :admin :tkn)
+            :access (-> db :app-state :admin :access)
+            :admin-page (str response)})))
+
+(xf/reg-event-db
+ :fetch-admin-logs-failed
+ (fn [db [_ response]]
+   (do (info "fetch admin-logs triggered got: " response)
+       (update db :app-state
+               assoc
+               :admin {:tkn nil}
+               :flash {:msg (:message response)
+                       :type "error"}))))
 
 (xf/reg-event-db
  :fetch-admin-ok
@@ -232,8 +261,12 @@
    (do
      (info "fetch admin-access ok triggered got: " response)
      (update db :app-state
-               (fn[old-db] (assoc-in old-db [:admin :access]
-                                     (:access response)))))))
+               (fn [old-db]
+                 (let [access-added (assoc-in old-db [:admin :access]
+                                              (:access response))]
+                   (if (= "admin" (:access response))
+                     (merge access-added (xf/dispatch [:fetch-admin-logs tkn]))
+                     access-added)))))))
 
 (xf/reg-event-db
  :fetch-admin-access-failed

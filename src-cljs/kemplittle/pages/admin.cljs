@@ -54,10 +54,14 @@
                  :type  "submit"} "Send email"]]]]))
 
 (defn admin-panel [adm-det]
-  (let [greeting (:greeting adm-det)]
-    (info "adm-det: " adm-det)
-    [:div
-     [:p "This is the admin panel"]]))
+  (let [log (-> adm-det :admin-page)]
+    (info "log is: : " log)
+    [:div {:class (tw! "whitespace-pre-wrap")}
+
+     [:div {:class (str (tw!  "bg-white mx-auto p-6"))}
+      [:div {:class (str (tw! "mb-4"))}]
+      [:div {:class (str (tw! "flex items-center justify-between bg-gray-200 pl-3 pr-2 py-3 w-full rounded text-gray-600 font-bold cursor-pointer hover:bg-gray-300"))}
+       [:p (str log)]]]]))
 
 (defn login-form [adm-details]
   (let [state* (uix/state {:user "" :pass ""})
@@ -65,7 +69,7 @@
         pass* (derive-state state* [:pass])
         token (get adm-details [:tkn])
         ]
-    (info "token is: " token)
+    (info "adm details: " adm-details)
     (if token
       (xf/dispatch [:fetch-admin-access token])
       [:div
@@ -104,5 +108,6 @@
          [login-form adm-det]]
         (case usr-access
           "secretary" [secretary-panel adm-det]
-          "admin" [admin-panel adm-det]))))
+          "admin" [admin-panel adm-det]
+          [:div "Unknown user level"]))))
 

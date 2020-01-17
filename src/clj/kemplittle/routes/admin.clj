@@ -103,13 +103,12 @@
     (let [lvl (check-user-access request)]
       (ok {:access lvl}))))
 
-(defn home
+(defn admin-info-page
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
-    (let [lvl (check-user-access request)]
-      (info "level is: " lvl)
-      (ok {:info "no info"}))))
+    (let [log (slurp "admin.log")]
+      (ok {:info log}))))
 
 (defn get-user-data
   [request]
@@ -155,7 +154,7 @@
 
 (defn admin-routes []
   ["/api"
-   ["/get-info" {:get home}]
+   ["/get-info" {:get admin-info-page}]
    ["/start-client" {:post start-client}]
    ["/get-access-level" {:get access-level}]])
 
