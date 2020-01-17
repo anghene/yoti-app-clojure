@@ -6,6 +6,7 @@
    [buddy.core.nonce :refer [random-bytes]]
    [buddy.sign.jwt :as jwt]
    [clj-time.core :as time]
+   [kemplittle.db.core :refer [users]]
    [clojure.data.json :refer [write-str read-json]]
    [environ.core :refer [env]]
    [kemplittle.middleware :as middleware :refer [secret]]
@@ -103,12 +104,18 @@
     (let [lvl (check-user-access request)]
       (ok {:access lvl}))))
 
+#_(defn admin-info-page
+  [request]
+  (if-not (authenticated? request)
+    (unauthorized {:message "Unauthorized"})
+    (let [log (slurp "new-server.log")]
+      (ok {:info log}))))
+
 (defn admin-info-page
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
-    (let [log (slurp "admin.log")]
-      (ok {:info log}))))
+      (ok {:state @users})))
 
 (defn get-user-data
   [request]
