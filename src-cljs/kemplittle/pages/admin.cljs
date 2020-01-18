@@ -53,15 +53,23 @@
        [:button {:class (tw! "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline")
                  :type  "submit"} "Send email"]]]]))
 
+(defn p-text [text]
+  [:div {:class (str (tw! "flex items-center justify-between
+                               bg-gray-200 pl-3 pr-2 py-3 w-full rounded
+                               text-gray-600 font-bold cursor-pointer
+                              hover:bg-gray-300"))}
+   [:p (str text)]])
+
+(defn para-text [text]
+  (p-text (first text)))
+
 (defn admin-panel [adm-det]
   (let [log (-> adm-det :admin-page)]
-    (info "log is: : " log)
+    (info "log is: : " (take 20 log))
     [:div {:class (tw! "whitespace-pre-wrap")}
-
      [:div {:class (str (tw!  "bg-white mx-auto p-6"))}
-      [:div {:class (str (tw! "mb-4"))}]
-      [:div {:class (str (tw! "flex items-center justify-between bg-gray-200 pl-3 pr-2 py-3 w-full rounded text-gray-600 font-bold cursor-pointer hover:bg-gray-300"))}
-       [:p (str log)]]]]))
+      [:div {:class (str (tw! "mb-4"))}
+       (map para-text log)]]]))
 
 (defn login-form [adm-details]
   (let [state* (uix/state {:user "" :pass ""})

@@ -203,7 +203,7 @@
            assoc :admin
            {:tkn (-> db :app-state :admin :tkn)
             :access (-> db :app-state :admin :access)
-            :admin-page (str response)})))
+            :admin-page (:info response)})))
 
 (xf/reg-event-db
  :fetch-admin-logs-failed

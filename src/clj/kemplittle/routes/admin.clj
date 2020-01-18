@@ -104,14 +104,23 @@
     (let [lvl (check-user-access request)]
       (ok {:access lvl}))))
 
-#_(defn admin-info-page
+(defn parse-log [text]
+  (->>
+   (re-seq #"(?<=)(.*)(?=\n)" text)
+   (map
+    #(drop-while empty? %))
+   (remove empty?)
+   (take-last 30)
+   ))
+
+(defn admin-info-page
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
-    (let [log (slurp "new-server.log")]
+    (let [log (parse-log (slurp "new-server.log"))]
       (ok {:info log}))))
 
-(defn admin-info-page
+(defn show-connected-users
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})

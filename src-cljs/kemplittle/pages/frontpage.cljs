@@ -54,7 +54,7 @@
     ; (info "match: " match)
     (info "app-state: "(dissoc app-state :current-page))
     [:<>
-     [header]
+     [header (-> app-state :admin :access)]
      (when flash
       ;  (info "flash: " flash)
        (flash-div flash))
