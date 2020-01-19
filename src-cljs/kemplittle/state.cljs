@@ -4,7 +4,12 @@
    [reitit.frontend.controllers :as rfc]
    [taoensso.timbre :refer [info]]
    [kemplittle.pages.frontpage :as fp]
+  ;  [kemplittle.components.yoti :refer [init-yoti-button]]
+   [clojure.browser.dom :as dom]
    [cljs-bean.core :as bean]))
+
+(defn make-uuid-yoti []
+  (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
 
 ;; Event handlers
 (xf/reg-event-db
@@ -13,10 +18,11 @@
    {:app-state {:current-page {:data {:name :kemplittle.routes/frontpage
                                       :view fp/main-page
                                       :controllers [{:start nil
-                                                     :stop nil}]}}}
+                                                     :stop nil}]}}
                 :flash nil
                 :session nil
-                :admin nil}))
+                :admin nil
+                :unique-yoti-id "vlad"}}))
 
 ;; Init database
 
@@ -37,6 +43,10 @@
             (fn []
               (:current-page (xf/<- [:db/app-state]))))
 
+(xf/reg-sub :unique-yoti-id
+            (fn []
+              (:unique-yoti-id (xf/<- [:db/app-state]))))
+
 (xf/reg-sub :session
             (fn []
               (:session (xf/<- [:db/app-state]))))
@@ -46,12 +56,6 @@
               (:admin (xf/<- [:db/app-state]))))
 
 ;; Effect handlers
-
-(xf/reg-fx
- :clear-flash (fn [db [_ _]]
-                (info "db was got: " db)
-                (update db assoc :flash
-                        "new nil")))
 
 (xf/reg-fx
  :http-post
@@ -109,6 +113,33 @@
                 :on-ok :fetch-admin-ok
                 :on-failed :fetch-admin-failed}}))
 
+
+(xf/reg-event-fx
+ :no-flash
+ (fn [db [_ _]]
+   (info "no flash triggered with db : " db)
+   {:db (assoc-in db [:app-state :flash]
+                  nil)}))
+
+(xf/reg-event-db
+ :log-out
+ (fn [db [_ value]]
+   (info "triggered log-out with former db: " db)
+   (info "returned new db: " (assoc-in db [:app-state :admin] nil))
+   (assoc-in db [:app-state :admin] nil)))
+
+(xf/reg-event-db
+ :set-flash
+ (fn [db [_ value]]
+   (assoc-in db [:app-state :flash] value)))
+
+(xf/reg-event-db
+ :set-yoti-uuid
+ (fn [db [_ value]]
+   (info "old uuid value: " (-> db :app-state :unique-yoti-id))
+  ;  (dom/remove-children "yoti-app-btn")
+   (assoc-in db [:app-state :unique-yoti-id] value)))
+
 (xf/reg-event-db
  :set-value
  (fn [db [_ value]]
@@ -116,10 +147,12 @@
 
 (xf/reg-event-fx
  :initiate-client-action
- (fn [db [_ token client-email client-name]]
+ (fn [db [_ token client-email client-name add-msg]]
    (info "initiate client action called got: " token)
    {:http-post {:url (str "http://localhost:3000/api/start-client")
-                :form-data {:client-email client-email :client-name client-name}
+                :form-data {:client-email client-email
+                            :client-name client-name
+                            :add-msg add-msg}
                 :on-ok :initiate-client-action-ok
                 :on-failed :initiate-client-action-failed
                 :tkn token}}))
@@ -132,18 +165,6 @@
            :on-ok :fetch-admin-access-ok
            :on-failed :fetch-admin-access-failed
            :tkn token}}))
-
-; (xf/reg-event-fx
-;  :clear-flash
-;  (fn [db [_ _]])
-;  )
-
-(xf/reg-event-fx
- :no-flash
- (fn [db [_ _]]
-   (info "db was got: " db)
-   {:db (assoc-in db [:app-state :flash]
-                  nil)}))
 
 (xf/reg-event-fx
  :fetch-admin-logs
@@ -203,7 +224,9 @@
            assoc :admin
            {:tkn (-> db :app-state :admin :tkn)
             :access (-> db :app-state :admin :access)
-            :admin-page (:info response)})))
+            :log-page (:logs response)
+            :users-page (:users response)
+            :custom-email-page (:opts response)})))
 
 (xf/reg-event-db
  :fetch-admin-logs-failed

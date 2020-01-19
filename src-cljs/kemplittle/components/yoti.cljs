@@ -1,9 +1,12 @@
 (ns kemplittle.components.yoti
   (:require
    [tailwind.core :refer [tw tw! spit-css!]]
+   [xframe.core.alpha :as xf :refer [<sub]]
    [reitit.frontend.easy :as rfe]
    [cljsjs.emotion]
    [uix.core.alpha :as uix]
+   [cljs-bean.core :as bean]
+   [clojure.browser.dom :as dom]
    [taoensso.timbre :refer [info]]))
 
 (defn yoti-logo []
@@ -30,3 +33,64 @@
       (yoti-logo)
       [:span {:class "yoti-button__text"} text]]]]])
 
+
+(defn yoti-app-button [{:keys [ref unique-yoti-id]}]
+  [:div {:id "yoti-app-btn"}
+   [:div {:id unique-yoti-id}]])
+
+(defn first-init-yoti-button [uid]
+  (let [tkn-handler (fn [token ref]
+                      (.send goog.net.XhrIo
+                             (str "yotiapp?token="
+                                  token
+                                  "&ref=" ref)))
+        elements
+        {:elements [{:domId uid
+                     :scenarioId "15f775ff-b8c4-42e7-b8d1-3c2df8e9010c"
+                     :clientSdkId "8d26c691-0b72-4ddd-9b33-59a79f51eb96"
+                     :button {:label "Use Yoti"
+                              :align "center"
+                              :width "full"}
+
+                     :modal {:zIndex 9999}
+                     :shareComplete {:closeDelay 4000
+                                     :tokenHandler tkn-handler}}]}
+        init-payload (-> elements
+                         bean/->js)]
+
+    (info "Calling init-yoti-button with id: " uid)
+    (.addEventListener
+     js/window
+     "DOMContentLoaded"
+     (fn []
+       (.. js/window
+           -Yoti
+           -Share (init
+                   init-payload))))))
+
+(defn subsequent-init-yoti-button [uid]
+  (let [tkn-handler (fn [token ref]
+                      (.send goog.net.XhrIo
+                             (str "yotiapp?token="
+                                  token
+                                  "&ref=" ref)))
+        elements
+        {:elements [{:domId uid
+                     :scenarioId "15f775ff-b8c4-42e7-b8d1-3c2df8e9010c"
+                     :clientSdkId "8d26c691-0b72-4ddd-9b33-59a79f51eb96"
+                     :button {:label "Use Yoti"
+                              :align "center"
+                              :width "full"}
+
+                     :modal {:zIndex 9999}
+                     :shareComplete {:closeDelay 4000
+                                     :tokenHandler tkn-handler}}]}
+        init-payload (-> elements
+                         bean/->js)]
+
+    (info "Calling init-yoti-button with id: " uid)
+    (set! (.. js/window -Yoti -Share -uid) nil)
+    (.. js/window
+        -Yoti
+        -Share (init
+                init-payload))))

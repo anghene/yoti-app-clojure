@@ -13,11 +13,11 @@
 
 <body>
     <div id="root"></div>
-    <script src="cljs-out/dev-main.js"></script>
+    <script src="https://www.yoti.com/share/client/"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type='text/javascript' src='https://www.kemplittle.com/wp-content/themes/kemplittle/js/slick.min.js?ver=1.6.0'></script>
-    <script src="https://www.yoti.com/share/client/"></script>
+    <script src="cljs-out/dev-main.js"></script>
     <script>
         $(document).ready(function() {
             $('.logos-slider').slick({
@@ -30,15 +30,16 @@
                 slidesToScroll: 1
             });
         });
-	function getParameterByName(name, url) {
-	    if (!url) url = window.location.href;
-	    name = name.replace(/[\[\]]/g, '\\$&');
-	    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-		        results = regex.exec(url);
-	    if (!results) return null;
-	    if (!results[2]) return '';
-	    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-	}
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
         console.log("Logging url param: ", getParameterByName('ref')); // "ref"
         window.Yoti.Share.init({
             elements: [{

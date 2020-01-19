@@ -31,6 +31,7 @@
   com.yoti/yoti-sdk-impl {:mvn/version "2.6.0"}
   conman {:mvn/version "0.8.4"}
   cprop {:mvn/version "0.1.14"}
+  domina {:mvn/version "1.0.3"}
   environ {:mvn/version "1.1.0"}
   expound {:mvn/version "0.7.0"}
   fipp {:mvn/version "0.6.22"}

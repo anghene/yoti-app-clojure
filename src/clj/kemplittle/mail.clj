@@ -2,6 +2,7 @@
  (:require  [postal.core :as postal]
             [selmer.parser :as parser]
             [taoensso.timbre :as timbre :refer [info]]
+            [selmer.parser :as parser]
             [environ.core :refer [env]]))
 
 (def contacts
@@ -30,7 +31,7 @@
                                  :subject "Validation result"
                                  :body [{:type "text/plain"
                                          :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
-               (timbre/info "Sent a mail to: " (:email %)))
+               (timbre/info "Sent an mail to: " (:email %)))
           (filter #(= (:id %) dest-id) contacts))))
 
 (defn send-validation-mail [dest-id user type]
@@ -40,19 +41,38 @@
      user
      (str "SUCCESSFUL VALIDATION with " type))))
 
-(defn prompt-client-to-validate-himself [ref-id ref-email client-email client-name]
+(defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
+  (as-> msg-map $
+    (if is-uk-inc? (dissoc $ :opt2 :opt3 :opt4 :opt5) (dissoc $ :opt1))
+    (if is-dir-sec-leg? (dissoc $ :opt6) $)
+    (if (not (nil? psc-names))
+      (assoc-in $ [:opt1 :text :a] psc-names)
+      $)))
+
+(defn prompt-client-to-validate-himself [{:keys [ref-name ref-id ref-email client-email
+                                                 client-name add-msg client-type psc-names
+                                                 msg-map is-uk-inc? is-dir-sec-leg?]}]
   (postal/send-message
    (smtp-settings)
    {:from "vlad@anghene.com"
     :to client-email
     :subject "Validation request from Kemp Little"
     :body [{:type "text/html"
-            :content (format
-                      "Hello %s.
-                       <br>
-                       %s would like to ask you to kindly initiate the validation process over at https://identity.kemplittle.com/#/?ref=%s.
-                       <br>
-                       Please follow the link to get started." client-name ref-email ref-id)}]}))
+            :content (parser/render-file (case client-type
+                                           "1" "individual-email.html"
+                                           "2" "corporate-email.html"
+                                           nil)
+                                         {:client-name client-name
+                                          :ref-name ref-name
+                                          :ref-email ref-email
+                                          :ref-id ref-id
+                                          :add-msg add-msg
+                                          :opts (case client-type
+                                                  "2" (filtered-opts {:is-uk-inc? is-uk-inc?
+                                                                      :is-dir-sec-leg? is-dir-sec-leg?
+                                                                      :msg-map msg-map
+                                                                      :psc-names psc-names})
+                                                  nil)})}]}))
 
 ; {:type "text/html"
 ;  :content (parser/render-file
