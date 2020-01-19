@@ -109,7 +109,7 @@
          ; origin-certificates (.. first-source-anchor getOriginCertificates)
         ]
     {:full_name full-name :email emailAddress
-     :address adrress :dob dob :gender gender}))
+     :address address :dob dob :gender gender}))
 
 (defn pass-token
   "activated when received a token via yoti digital id"
