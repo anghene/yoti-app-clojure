@@ -84,9 +84,9 @@
          ; familyName (.. profile getFamilyName getValue)
          ; phoneNumber (.. profile getPhoneNumber getValue)
         emailAddress (.. profile getEmailAddress getValue)
-         ; dob (.. profile getDateOfBirth getValue)
-         ; gender (.. profile getGender getValue)
-         ; address (.. profile getPostalAddress getValue)
+        dob (.. profile getDateOfBirth getValue)
+        gender (.. profile getGender getValue)
+        address (.. profile getPostalAddress getValue)
          ; structured-address (.. profile getStructuredPostalAddress getValue)
          ; nationality (.. profile getNationality getValue)
          ; is-over-18? (when-let [age-ver (.. profile (.findAgeOverVerification 18))] (.. age-ver getResult))
@@ -108,7 +108,8 @@
          ; signed-timestamp (.. first-source-anchor getSignedTimestamp)
          ; origin-certificates (.. first-source-anchor getOriginCertificates)
         ]
-    {:name full-name :email emailAddress}))
+    {:full_name full-name :email emailAddress
+     :address adrress :dob dob :gender gender}))
 
 (defn pass-token
   "activated when received a token via yoti digital id"

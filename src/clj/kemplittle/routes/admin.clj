@@ -184,7 +184,8 @@
 (defn parse-users-for-client [users]
   (map #(assoc {}
                :id (-> % first first)
-               :name (get % [:user-details :name] "Couldn't get name")
+               :session (-> % first second)
+               :name (get % [:user-details :full_name] "Couldn't get name")
                :type (-> % :type)
                :user-details (-> % :user-details))
        users))

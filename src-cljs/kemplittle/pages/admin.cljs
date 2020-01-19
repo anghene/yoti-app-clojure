@@ -85,6 +85,7 @@
 (defn draw-user-row [user]
   [:tr {}
    [:td {:class (str (tw! "border px-4 py-2"))} (:id user)]
+   [:td {:class (str (tw! "border px-4 py-2"))} (:session user)]
    [:td {:class (str (tw! "border px-4 py-2"))} (:name user)]
    [:td {:class (str (tw! "border px-4 py-2"))} (:type user)]
    [:td {:class (str (tw! "border px-4 py-2"))} (:user-details user)]])
@@ -94,6 +95,7 @@
    [:thead {}
     [:tr {}
      [:th {:class (str (tw! "px-4 py-2"))} "ID"]
+     [:th {:class (str (tw! "px-4 py-2"))} "Session"]
      [:th {:class (str (tw! "px-4 py-2"))} "Name"]
      [:th {:class (str (tw! "px-4 py-2"))} "Type"]
      [:th {:class (str (tw! "px-4 py-2"))} "User-details"] ] ]
