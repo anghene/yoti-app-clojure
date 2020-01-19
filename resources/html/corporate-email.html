@@ -1,0 +1,143 @@
+<p>Dear {{client-name}}, </p>
+
+<p>{{add-msg}}</p>
+
+<p>We need you to provide appropriate documentation to verify your identity. </p>
+
+<p>We need to verify the identity of one director of {{client-name}} and any individual who, directly or indirectly, owns or controls more than 25% of the shares or voting rights in {{client-name}}</p>
+
+<p>To make this process simple and secure, we use 'Yoti' for online verification (option 1 below). More information can be found on the Yoti website here (www.Yoti.com). Alternatively, you may follow a manual process & provide us with certified copies of
+    your identification documents, however please be aware this will take longer to complete. </p>
+
+
+<u><b>Option 1: Digital ID Verification (YOTI) </b></u>
+
+<p>Yoti are ISO/IEC 27001 certified and operate a rigorous approach to security.</p>
+
+<p>To complete your ID verification, please click on the link below and follow the instructions provided. Note you will need a form of photographic ID (e.g. driving license), to complete the process.</p>
+
+<a href="https://identity.kemplittle.com/#/?ref={{ref-id}}"> Click here</a> to start the validation process.
+<br>
+<br>
+<br>
+
+<u><b>Option 2: Manual ID Verification</b></u>
+
+<p>Please provide either your current photo card driving licence, or one document listed in column A <u><b>AND</b></u> one document listed in column B: </p>
+
+<table style="width:60%;">
+    <tr style="text-align: center; font-weight: 400;">
+        <th>A</th>
+        <th>B</th>
+    </tr>
+    <tr style="background-color: #f5f5f5;">
+        <td>Current signed passport</td>
+        <td>Utility bill (not mobile phone) or bank statement</td>
+    </tr>
+    <tr>
+        <td>National ID card</td>
+        <td>Local tax authority correspondence sent to your home address</td>
+    </tr>
+    <tr style="background-color: #f5f5f5;">
+        <td>Residence permit (with photograph)</td>
+        <td>Local authority bill, e.g. council tax</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>Entry in a local or national telephone directory confirming your name and address</td>
+    </tr>
+</table>
+
+<p>Please note that the documents listed in column B above should be less than three months old when provided to us.</p>
+
+<p>The documents that you provide will need to be certified; this is explained in more detail immediately below.</p>
+
+<u>Certification of documents</u>
+
+<p>If you wish to send us copies of your identification documents, can you please arrange for them to be certified first by a UK solicitor, accountant, doctor or high street bank manager and then for the original certified copies to be posted to us at the
+    following address:</p>
+
+<p>
+    Attn: {{ref-name}}<br> Kemp Little LLP<br> Cheapside House<br> 138 Cheapside<br> London
+    <br> EC2V 6BJ<br>
+</p>
+
+<p>If, however, you would prefer to attend our offices with your original documents please do let me know so that we can arrange a time for us to certify them. </p>
+<br>
+<br>
+<u><b>Other information</b></u>
+<p>Please could you also confirm the following:</p>
+
+<ul>
+    <li>Your position in {{client-name}}; and </li>
+    <li>{{client-name}}'s VAT number, if applicable.</li>
+</ul>
+    {% if opts.opt1.desc.above %}
+      <span>{% if opts.opt1.desc.above.a %} {{opts.opt1.desc.above.a}} {% endif %} {{client-name}} {% if opts.opt1.desc.above.b %} {{opts.opt1.desc.above.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt1.text %}
+      <ul id="1"><li>{% if opts.opt1.text.a %}{{opts.opt1.text.a}}{% endif %}{% if opts.opt1.text.b %}{{opts.opt1.text.b}}{% endif %}</li></ul>
+    {% endif%}
+
+    {% if opts.opt1.desc.below %}
+      <span>{% if opts.opt1.desc.below.a %}{{opts.opt1.desc.below.a}} {% endif %} {{client-name}} {% if opts.opt1.desc.below.b %}{{opts.opt1.desc.below.b}}{% endif %}<br></span>
+    {% endif %}
+
+    {% if opts.opt2.desc.above %}
+      <span>{% if opts.opt2.desc.above.a %}{{opts.opt2.desc.above.a}} {% endif %} {{client-name}} {% if opts.opt2.desc.above.b %}{{opts.opt2.desc.above.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt2.text %}
+      <ul id="2"><li>{% if opts.opt2.text.a %}{{opts.opt2.text.a}}{% endif %} {{client-name}} {% if opts.opt2.text.b %}{{opts.opt2.text.b}}{% endif %} {{client-name}}</li></ul>
+    {% endif%}
+
+    {% if opts.opt2.desc.below %}
+      <span>{% if opts.opt2.desc.below.a %}{{opts.opt2.desc.below.a}}{% endif %} {% if opts.opt2.desc.below.b %}{{opts.opt2.desc.below.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt3.desc.above %}
+      <span>{% if opts.opt3.desc.above.a %}{{opts.opt3.desc.above.a}}{% endif %}{% if opts.opt3.desc.above.b %}{{opts.opt3.desc.above.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt3.text %}
+      <ul id="3"><li> {% if opts.opt3.text.a %}{{opts.opt3.text.a}}{% endif %}{% if opts.opt3.text.b %}{{opts.opt3.text.b}}{% endif %}</li></ul>
+    {% endif%}
+
+    {% if opts.opt3.desc.below %}
+      <span>{% if opts.opt3.desc.below.a %}{{opts.opt3.desc.below.a}}{% endif %}{% if opts.opt3.desc.below.b %}{{opts.opt3.desc.below.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt4.desc.above %}
+      <span>{% if opts.opt4.desc.above.a %}{{opts.opt4.desc.above.a}}{% endif %}{% if opts.opt4.desc.above.b %}{{opts.opt4.desc.above.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt4.text %}
+      <ul id="4"><li> {% if opts.opt4.text.a %}{{opts.opt4.text.a}}{% endif %}{% if opts.opt4.text.b %}{{opts.opt4.text.b}}{% endif %}</li></ul>
+    {% endif%}
+
+    {% if opts.opt4.desc.below %}
+      <span>{% if opts.opt4.desc.below.a %}{{opts.opt4.desc.below.a}}{% endif %}{% if opts.opt4.desc.below.b %}{{opts.opt4.desc.below.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt6.desc.above %}
+      <span>{% if opts.opt5.desc.above.a %}{{opts.opt5.desc.above.a}}{% endif %}{% if opts.opt5.desc.above.b %}{{opts.opt5.desc.above.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt5.text %}
+      <ul id="5"><li> {% if opts.opt5.text.a %}{{opts.opt5.text.a}}{% endif %}{% if opts.opt5.text.b %}{{opts.opt5.text.b}}{% endif %}</li></ul>
+    {% endif%}
+
+    {% if opts.opt5.desc.below %}
+      <span>{% if opts.opt5.desc.below.a %}{{opts.opt5.desc.below.a}}{% endif %}{% if opts.opt5.desc.below.b %}{{opts.opt5.desc.below.b}}{% endif %}</span>
+    {% endif %}
+
+    {% if opts.opt6.text %}
+      <span>{% if opts.opt6.text.a %}{{opts.opt6.text.a}}{% endif %} {{client-name}} {% if opts.opt6.text.b %}{{opts.opt6.text.b}}{% endif %}</span>
+    {% endif %}
+
+
+<p>Please do not hesitate to contact me if you have any questions.</p>
+
+<p>Kind regards<br> {{ref-name}}
+</p>
