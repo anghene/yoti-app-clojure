@@ -3,6 +3,7 @@
 .absolute{position:absolute;}
 .appearance-none{appearance:none;}
 .bg-blue-500{background-color:#4299e1;}
+.bg-gray-100{background-color:#f7fafc;}
 .bg-gray-200{background-color:#edf2f7;}
 .bg-green-100{background-color:#f0fff4;}
 .bg-klgreen-100{background-color:#00ab8b;}
@@ -66,6 +67,7 @@
 .rounded{border-radius:0.25rem;}
 .shadow{box-shadow:0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);}
 .shadow-md{box-shadow:0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);}
+.table-auto{table-layout:auto;}
 .text-gray-600{color:#718096;}
 .text-gray-700{color:#4a5568;}
 .text-green-700{color:#2f855a;}
