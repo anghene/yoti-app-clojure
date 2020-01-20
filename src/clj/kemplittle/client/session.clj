@@ -116,14 +116,14 @@
 
 (defn parse-checks [webhook]
   (when (is-completed? webhook)
-    (let [session-details (session-details (:session_id webhook))
-          resources (:resources session-details)
+    (let [ses-details (session-details (:session_id webhook))
+          resources (:resources ses-details)
           id-document-used (-> resources
                             :id_documents
                             first)
           document-type (:document_type id-document-used)
           issuing-country (:issuing_country id-document-used)
-          all-checks (:checks session-details)
+          all-checks (:checks ses-details)
           text-data-check (first (filter
                                   #(= (:type %)
                                       "ID_DOCUMENT_TEXT_DATA_CHECK")
