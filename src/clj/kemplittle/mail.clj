@@ -43,16 +43,16 @@
        (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
             "\nMETHOD USED: " type
             "\nFULL NAME: " (:full_name user)
+            (if (= "DOCSCAN" type)
+              (str
+               "\nDOCUMENT TYPE: " (:document-type user)
+               "\nISSUING COUNTRY: " (:issuing-country user)))
             (if failed?
               (str "\nREASON: " (:reason user)
                    "\nDESCRIPTION: " (:description user)
                    "\nRECOMMENDATION: " (:recommendation user))
               (str "\nADDRESS: " (get user :address "Not available with this type of document used.")
-                   "\nDATE OF BIRTH: " (get user :dob "Not available with this type of document used.")
-                   (if (= "DOCSCAN" type)
-                     (str
-                      "\nDOCUMENT TYPE: " (:document-type user)
-                      "\nISSUING COUNTRY: " (:issuing-country user))))))))))
+                   "\nDATE OF BIRTH: " (get user :dob "Not available with this type of document used."))))))))
 
 (defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
   (as-> msg-map $
