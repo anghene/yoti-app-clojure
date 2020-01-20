@@ -153,7 +153,7 @@
                                   :ref-email own-email
                                   :client-email client-email
                                   :client-name client-name
-                                  :msg-map admin-msg-opts
+                                  :msg-map @admin-msg-opts
                                   :client-type "2"
                                   :is-uk-inc? nil
                                   :psc-names nil
@@ -181,14 +181,15 @@
    (take-last 30)
    ))
 
-(defn parse-users-for-client [users]
-  (map #(assoc {}
-               :id (-> % first first)
-               :session (-> % first second)
-               :name (get % [:user-details :full_name] "Couldn't get name")
-               :type (-> % :type)
-               :user-details (-> % :user-details))
-       users))
+(defn parse-user-for-client [user]
+  (when user
+    (assoc {}
+           :id nil
+           :session nil
+           :name (-> user :user-details :full_name)
+           :type (-> user :type)
+           :user-details (-> user :user-details))
+         ))
 
 (defn admin-info-page
   [request]
@@ -197,7 +198,7 @@
     (let [log (parse-log (slurp "new-server.log"))]
       (ok {:logs log
            :opts @admin-msg-opts
-           :users (parse-users-for-client @users)}))))
+           :users (map parse-user-for-client @users)}))))
 
 (defn get-user-data
   [request]
