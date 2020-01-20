@@ -4,7 +4,7 @@
    [xframe.core.alpha :as xf :refer [<sub]]
    [cljsjs.emotion]
    [taoensso.timbre :refer [info]]
-   [kemplittle.components.yoti :refer [scan-doc-button yoti-app-button first-init-yoti-button]]
+   [kemplittle.components.yoti :refer [scan-doc-button yoti-app-button]]
    [kemplittle.components.utils :refer [header footer flash-div]]
    [clojure.browser.dom :as dom]))
 
@@ -24,7 +24,7 @@
       [scan-doc-button {:text "DOC SCAN" :ref (-> query :ref)}]
       [yoti-app-button {:ref (-> query :ref) :unique-yoti-id uid}]]
      (do
-       (first-init-yoti-button uid)
+      ;  (first-init-yoti-button uid)
        (info "ran init on yoti button :" uid))
      [:br] [:br]]))
 
