@@ -117,6 +117,12 @@
 (defn parse-checks [webhook]
   (when (is-completed? webhook)
     (let [session-details (session-details (:session_id webhook))
+          resources (:resources session-details)
+          id-document-used (-> resources
+                            :id_documents
+                            first)
+          document-type (:document_type id-document-used)
+          issuing-country (:issuing_country id-document-used)
           all-checks (:checks session-details)
           text-data-check (first (filter
                                   #(= (:type %)
@@ -133,7 +139,9 @@
                                            :reason)})]
       ; (timbre/info "text-check: " text-check)
       (merge result
-             {:dest-id (:user_tracking_id session-details)}))))
+             {:dest-id (:user_tracking_id session-details)
+              :document-type document-type
+              :issuing_country issuing-country}))))
 
 (defn user-profile [media-request]
   (read-json media-request))

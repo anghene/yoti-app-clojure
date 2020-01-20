@@ -112,7 +112,6 @@
          ; origin-certificates (.. first-source-anchor getOriginCertificates)
         ]
     {:full_name full-name
-     :email emailAddress
      :address address
      :dob (str dob)
      }))

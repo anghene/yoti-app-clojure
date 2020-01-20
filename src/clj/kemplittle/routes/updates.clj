@@ -18,6 +18,31 @@
       true)
     false))
 
+(def docscan-errors
+  [{:reason "PHOTO_OVEREXPOSED"	:description "The photo is overexposed"	:recommendation "NOT_AVAILABLE"}
+   {:reason "PHOTO_TOO_DARK"	:description "The photo is dark"	:recommendation "NOT_AVAILABLE"}
+   {:reason "PHOTO_TOO_BLURRY"	:description "The photo is blurry"	:recommendation "NOT_AVAILABLE"}
+   {:reason "DOCUMENT_TOO_DAMAGED"	:description "Document is too damaged (at the point we cannot check)"	:recommendation "NOT_AVAILABLE"}
+   {:reason "GLARE_OBSTRUCTION"	:description "The photo has a glare"	:recommendation "NOT_AVAILABLE"}
+   {:reason "OBJECT_OBSTRUCTION"	:description "Object in the way"	:recommendation "NOT_AVAILABLE"}
+   {:reason "UNABLE_TO_LOAD"	:description "Unable to load file"	:recommendation "NOT_AVAILABLE"}
+   {:reason "PARTIAL_PHOTO"	:description "The photo is partially taken"	:recommendation "NOT_AVAILABLE"}
+   {:reason "IMAGE_RESOLUTION_TOO_LOW"	:description "The image resolution is too low"	:recommendation "NOT_AVAILABLE"}
+   {:reason "COUNTRY_NOT_SUPPORTED"	:description "The country is not supported"	:recommendation "NOT_AVAILABLE"}
+   {:reason "DOCUMENT_NOT_SUPPORTED"	:description "Yoti does not support this document"	:recommendation "NOT_AVAILABLE"}
+   {:reason "INCORRECT_DOCUMENT_TYPE"	:description "The document type is incorrect"	:recommendation "NOT_AVAILABLE"}
+   {:reason "INCORRECT_MRZ"	:description "MRZ on passport is incorrect"	:recommendation "NOT_AVAILABLE"}
+   {:reason "DOCUMENT_VERSION_NOT_SUPPORTED"	:description "Yoti does not support this document template"	:recommendation "NOT_AVAILABLE"}
+   {:reason "MISSING_DOCUMENT_SIDE"	:description "The full document was not sent"	:recommendation "NOT_AVAILABLE"}
+   {:reason "BLACK_AND_WHITE_IMAGE"	:description "Black and white photo"	:recommendation "NOT_AVAILABLE"}
+   {:reason "MISUSE"	:description "The photo has been misused"	:recommendation "NOT_AVAILABLE"}
+   {:reason "INVALID"	:description "The photo is not a valid photo"	:recommendation "NOT_AVAILABLE"}
+   {:reason "DOCUMENT_COPY"	:description "The photo has been photocopied"	:recommendation "REJECT"}
+   {:reason "NO_HOLOGRAM_MOVEMENT"	:description "There is no hologram movement detected"	:recommendation "REJECT"}
+   {:reason "TAMPERED"	:description "The photo seems to be tampered with"	:recommendation "REJECT"}
+   {:reason "MISSING_HOLOGRAM"	:description "There is no hologram on the photo"	:recommendation "REJECT"}
+   {:reason "EXPIRED_DOCUMENT"	:description "The document has expired"	:recommendation "REJECT"}])
+
 (defn persist-to-state! [session-id user]
   (swap! users conj {:id @max-id
                      :session session-id
@@ -38,8 +63,16 @@
             dest-id (clojure.string/trim
                      (:dest-id server-response))
             user (if-not failed?
-                    (media-details session-id media-id)
-                     {:full_name "n/a" :reason (:reason server-response)})]
+                   (media-details session-id media-id)
+                   (let [reason (:reason server-response)
+                         reason-with-aid (first
+                                          (filter #(= reason (:reason %))
+                                                  docscan-errors))
+                         desc (:description reason-with-aid)
+                         recom (:recommendation reason-with-aid)]
+                     {:full_name "n/a" :reason reason
+                      :description desc :recommendation recom
+                      :ok? (:ok? server-response)}))]
         (timbre/info "[DOCSCAN] user to persist: " user)
         (try (send-validation-email dest-id user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))

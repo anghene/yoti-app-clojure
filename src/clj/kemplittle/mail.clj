@@ -30,16 +30,29 @@
                                  :to (:email %)
                                  :subject "Validation result"
                                  :body [{:type "text/plain"
-                                         :content (format "Client name: %s\nValidation result: %s\n" client-name validation-result)}]})
+                                         :content (format validation-result)}]})
                (timbre/info "Sent an mail to: " (:email %)))
           (filter #(= (:id %) dest-id) contacts))))
 
 (defn send-validation-email [dest-id user type]
   (when (= "true" (:send-emails env))
-    (send-messages!
-     dest-id
-     user
-     (str "SUCCESSFUL VALIDATION with " type))))
+    (let [failed? (not (:ok? user))]
+      (send-messages!
+       dest-id
+       (:full_name user)
+       (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
+            "\nMETHOD USED: " type
+            "\nFULL NAME: " (:full_name user)
+            (if failed?
+              (srt "\nREASON: " (:reason user)
+                   "\nDESCRIPTION: " (:description user)
+                   "\nRECOMMENDATION: " (:recommendation user))
+              (srt "\nADDRESS: " (get user :address "Not available with this type of document used.")
+                   "\nDATE OF BIRTH: " (get user :dob "Not available with this type of document used.")
+                   (if (= "DOCSCAN" type)
+                     (str
+                      "\nDOCUMENT TYPE: " (:document-type user)
+                      "\nISSUING COUNTRY: " (:issuing-country user))))))))))
 
 (defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
   (as-> msg-map $
