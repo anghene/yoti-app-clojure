@@ -19,7 +19,8 @@
     false))
 
 (defn persist-to-state! [session-id user]
-  (swap! users conj {@max-id session-id
+  (swap! users conj {:id @max-id 
+                     :session session-id
                      :type :docscan
                      :user-details user})
   (swap! max-id inc)

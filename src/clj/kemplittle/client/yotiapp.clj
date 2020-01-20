@@ -8,6 +8,8 @@
             HumanProfile Image YotiClient YotiClientBuilder]
            [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse]))
 
+(def activities (atom nil))
+
 (def client
   (let [ycb (. YotiClientBuilder newInstance)
         forapp (doto ycb (.forApplication (:yotiapp-sdk-id env)))
@@ -16,9 +18,10 @@
     (.build wkp)))
 
 (defn persist-to-state! [activity user]
-  (swap! users conj {@max-id activity
+  (swap! users conj {:id @max-id
                      :type :yotiapp
                      :user-details user})
+  (swap! activities conj {@max-id activity})
   (swap! max-id inc)
   (timbre/info "Persisted a yotiapp user to state."))
 
@@ -85,7 +88,7 @@
          ; phoneNumber (.. profile getPhoneNumber getValue)
         emailAddress (.. profile getEmailAddress getValue)
         dob (.. profile getDateOfBirth getValue)
-        gender (.. profile getGender getValue)
+        ; gender (.. profile getGender getValue)
         address (.. profile getPostalAddress getValue)
          ; structured-address (.. profile getStructuredPostalAddress getValue)
          ; nationality (.. profile getNationality getValue)
@@ -108,8 +111,11 @@
          ; signed-timestamp (.. first-source-anchor getSignedTimestamp)
          ; origin-certificates (.. first-source-anchor getOriginCertificates)
         ]
-    {:full_name full-name :email emailAddress
-     :address address :dob dob :gender gender}))
+    {:full_name full-name
+     :email emailAddress
+     :address address
+     :dob (str dob)
+     }))
 
 (defn pass-token
   "activated when received a token via yoti digital id"
