@@ -119,8 +119,9 @@
     (let [ses-details (session-details (:session_id webhook))
           resources (:resources ses-details)
           id-document-used (-> resources
-                            :id_documents
-                            first)
+                               :id_documents
+                               first)
+          id-of-doc (:id id-document-used)
           document-type (:document_type id-document-used)
           issuing-country (:issuing_country id-document-used)
           all-checks (:checks ses-details)
@@ -139,9 +140,10 @@
                                            :reason)})]
       ; (timbre/info "text-check: " text-check)
       (merge result
-             {:dest-id (:user_tracking_id session-details)
+             {:dest-id (:user_tracking_id ses-details)
               :document-type document-type
-              :issuing_country issuing-country}))))
+              :issuing_country issuing-country
+              :document-id id-of-doc}))))
 
 (defn user-profile [media-request]
   (read-json media-request))

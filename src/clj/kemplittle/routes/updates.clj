@@ -43,11 +43,13 @@
    {:reason "MISSING_HOLOGRAM"	:description "There is no hologram on the photo"	:recommendation "REJECT"}
    {:reason "EXPIRED_DOCUMENT"	:description "The document has expired"	:recommendation "REJECT"}])
 
-(defn persist-to-state! [session-id user]
+(defn persist-to-state! [session-id user media-id doc-id]
   (swap! users conj {:id @max-id
-                     :session session-id
+                     :session-id session-id
                      :type :docscan
-                     :user-details user})
+                     :user-details user
+                     :media-id media-id
+                     :document-id doc-id})
   (swap! max-id inc)
   (timbre/info "Persisted a docscan user to state."))
 
@@ -57,9 +59,10 @@
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
             server-response (parse-checks webhook)
+            doc-id (:document-id server-response)
             failed? (not (:ok? server-response))
             media-id (if-not failed?
-                      (:id server-response))
+                       (:id server-response))
             dest-id (clojure.string/trim
                      (:dest-id server-response))
             user (if-not failed?
@@ -76,7 +79,7 @@
         (timbre/info "[DOCSCAN] user to persist: " user)
         (try (send-validation-email dest-id user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
-        (persist-to-state! session-id user))
+        (persist-to-state! session-id user media-id doc-id))
       (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}
