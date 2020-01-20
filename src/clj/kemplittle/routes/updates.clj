@@ -39,7 +39,7 @@
                      (:dest-id server-response))
             user (if-not failed?
                     (media-details session-id media-id)
-                     {:full_name n/a :reason (:reason server-response)})]
+                     {:full_name "n/a" :reason (:reason server-response)})]
         (timbre/info "[DOCSCAN] user to persist: " user)
         (try (send-validation-email dest-id user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
