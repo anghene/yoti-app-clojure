@@ -44,10 +44,10 @@
             "\nMETHOD USED: " type
             "\nFULL NAME: " (:full_name user)
             (if failed?
-              (srt "\nREASON: " (:reason user)
+              (str "\nREASON: " (:reason user)
                    "\nDESCRIPTION: " (:description user)
                    "\nRECOMMENDATION: " (:recommendation user))
-              (srt "\nADDRESS: " (get user :address "Not available with this type of document used.")
+              (str "\nADDRESS: " (get user :address "Not available with this type of document used.")
                    "\nDATE OF BIRTH: " (get user :dob "Not available with this type of document used.")
                    (if (= "DOCSCAN" type)
                      (str
