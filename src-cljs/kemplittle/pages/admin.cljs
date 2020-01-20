@@ -102,12 +102,130 @@
    [:tbody {}
     (map draw-user-row users)]])
 
+(defn customize-email-panel [opts]
+  (let [state* (uix/state (merge {} opts))
+        opt1-above-a (derive-state state* [:opt1 :desc :above :a])
+        opt1-above-b (derive-state state* [:opt1 :desc :above :b])
+        opt1-text-a (derive-state state* [:opt1 :text :a])
+        opt1-text-b (derive-state state* [:opt1 :text :b])
+        opt1-below-a (derive-state state* [:opt1 :desc :below :a])
+        opt1-below-b (derive-state state* [:opt1 :desc :below :b])
+        opt2-above-a (derive-state state* [:opt2 :desc :above :a])
+        opt2-above-b (derive-state state* [:opt2 :desc :above :b])
+        opt2-text-a (derive-state state* [:opt2 :text :a])
+        opt2-text-b (derive-state state* [:opt2 :text :b])
+        opt2-below-a (derive-state state* [:opt2 :desc :below :a])
+        opt2-below-b (derive-state state* [:opt2 :desc :below :b])
+        opt3-above-a (derive-state state* [:opt3 :desc :above :a])
+        opt3-above-b (derive-state state* [:opt3 :desc :above :b])
+        opt3-text-a (derive-state state* [:opt3 :text :a])
+        opt3-text-b (derive-state state* [:opt3 :text :b])
+        opt3-below-a (derive-state state* [:opt3 :desc :below :a])
+        opt3-below-b (derive-state state* [:opt3 :desc :below :b])
+        opt4-above-a (derive-state state* [:opt4 :desc :above :a])
+        opt4-above-b (derive-state state* [:opt4 :desc :above :b])
+        opt4-text-a (derive-state state* [:opt4 :text :a])
+        opt4-text-b (derive-state state* [:opt4 :text :b])
+        opt4-below-a (derive-state state* [:opt4 :desc :below :a])
+        opt4-below-b (derive-state state* [:opt4 :desc :below :b])
+        opt5-above-a (derive-state state* [:opt5 :desc :above :a])
+        opt5-above-b (derive-state state* [:opt5 :desc :above :b])
+        opt5-text-a (derive-state state* [:opt5 :text :a])
+        opt5-text-b (derive-state state* [:opt5 :text :b])
+        opt5-below-a (derive-state state* [:opt5 :desc :below :a])
+        opt5-below-b (derive-state state* [:opt5 :desc :below :b])
+        opt6-above-a (derive-state state* [:opt6 :desc :above :a])
+        opt6-above-b (derive-state state* [:opt6 :desc :above :b])
+        opt6-text-a (derive-state state* [:opt6 :text :a])
+        opt6-text-b (derive-state state* [:opt6 :text :b])
+        opt6-below-a (derive-state state* [:opt6 :desc :below :a])
+        opt6-below-b (derive-state state* [:opt6 :desc :below :b])
+        ]
+    [:div
+     {:class (tw! "w-1/2 m-auto")}
+     [:p {:class (tw! "pt-10 text-gray-700")}
+      (str @state*)]
+     [:form {:class (tw! "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
+             :on-submit #(do
+                           (.preventDefault %)
+                           #_(reset! state*  {:client-email ""
+                                              :client-name ""
+                                              :add-msg ""})
+                           )}
+      [:div {:class (tw! "mb-4")}
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "opt1-above-desc-a"} "UK Company option"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt1-above-desc-a"
+                   :type        "text"
+                   :placeholder "Option 1"
+                   :value @opt1-above-a
+                   :on-change #(reset! opt1-above-a (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[client name]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-above-desc-a"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt1-above-b
+                   :on-change #(reset! opt1-above-b (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[psc-names]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-below-desc-a"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt1-below-a
+                   :on-change #(reset! opt1-below-a (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[client-name]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-below-desc-b"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt1-below-b
+                   :on-change #(reset! opt1-below-b (.. % -target -value))}]]
+      [:div {:class (tw! "mb-4")}
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "opt1-above-desc-a"} "UK Company option"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt1-above-desc-a"
+                   :type        "text"
+                   :placeholder "Option 1"
+                   :value @opt2-above-a
+                   :on-change #(reset! opt2-above-a (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[client name]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-above-desc-a"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt2-above-b
+                   :on-change #(reset! opt2-above-b (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[psc-names]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-below-desc-a"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt2-below-a
+                   :on-change #(reset! opt2-below-a (.. % -target -value))}]
+       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+                :for   "client-name"} "[client-name]"]
+       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+                   :id          "opt2-below-desc-b"
+                   :type        "text"
+                   :placeholder "Option 2"
+                   :value @opt2-below-b
+                   :on-change #(reset! opt2-below-b (.. % -target -value))}]]]]
+    ))
+
 (defn show-customize-email []
   (let [adm-det (<sub [:admin-details])
         usr-access (:access adm-det)
         opts (:custom-email-page adm-det)]
     (case usr-access
-      "admin" (str opts)
+      "admin" (customize-email-panel opts)
       "secretary" [:div  {:class (tw! "w-1/2 m-auto")}
                    "Only admins have access to emails."]
       [:div  {:class (tw! "w-1/2 m-auto")}
