@@ -5,7 +5,7 @@
    [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
    [kemplittle.client.session :refer [is-completed? text-check-id media-details]]
-   [kemplittle.mail :refer [send-validation-mail]]))
+   [kemplittle.mail :refer [send-validation-email]]))
 
 (defn is-admin? [name pass]
   (and (= name "yotiupdate")
@@ -19,7 +19,7 @@
     false))
 
 (defn persist-to-state! [session-id user]
-  (swap! users conj {:id @max-id 
+  (swap! users conj {:id @max-id
                      :session session-id
                      :type :docscan
                      :user-details user})
@@ -31,14 +31,19 @@
     (timbre/info "got params on webhook: " webhook)
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
-            text-check-id (text-check-id webhook)
-            media-id (:media-id text-check-id)
-            dest-id (clojure.string/trim (:dest-id text-check-id))
-            user (media-details session-id media-id)]
+            server-response (parse-checks webhook)
+            failed? (not (:ok? server-response))
+            media-id (if-not failed?
+                      (:id server-response))
+            dest-id (clojure.string/trim
+                     (:dest-id server-response))
+            user (if-not failed?
+                    (media-details session-id media-id)
+                     {:full_name n/a :reason (:reason server-response)})]
         (timbre/info "[DOCSCAN] user to persist: " user)
-        (try (send-validation-mail dest-id (-> user :full_name) "DOCSCAN")
+        (try (send-validation-email dest-id user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
-        (persist-to-state! session-id user))
+        (persist-to-state! session-id result))
       (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}

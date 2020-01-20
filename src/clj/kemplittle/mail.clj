@@ -34,7 +34,7 @@
                (timbre/info "Sent an mail to: " (:email %)))
           (filter #(= (:id %) dest-id) contacts))))
 
-(defn send-validation-mail [dest-id user type]
+(defn send-validation-email [dest-id user type]
   (when (= "true" (:send-emails env))
     (send-messages!
      dest-id
