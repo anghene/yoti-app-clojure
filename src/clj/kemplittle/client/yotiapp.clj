@@ -2,7 +2,7 @@
   (:require [environ.core :refer [env]]
             [taoensso.timbre :as timbre :refer [info]]
             [kemplittle.db.core :refer [max-id users]]
-            [kemplittle.mail :as mail]
+            [kemplittle.mail :refer [send-validation-email]]
             )
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder]
@@ -125,6 +125,6 @@
         trimmed-dest-id (clojure.string/trim dest-id)]
     (info trimmed-dest-id " asked for a New YotiApp user.")
     (persist-to-state! activity-details user)
-    (try (mail/send-validation-email trimmed-dest-id user "Yoti APP")
+    (try (send-validation-email trimmed-dest-id user "Yoti APP")
          (catch Exception e (timbre/info (str "Error sending yotiapp emails : " e))))
     (timbre/info "users so far: " @users)))

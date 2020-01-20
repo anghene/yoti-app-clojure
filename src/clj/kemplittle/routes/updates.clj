@@ -43,7 +43,7 @@
         (timbre/info "[DOCSCAN] user to persist: " user)
         (try (send-validation-email dest-id user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
-        (persist-to-state! session-id result))
+        (persist-to-state! session-id user))
       (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}
