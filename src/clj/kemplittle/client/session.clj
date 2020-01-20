@@ -114,21 +114,26 @@
   (and (= (:state check) "DONE")
        (= (-> check :report :recommendation :value) "APPROVE")))
 
-(defn text-check-id [webhook]
+(defn parse-checks [webhook]
   (when (is-completed? webhook)
     (let [session-details (session-details (:session_id webhook))
-          text-check (filter
-                      #(and (is-approved-and-done? %)
-                            (= (:type %)
-                               "ID_DOCUMENT_TEXT_DATA_CHECK"))
-                      (:checks session-details))
-          result (-> text-check
-                     first
-                     :generated_media
-                     first
-                     :id)]
+          all-checks (:checks session-details)
+          text-data-check (first (filter
+                                  #(= (:type %)
+                                      "ID_DOCUMENT_TEXT_DATA_CHECK")
+                                  all-checks))
+          result (if (is-approved-and-done? text-data-check)
+                   {:ok? true :id (-> text-data-check
+                                      :generated_media
+                                      first
+                                      :id)}
+                   {:ok? false :reason (-> text-data-check
+                                           :report
+                                           :recommendation
+                                           :reason)})]
       ; (timbre/info "text-check: " text-check)
-      {:media-id result :dest-id (:user_tracking_id session-details)})))
+      (assoc result
+             {:dest-id (:user_tracking_id session-details)}))))
 
 (defn user-profile [media-request]
   (read-json media-request))
