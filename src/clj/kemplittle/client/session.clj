@@ -132,7 +132,7 @@
                                            :recommendation
                                            :reason)})]
       ; (timbre/info "text-check: " text-check)
-      (assoc result
+      (merge result
              {:dest-id (:user_tracking_id session-details)}))))
 
 (defn user-profile [media-request]
