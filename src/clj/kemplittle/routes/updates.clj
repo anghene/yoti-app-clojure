@@ -4,7 +4,7 @@
    [taoensso.timbre :as timbre]
    [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
-   [kemplittle.client.session :refer [is-completed? text-check-id media-details]]
+   [kemplittle.client.session :refer [is-completed? parse-checks media-details]]
    [kemplittle.mail :refer [send-validation-email]]))
 
 (defn is-admin? [name pass]
