@@ -22,7 +22,7 @@
                 :flash nil
                 :session nil
                 :admin nil
-                :unique-yoti-id "vlad"}}))
+                :unique-yoti-id "yotiapp"}}))
 
 ;; Init database
 
