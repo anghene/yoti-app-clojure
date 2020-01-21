@@ -4,8 +4,8 @@
    [xframe.core.alpha :as xf :refer [<sub]]
    [cljsjs.emotion]
    [taoensso.timbre :refer [info]]
-   [kemplittle.components.yoti :refer [scan-doc-button yoti-app-button]]
-   [kemplittle.components.utils :refer [header footer flash-div]]
+   [kemplittle.components.yoti :refer [scan-doc-button yoti-app-button first-init-yoti-button]]
+   [kemplittle.components.utils :refer [header footer flash-div not-found]]
    [clojure.browser.dom :as dom]))
 
 (defn front-page [match]
@@ -21,7 +21,7 @@
       [:li "2. If you are already a user of the Yoti app, then click “Use Yoti” below to share your identity with us via the Yoti app."]]
      [:br]
      [:div {:class (tw! "flex flex-col items-center")}
-      [scan-doc-button {:text "DOC SCAN" :ref (-> query :ref)}]
+      [scan-doc-button {:text "DOC SCAN" :ref (-> query :ref) :uuid (-> query :uuid)}]
       [yoti-app-button {:ref (-> query :ref) :unique-yoti-id uid}]]
      (do
       ;  (first-init-yoti-button uid)
@@ -50,6 +50,8 @@
            (js/setTimeout
             (fn [_] (xf/dispatch [:no-flash]))
             3000))
-         [view match]))
+         (if-not view
+           [not-found match]
+           [view match])))
      [footer]]))
 
