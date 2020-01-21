@@ -24,8 +24,8 @@
   "This route is used by the Yoti.Share.init() function on frontend,
    to send a token so we can retrieve a user from SDK."
   [{:keys [params]}]
-  (timbre/info "Got request from Yoti servers: " (:token params) " on behalf of: " (:ref params))
-  (yotiapp/pass-token (:token params) (:ref params))
+  (timbre/info "Got request from Yoti servers: " (:token params) "with uuid: " (:uuid params))
+  (yotiapp/pass-token (:token params) (:uuid params) (:ref params))
   {:status  200
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body    "ok"})
@@ -57,16 +57,17 @@
     (layout/render request "thankyou.html"))
 
 (defn docscan-page [{:keys [params query-params] :as request}]
-  (let [session (get-new-session (:ref params))]
+  (let [session (get-new-session (:uuid params))]
     (timbre/info "session:" session)
     (layout/render request "docscan.html" {:session {:id (:session_id session)
                                                    :token (:client_session_token session)}})))
 
 (defn new-session [{:keys [params query-params] :as request}]
-  (let [sess (session/get-new-session (:ref params))
+  (let [sess (session/get-new-session (:uuid params))
         id (:session_id sess)
         tkn (:client_session_token sess)]
-    (timbre/info (:ref params) " asked for a new session and got : " sess)
+    (timbre/info "Params: " params)
+    (timbre/info "Started a new local session: " (:uuid params) "for DOCSCAN that we just got: " sess)
     {:status (:status request)
      :headers {"Content-Type" "application/json"}
      :body (write-str {:id id :tkn tkn})}))
