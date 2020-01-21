@@ -3,10 +3,9 @@
    [buddy.auth :refer [authenticated? throw-unauthorized]]
    [buddy.auth.backends.token :refer [jws-backend]]
    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-   [buddy.core.nonce :refer [random-bytes]]
    [buddy.sign.jwt :as jwt]
    [clj-time.core :as time]
-   [kemplittle.db.core :refer [users]]
+   [kemplittle.db.core :refer [users authdata session-data]]
    [clojure.data.json :refer [write-str read-json]]
    [environ.core :refer [env]]
    [kemplittle.middleware :as middleware :refer [secret]]
@@ -14,12 +13,34 @@
    [ring.util.response]
    [taoensso.timbre :as timbre :refer [info]]
    [cheshire.core :as json]
-   [kemplittle.mail :as mail :refer [prompt-client-to-validate-himself contacts]]
+   [kemplittle.mail :as mail :refer [prompt-client-to-validate-himself]]
    ))
 
 
 ;; Global var that stores valid users with their
 ;; respective passwords.
+
+(defn new-user-track-session! 
+  "When secretary starts validation process,
+   we use uuid to keep tabs on which secretary and which client name
+   to retrieve it later for cases when validation failed."
+  [ref-id client-name]
+  (let [uuid (.toString (java.util.UUID/randomUUID))
+        new-track-session {:uuid uuid
+                           :initiated-by-id ref-id
+                           :client-name client-name}]
+    (swap! session-data conj new-track-session)
+    (info "started new user-track-session on: " uuid " for ref-id:" ref-id " tracking: " client-name)
+    new-track-session))
+
+(defn match-session-data-uuid
+  "Used by updates or yotiapp to get ref-id and client-name based on uuid"
+  [uuid]
+  (let [sdata (-> (filter #(= uuid (:uuid %))
+                                 @session-data)
+                         first)
+        ]
+    sdata))
 
 (def admin-msg-opts
   (atom {:opt1 {:desc {:above {:a "In order to assist you with the process we will obtain any relevant company documents which are available from Companies House. To this end, we have reviewed the Persons of Significant Control (PSC) register of"
@@ -50,31 +71,6 @@
          :opt6 {:text {:a "Further, we will also require evidence of the authority given to you to instruct us from the director of"
                        :b "who has provided their identification documents. This can take the form of a letter or an email and should be received before we are able to proceed with this matter."}}}))
 
-(def authdata {:admin {:password "open4me"
-                       :email "vlad.anghene@gmail.com"
-                       :name "Vlad"
-                       :access "admin"}
-               :secretary1 {:password "secret"
-                            :email "Gerard.Frith@kemplittle.com"
-                            :name "Gerard Frith"
-                            :access "secretary"}
-               :secretary2 {:password "nuclear"
-                            :email "Chris.Gray@kemplittle.com"
-                            :name "Chris Gray"
-                            :access "secretary"}
-               :secretary3 {:password "thisthat"
-                            :email ""
-                            :name "John"
-                            :access "secretary"}
-               :chris {:password "whitesnow"
-                       :email "Chris.Gray@kemplittle.com"
-                       :name "Chris Gray"
-                       :access "admin"}
-               :gerard {:password "greentree"
-                        :email "Gerard.Frith@kemplittle.com"
-                        :name "Gerard Frith"
-                        :access "admin"}})
-
 (defn ok [d] {:status 200 :body d})
 (defn bad-request [d] {:status 400 :body d})
 (defn unauthorized [d] {:status 401 :body d})
@@ -87,37 +83,33 @@
 ;; If incoming user is not authenticated it raises a not authenticated
 ;; exception, else it simply shows a hello world message.
 
-(defn match-header-usr-name
+(defn match-authdata-usr-header
   "get name from state based on :username from header"
-  [request local-user]
-  (let [
-        user-name (get-in authdata [(keyword local-user) :name])]
-    user-name
-    ))
-
-(defn match-header-usr-mail
-  "get email from state based on :username from header"
-  [request local-user]
-  (let [
-        user-email (get-in authdata [(keyword local-user) :email])]
-    user-email
+  [local-user]
+  (let [user-name (get-in authdata [(keyword local-user) :name])
+        user-email (get-in authdata [(keyword local-user) :email])
+        user-id (get-in authdata [(keyword local-user) :id])]
+    {:name user-name
+     :email user-email
+     :id user-id}
     ))
 
 (defn match-header-usr-access
   "get access from state based on :username from header"
-  [request local-user]
+  [local-user]
   (let [
         access-level (get-in authdata [(keyword local-user) :access])]
     access-level
     ))
 
-(defn prompt-client-via-email [{:keys [ref-name ref-id ref-email client-email
-                                       client-name add-msg client-type psc-names
+(defn prompt-client-via-email [{:keys [admin-name user-tracking-id admin-email client-email
+                                       client-name add-msg client-type psc-names ref-id
                                        msg-map is-uk-inc? is-dir-sec-leg?]}]
-    ; (info "prompt function gets: " ref-email ref-id client-email)
-    (try (do (prompt-client-to-validate-himself {:ref-id ref-id
-                                                 :ref-email ref-email
-                                                 :ref-name ref-name
+    ; (info "prompt function gets: " admin-email user-tracking-id client-email)
+    (try (do (prompt-client-to-validate-himself {:user-tracking-id user-tracking-id
+                                                 :ref-id ref-id
+                                                 :admin-email admin-email
+                                                 :admin-name admin-name
                                                  :client-email client-email
                                                  :client-name client-name
                                                  :client-type client-type
@@ -126,7 +118,7 @@
                                                  :is-dir-sec-leg? is-dir-sec-leg?
                                                  :msg-map msg-map
                                                  :psc-names psc-names})
-             (timbre/info "Sent an mail to: " client-email))
+             (timbre/info "Sent a prompt validation mail to: " client-email))
          (catch Exception e (info "Unable to send prompt-client email: " e))))
 
 (defn start-client
@@ -142,25 +134,26 @@
             local-user (-> request
                            :identity
                            :user)
-            own-name (match-header-usr-name request local-user)
-            own-email (match-header-usr-mail request local-user)
-            own-data (filter #(= (:email %) own-email) contacts)
-            ref-id (-> own-data first :id)]
-        #_(info "gets to authorized level with client-email: " client-email " and : " own-email)
+            admin-data (match-authdata-usr-header local-user)
+            admin-email (:email admin-data)
+            admin-name (:name admin-data)
+            ref-id (:id admin-data)
+            user-session (new-user-track-session! ref-id client-name)]
+        (info "this is admin-data: " admin-data)
         (prompt-client-via-email {:add-msg add-msg
-                                  :ref-name own-name
+                                  :admin-name admin-name
+                                  :admin-email admin-email
+                                  :user-tracking-id (:uuid user-session)
                                   :ref-id ref-id
-                                  :ref-email own-email
                                   :client-email client-email
                                   :client-name client-name
                                   :msg-map @admin-msg-opts
                                   :client-type "2"
-                                  :is-uk-inc? nil
+                                  :is-uk-inc? true
                                   :psc-names nil
-                                  :is-dir-sec-leg? true
-                                  })
+                                  :is-dir-sec-leg? true})
         (ok {:status "Ok"
-             :message (str "Successfully send email to : " client-name " with ref-id " ref-id)})))))
+             :message (str "Successfully started a validation process: " (:uuid user-session))})))))
 
 (defn access-level
   [request]
@@ -169,7 +162,7 @@
     (let [local-user (-> request
                          :identity
                          :user)
-          lvl (match-header-usr-access request local-user)]
+          lvl (match-header-usr-access local-user)]
       (ok {:access lvl}))))
 
 (defn parse-log [text]

@@ -63,10 +63,11 @@
             failed? (not (:ok? server-response))
             media-id (if-not failed?
                        (:id server-response))
-            dest-id (clojure.string/trim
-                     (:dest-id server-response))
+            uuid (clojure.string/trim
+                     (:uuid server-response))
             user (if-not failed?
-                   (media-details session-id media-id)
+                   (assoc (media-details session-id media-id)
+                          :ok? true)
                    (let [reason (:reason server-response)
                          reason-with-aid (first
                                           (filter #(= reason (:reason %))
@@ -77,9 +78,9 @@
                       :description desc :recommendation recom
                       :ok? (:ok? server-response)}))]
         (timbre/info "[DOCSCAN] user to persist: " user)
-        (try (send-validation-email dest-id user "DOCSCAN")
+        (try (send-validation-email uuid user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
-        (persist-to-state! session-id user media-id doc-id))
+        #_(persist-to-state! session-id user media-id doc-id))
       (timbre/info "users thus far: " @users))
     {:status  200
      :headers {"Content-Type" "application/json"}

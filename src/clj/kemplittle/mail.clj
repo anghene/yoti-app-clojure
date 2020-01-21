@@ -3,12 +3,8 @@
             [selmer.parser :as parser]
             [taoensso.timbre :as timbre :refer [info]]
             [selmer.parser :as parser]
-            [environ.core :refer [env]]))
-
-(def contacts
-  [{:id "1" :email "vlad.anghene@gmail.com"}
-   {:id "2" :email "Gerard.Frith@kemplittle.com"}
-   {:id "3" :email "Chris.Gray@kemplittle.com"}])
+            [environ.core :refer [env]]
+            [kemplittle.db.core :refer [authdata match-authdata-initiated-by-id session-data]]))
 
 (defn smtp-settings []
   (let [host (env :kl-smtp-host)
@@ -22,37 +18,74 @@
       (= ssl "tls") (assoc base-params :tls true)
       :else base-params)))
 
-(defn send-messages! [dest-id client-name validation-result]
-  (info "send-messages! gets dest-id:" dest-id " client-name:" client-name " validation-result:" validation-result)
-  (doall (map
-          #(do (postal/send-message
-                (smtp-settings) {:from "vlad@anghene.com"
-                                 :to (:email %)
-                                 :subject "Validation result"
-                                 :body [{:type "text/plain"
-                                         :content (format validation-result)}]})
-               (timbre/info "Sent an mail to: " (:email %)))
-          (filter #(= (:id %) dest-id) contacts))))
+(defn send-messages!
+  [admin-email client-name validation-result]
+  (info "PREPARING TO SEND: admin-mail:" admin-email " client-name:" client-name " validation-result:" validation-result)
+  (postal/send-message
+   (smtp-settings) {:from "hello@congruent.dev"
+                    :to admin-email
+                    :subject (str "Validation result for: " client-name)
+                    :body [{:type "text/plain"
+                            :content (format validation-result)}]})
+  (timbre/info "Sent an mail to: " admin-email))
+          
 
-(defn send-validation-email [dest-id user type]
+(defn match-session-track-data-uuid
+  "Used by updates or yotiapp to get ref-id and client-name based on uuid"
+  [uuid]
+  (let [session-data (-> (filter #(= uuid (:uuid %))
+                                 @session-data)
+                         first)]
+    session-data))
+
+(defn send-validation-email [user-tracking-id user type]
+  ; (info "send-validation-email gets called with this uuid: " user-tracking-id)
   (when (= "true" (:send-emails env))
-    (let [failed? (not (:ok? user))]
+    (let [failed? (not (:ok? user))
+          address-line (if-not failed?
+                         (case type
+                           "YOTIAPP"
+                           (->> (clojure.string/split (get (-> user
+                                                               :structured_postal_address)
+                                                           "formatted_address")
+                                                      #"\n")
+                                (clojure.string/join ", "))
+                           "DOCSCAN"
+                           (let [struct (some-> user :structured_postal_address)
+                                 ad1 (some-> struct :address_line1)
+                                 ad2 (some-> struct :address_line2)
+                                 cntry (some-> struct :country_iso)]
+                             (if (or (nil? struct)
+                                     (and (nil? ad1) (nil? ad2)))
+                               "N/A"
+                               (clojure.string/join ", " [ad1 ad2 cntry])))))
+          user-session (match-session-track-data-uuid user-tracking-id)
+          client-name (if (= "n/a" (:full_name user))
+                        (:client-name user-session)
+                        (:full_name user))
+          admin-email (-> user-session
+                          :initiated-by-id
+                          match-authdata-initiated-by-id
+                          :admin-email
+                          )
+          result (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
+                      "\nMETHOD USED: " type
+                      "\nFULL NAME: " client-name
+                      (if failed?
+                        (str "\nREASON: " (:reason user)
+                             "\nDESCRIPTION: " (:description user)
+                             "\nRECOMMENDATION: " (:recommendation user))
+                        (str
+                         "\nDOCUMENT TYPE: " (:document_type user)
+                         "\nISSUING COUNTRY: " (:issuing_country user)
+                         "\nEXPIRATION DATE: " (:expiration_date user)
+                         "\nADDRESS: " address-line
+                         "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
       (send-messages!
-       dest-id
-       (:full_name user)
-       (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
-            "\nMETHOD USED: " type
-            "\nFULL NAME: " (:full_name user)
-            (if (= "DOCSCAN" type)
-              (str
-               "\nDOCUMENT TYPE: " (:document-type user)
-               "\nISSUING COUNTRY: " (:issuing-country user)))
-            (if failed?
-              (str "\nREASON: " (:reason user)
-                   "\nDESCRIPTION: " (:description user)
-                   "\nRECOMMENDATION: " (:recommendation user))
-              (str "\nADDRESS: " (get user :address "Not available with this type of document used.")
-                   "\nDATE OF BIRTH: " (get user :dob "Not available with this type of document used."))))))))
+       admin-email
+       client-name 
+       result
+       ))))
 
 (defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
   (as-> msg-map $
@@ -62,12 +95,14 @@
       (assoc-in $ [:opt1 :text :a] psc-names)
       $)))
 
-(defn prompt-client-to-validate-himself [{:keys [ref-name ref-id ref-email client-email
+(defn prompt-client-to-validate-himself [{:keys [admin-name ref-id admin-email client-email
                                                  client-name add-msg client-type psc-names
-                                                 msg-map is-uk-inc? is-dir-sec-leg?]}]
+                                                 user-tracking-id msg-map is-uk-inc? is-dir-sec-leg?]}]
+
+  (info "prompts with ref-id: " ref-id " and user-tracking-id: " user-tracking-id)
   (postal/send-message
    (smtp-settings)
-   {:from "vlad@anghene.com"
+   {:from "hello@congruent.dev"
     :to client-email
     :subject "Validation request from Kemp Little"
     :body [{:type "text/html"
@@ -76,8 +111,9 @@
                                            "2" "corporate-email.html"
                                            nil)
                                          {:client-name client-name
-                                          :ref-name ref-name
-                                          :ref-email ref-email
+                                          :admin-name admin-name
+                                          :admin-email admin-email
+                                          :user-tracking-id user-tracking-id
                                           :ref-id ref-id
                                           :add-msg add-msg
                                           :opts (case client-type

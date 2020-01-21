@@ -21,14 +21,14 @@
 (defn get-digest [request]
   (sign request))
 
-(defn get-new-session [ref]
+(defn get-new-session [uuid]
   (let [sdkid (:docscan-sdk-id env)
         my-server-urls
         {:sdk_config {:success_url (:success-url env)
                       :error_url (:error-url env)}
          :notifications {:endpoint (:webhook-url env)
                          :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}}
-        usertracking-uuid (str ref)
+        usertracking-uuid (str uuid)
         base-url "https://api.yoti.com/idverify/v1"
         json-payload (slurp (clojure.java.io/file "resources/request"))
         payload (-> (read-json json-payload)
@@ -140,7 +140,7 @@
                                            :reason)})]
       ; (timbre/info "text-check: " text-check)
       (merge result
-             {:dest-id (:user_tracking_id ses-details)
+             {:uuid (:user_tracking_id ses-details)
               :document-type document-type
               :issuing_country issuing-country
               :document-id id-of-doc}))))

@@ -40,7 +40,7 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
-        console.log("Logging url param: ", getParameterByName('ref')); // "ref"
+        console.log("Logging url param: ", getParameterByName('uuid')); // "ref"
         window.Yoti.Share.init({
             elements: [{
                 domId: "yotiapp",
@@ -57,9 +57,9 @@
                 shareComplete: {
                     closeDelay: 4000, // default to 4000, min of 500 - max of 10000
                     tokenHandler: (token, done) => {
-                        console.log(`Received the token: ${token}`);
+                        // console.log(`Received the token: ${token}`);
                         let xhr = new XMLHttpRequest();
-                        let endpoint = 'yotiapp?token=' + token + '&ref=' + getParameterByName('ref');
+                        let endpoint = 'yotiapp?token=' + token + '&ref=' + getParameterByName('ref') + '&uuid=' + getParameterByName('uuid');
                         xhr.open("GET", endpoint);
                         xhr.send();
                         done(); //done() will overwrite the closeDelay
