@@ -34,7 +34,13 @@
       :controllers [{:parameters {:query [:path]}
                      :start (fn [a]
                               (js/console.log "start" "frontpage controller"))
-                     :stop (log-fn "stop" "frontpage controller")}]}]
+                     :stop (fn [a]
+                             (do
+                               (.. js/window
+                                   -Yoti
+                                   -Share
+                                   -destroy)
+                               (log-fn "stop" "frontpage controller")))}]}]
     ["docscan"
      {:name ::docscan
       :parameters {:query {(s/optional-key :ref) s/Keyword}}
