@@ -2,6 +2,7 @@
   (:require
    [xframe.core.alpha :as xf :refer [<sub]]
    [taoensso.timbre :refer [info]]
+   [reitit.frontend.easy :as rfe] 
    [kemplittle.components.yoti :refer [yoti-logo]]
    [tailwind.core :refer [tw tw! spit-css!]]))
 
@@ -14,7 +15,7 @@
         (rfe/href
          :kemplittle.routes/docscan
          {}
-         {:ref ref})}
+         {:ref ref :uuid uuid})}
     [:div {:class (str "yoti-button-layout "
                        (tw! "items-center"))}
      [:button {:class (str "yoti-button "
@@ -26,6 +27,7 @@
   (let [{:keys [path query]} (:parameters match)
         {:keys [id]} path
         ref (-> query :ref)
+        uuid (-> query :uuid)
         session (<sub [:session :docscan])
         idsess (-> session :docscan :id)
         tkn (-> session :docscan :tkn)]
