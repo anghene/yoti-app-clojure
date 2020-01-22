@@ -19,17 +19,34 @@
 (defn derive-state [ref path]
   (uix/memo #(Cursor. ref path) [ref path]))
 
+(defn uuid-table [generated-uuids]
+  (let [make-row (fn [name uuid]
+                   [:tr {:class (tw! "hover:bg-gray-lighter")}
+                    [:td {:class (tw! "py-4 px-6 border-b border-gray-light")} name]
+                    [:td {:class (tw! "py-4 px-6 border-b border-gray-light")}
+                     [:code {:class (tw! "text-gray-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark")} (str "https://identity.kemplittle.com/#/?uuid=" uuid)]]])]
+    [:table {:class (tw! "text-left w-full border-collapse")}
+     [:thead {}
+      [:tr {} [:th {:class (tw! "py-4 px-6 bg-gray-lightest font-bold uppercase text-sm text-gray-dark border-b border-gray-light")} "Client Name"]
+       [:th {:class (tw! "py-4 px-6 bg-gray-lightest font-bold uppercase text-sm text-gray-dark border-b border-gray-light")} "UUID"]]]
+     [:tbody {}
+      (map
+       (fn [{:keys [client-name uuid]}]
+         (make-row client-name uuid))
+       generated-uuids)]]))
+
 (defn secretary-panel [adm-details]
   (let [state* (uix/state {:client-email ""
                            :client-name ""
                            :add-msg ""})
-        client-email* (derive-state state* [:client-email])
+        ; client-email* (derive-state state* [:client-email])
         client-name* (derive-state state* [:client-name])
-        add-msg* (derive-state state* [:add-msg])
-        token (-> adm-details :tkn)]
+        ; add-msg* (derive-state state* [:add-msg])
+        token (-> adm-details :tkn)
+        generated-uuids (-> adm-details :generated-uuids)]
     [:div
      {:class (tw! "w-1/2 m-auto")}
-     [:p {:class (tw! "pt-10 text-gray-700")}
+     [:p {:class (tw! "pt-10 text-gray-600")}
       (str "Hello. Here you can initiate the validation process.")]
      [:form {:class (tw! "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
              :on-submit #(do
@@ -37,7 +54,8 @@
                            (reset! state*  {:client-email ""
                                             :client-name ""
                                             :add-msg ""})
-                           (xf/dispatch [:initiate-client-action token @client-email* @client-name* @add-msg*]))}
+                          ;  (xf/dispatch [:initiate-client-action token @client-email* @client-name* @add-msg*])
+                           (xf/dispatch [:get-new-uuid token @client-name*]))}
       [:div {:class (tw! "mb-4")}
        [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
                 :for   "client-name"} "Client Name"]
@@ -47,26 +65,30 @@
                 :placeholder "Client Name"
                 :value @client-name*
                 :on-change #(reset! client-name* (.. % -target -value))}]
-       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
-                :for   "client-email"} "Client Email"]
-       [:input {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
-                :id          "client-email"
-                :type        "text"
-                :placeholder "Client Email"
-                :value @client-email*
-                :on-change #(reset! client-email* (.. % -target -value))}]
-       [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
-                :for   "add-msg"} "Editable Section / Free Text"]
-       [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
-                   :id          "add-msg"
-                   :type        "text"
-                   :rows "10" :cols "50"
-                   :placeholder "Editable Section / Free Text"
-                   :value @add-msg*
-                   :on-change #(reset! add-msg* (.. % -target -value))}]]
+      ;  [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+      ;           :for   "client-email"} "Client Email"]
+      ;  [:input {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+      ;           :id          "client-email"
+      ;           :type        "text"
+      ;           :placeholder "Client Email"
+      ;           :value @client-email*
+      ;           :on-change #(reset! client-email* (.. % -target -value))}]
+      ;  [:label {:class (tw! "block text-gray-700 text-sm font-bold mb-2")
+      ;           :for   "add-msg"} "Editable Section / Free Text"]
+      ;  [:textarea {:class (tw!       "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+      ;              :id          "add-msg"
+      ;              :type        "text"
+      ;              :rows "10" :cols "50"
+      ;              :placeholder "Editable Section / Free Text"
+      ;              :value @add-msg*
+      ;              :on-change #(reset! add-msg* (.. % -target -value))}]
+       ]
       [:div {:class (tw! "flex items-center justify-between")}
-       [:button {:class (tw! "bg-blue-500 hover:bg-blue-700 text-white font-bold my-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline")
-                 :type  "submit"} "Send email"]]]]))
+       [:button {:class (tw! "bg-blue-500 hover:bg-blue-700 text-white font-bold my-2 py-2 px-4 rounded focus:outline-none focus:shadow-outline")
+                 :type  "submit"} "Generate"]]
+      (when generated-uuids
+        [uuid-table generated-uuids])]
+     ]))
 
 (defn p-text [text]
   [:div {:class (str (tw! "mb-4"))}

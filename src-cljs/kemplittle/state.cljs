@@ -8,7 +8,9 @@
    [clojure.browser.dom :as dom]
    [cljs-bean.core :as bean]))
 
-(defn make-uuid-yoti []
+(defn make-uuid-yoti
+  "yoti-app div random id"
+  []
   (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
 
 ;; Event handlers
@@ -108,7 +110,7 @@
 (xf/reg-event-fx
  :fetch-admin-token
  (fn [db [_ uname pass]]
-   {:http-post {:url (str "https://identity.kemplittle.com/login")
+   {:http-post {:url (str "http://localhost:3000/login")
                 :form-data {:username uname :password pass}
                 :on-ok :fetch-admin-ok
                 :on-failed :fetch-admin-failed}}))
@@ -148,7 +150,7 @@
  :initiate-client-action
  (fn [db [_ token client-email client-name add-msg]]
    (info "initiate client action called got: " token)
-   {:http-post {:url (str "https://identity.kemplittle.com/api/start-client")
+   {:http-post {:url (str "http://localhost:3000/api/start-client")
                 :form-data {:client-email client-email
                             :client-name client-name
                             :add-msg add-msg}
@@ -160,7 +162,7 @@
  :fetch-admin-access
  (fn [db [_ token]]
    (info "fetch-admin-access called got: " token)
-   {:http {:url (str "https://identity.kemplittle.com/api/get-access-level")
+   {:http {:url (str "http://localhost:3000/api/get-access-level")
            :on-ok :fetch-admin-access-ok
            :on-failed :fetch-admin-access-failed
            :tkn token}}))
@@ -169,7 +171,7 @@
  :fetch-admin-logs
  (fn [db [_ _]]
    (info "fetch-admin-logs gets token: " (-> db :app-state :admin :tkn))
-   {:http {:url (str "https://identity.kemplittle.com/api/get-info")
+   {:http {:url (str "http://localhost:3000/api/get-info")
            :on-ok :fetch-admin-logs-ok
            :on-failed :fetch-admin-logs-failed
            :tkn (-> db :app-state :admin :tkn)}}))
@@ -179,7 +181,7 @@
  :fetch-session
  (fn [db [_ {:keys [ref uuid]}]]
    (info "fetch-session called with got: " (some-> ref name) (some-> uuid name))
-   {:http {:url (str "https://identity.kemplittle.com/getsession?ref=" (some-> ref name) "&uuid=" (some-> uuid name))
+   {:http {:url (str "http://localhost:3000/getsession?ref=" (some-> ref name) "&uuid=" (some-> uuid name))
            :on-ok :fetch-session-ok
            :on-failed :fetch-session-failed}}))
 
@@ -295,6 +297,43 @@
  :fetch-admin-access-failed
  (fn [db [_ response]]
    (do (info "fetch admin-access failed triggered got: " response)
+       (update db :app-state
+               assoc
+               :flash {:msg (:message response)
+                       :type "error"}))))
+
+(xf/reg-event-fx
+ :get-new-uuid
+ (fn [db [_ token client-name]]
+   (info "getting a new uuid session with token:" token)
+   (let [payload (if (empty? client-name)
+                   nil
+                   {:client-name client-name})]
+     {:http-post {:url (str "http://localhost:3000/api/start-session")
+                  :form-data payload
+                  :on-ok :get-new-uuid-ok
+                  :on-failed :get-new-uuid-failed
+                  :tkn token}})))
+
+(xf/reg-event-db
+ :get-new-uuid-ok
+ (fn [db [_ response]]
+   (let [old-uuids (or (-> db :app-state :admin :generated-uuids) [])
+         new-flash {:msg (:message response)
+                    :type "success"}
+         new-uuid (:new-uuid response)
+         client-name (:client-name response)]
+     (info "get-new-uuid ok triggered got: " response)
+     (-> db
+         (assoc-in  [:app-state :flash] new-flash)
+         (assoc-in  [:app-state :admin :generated-uuids]
+                    (conj old-uuids (assoc {} :client-name client-name
+                                           :uuid new-uuid)))))))
+
+(xf/reg-event-db
+ :get-new-uuid-failed
+ (fn [db [_ response]]
+   (do (info "get-new-uuid failed triggered got: " response)
        (update db :app-state
                assoc
                :flash {:msg (:message response)

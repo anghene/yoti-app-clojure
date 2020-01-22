@@ -20,7 +20,7 @@
 ;; Global var that stores valid users with their
 ;; respective passwords.
 
-(defn new-user-track-session! 
+(defn new-user-track-session!
   "When secretary starts validation process,
    we use uuid to keep tabs on which secretary and which client name
    to retrieve it later for cases when validation failed."
@@ -126,8 +126,8 @@
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
     (if-not (:body request)
-      (ok {:status "Failed"
-           :message "No body sent."})
+      (bad-request {:status "Failed"
+           :message "No data sent."})
       (let [client-email (get-in request [:body :client-email])
             client-name (get-in request [:body :client-name])
             add-msg (get-in request [:body :add-msg])
@@ -154,6 +154,31 @@
                                   :is-dir-sec-leg? true})
         (ok {:status "Ok"
              :message (str "Successfully started a validation process: " (:uuid user-session))})))))
+
+(defn start-session
+  "Endpoint to simply start a new session.
+   Looks for client-name in request and admin-data in header.
+   Returns a user-tracking-id to be used by secretary."
+  [request]
+  (if-not (authenticated? request)
+    (unauthorized {:message "Unauthorized"})
+    (if-not (:body request)
+      (bad-request {:status "Failed"
+           :message "No data sent."})
+      (let [client-name (get-in request [:body :client-name])
+            local-user (-> request
+                           :identity
+                           :user)
+            admin-data (match-authdata-usr-header local-user)
+            ; admin-email (:email admin-data)
+            ; admin-name (:name admin-data)
+            ref-id (:id admin-data)
+            user-session (new-user-track-session! ref-id client-name)]
+        ; (info "this is admin-data: " admin-data)
+        (ok {:status "Ok"
+             :message (str "Generated a new uuid for: " client-name)
+             :new-uuid (:uuid user-session)
+             :client-name client-name})))))
 
 (defn access-level
   [request]
@@ -239,6 +264,7 @@
   ["/api"
    ["/get-info" {:get admin-info-page}]
    ["/start-client" {:post start-client}]
+   ["/start-session" {:post start-session}]
    ["/get-access-level" {:get access-level}]])
 
 (defn login-route []

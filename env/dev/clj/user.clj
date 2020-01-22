@@ -70,6 +70,8 @@
 (defn parse-as-hiccup [file]
   (->> file
        read-file
+       clojure.string/trim-newline
+       clojure.string/trim
        (hick/parse-fragment)
        (map hick/as-hiccup)
        first
