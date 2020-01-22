@@ -63,10 +63,12 @@
             failed? (not (:ok? server-response))
             media-id (if-not failed?
                        (:id server-response))
-            uuid (clojure.string/trim
-                  (:uuid server-response))
-            ref-id (clojure.string/trim
-                    (:ref server-response))
+            uuid (some-> server-response
+                         :uuid
+                         clojure.string/trim)
+            ref-id (some-> server-response
+                           :ref
+                           clojure.string/trim)
             user (if-not failed?
                    (assoc (media-details session-id media-id)
                           :ok? true)

@@ -24,10 +24,10 @@
   "This route is used by the Yoti.Share.init() function on frontend,
    to send a token so we can retrieve a user from SDK."
   [{:keys [params]}]
-  (timbre/info "Got request from Yoti App modal with token : " (:token params) "with uuid: " (:uuid params) "and ref: " ref)
+  (timbre/info "Got request from Yoti App modal with token : " (:token params) "with uuid: " (:uuid params) "and ref: " (:ref params))
   (yotiapp/pass-token {:token (:token params)
                        :uuid (:uuid params)
-                       :ref (:ref params)})
+                       :ref-id (:ref params)})
   {:status  200
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body    "ok"})
@@ -59,17 +59,29 @@
     (layout/render request "thankyou.html"))
 
 (defn docscan-page [{:keys [params query-params] :as request}]
-  (let [session (get-new-session (:uuid params))]
+  (let [uuid (if (or (empty? (:uuid params))
+                     (= "null" (:uuid params))
+                     (nil? (:uuid params)))
+               (:ref params)
+               (:uuid params))
+        session (get-new-session uuid)]
     (timbre/info "session:" session)
     (layout/render request "docscan.html" {:session {:id (:session_id session)
                                                    :token (:client_session_token session)}})))
 
 (defn new-session [{:keys [params query-params] :as request}]
-  (let [sess (session/get-new-session (:uuid params))
+  (let [missing-tracking-uuid? (or (empty? (:uuid params))
+                                   (= "null" (:uuid params))
+                                   (nil? (:uuid params)))
+        used-id (if missing-tracking-uuid?
+                  (:ref params)
+                  (:uuid params))
+        trimmed-uuid (clojure.string/trim used-id)
+        sess (session/get-new-session trimmed-uuid)
         id (:session_id sess)
         tkn (:client_session_token sess)]
-    (timbre/info "Params: " params)
-    (timbre/info "Started a new local session: " (:uuid params) "for DOCSCAN that we just got: " sess)
+    (timbre/info "Uuid:" trimmed-uuid)
+    (timbre/info "Started a new local session: " trimmed-uuid "for DOCSCAN that we just got: " sess)
     {:status (:status request)
      :headers {"Content-Type" "application/json"}
      :body (write-str {:id id :tkn tkn})}))

@@ -87,6 +87,11 @@
                          "\nEXPIRATION DATE: " (:expiration_date user)
                          "\nADDRESS: " address-line
                          "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
+      ; (info "SEND VALIDATION EMAIL ================")
+      ; (info "admin-email: " admin-email)
+      ; (info "client-name: " client-name)
+      ; (info "ref-id: " ref-id)
+      ; (info "user-session: " user-session)
       (send-messages!
          admin-email
          client-name
