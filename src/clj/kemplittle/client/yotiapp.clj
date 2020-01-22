@@ -106,14 +106,14 @@
         ; gvn-names-verifiers (some-> gvn-names .getVerifiers)
         ; gvn-names-sources (some-> gvn-names .getSources)
         ; gvn-names-anchors (some-> gvn-names .getAnchors)
-        
+
         ; first-source-anchor (some-> gvn-names-sources (.get 0))
         ; first-sa-type (some-> first-source-anchor .getType)
         ; first-sa-value (some-> first-source-anchor .getValue)
         ; first-sa-subtype (some-> first-source-anchor .getSubType)
         ; signed-timestamp (some-> first-source-anchor .getSignedTimestamp)
         ; origin-certificates (some-> first-source-anchor .getOriginCertificates)
-        
+
         ; application-profile (some-> activity-details .getApplicationProfile)
         ; app-name (some-> application-profile .getApplicationName .getValue)
         ; app-url (some-> application-profile .getApplicationUrl .getValue)
@@ -186,8 +186,8 @@
   (let [activity-details (.getActivityDetails client token)
         user (get-user activity-details)
         trimmed-ref-id (clojure.string/trim ref)]
-    (info "Getting a New YotiApp user with uuid: " uuid)
+    (info "Getting a New YotiApp user with uuid: " uuid " and/or ref: " ref)
     (persist-to-state! activity-details user)
-    (try (send-validation-email uuid user "YOTIAPP")
+    (try (send-validation-email (or uuid ref) user "YOTIAPP")
          (catch Exception e (timbre/info (str "Error sending yotiapp emails : " e))))
     (timbre/info "users so far: " @users)))

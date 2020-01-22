@@ -28,7 +28,7 @@
                     :body [{:type "text/plain"
                             :content (format validation-result)}]})
   (timbre/info "Sent an mail to: " admin-email))
-          
+
 
 (defn match-session-track-data-uuid
   "Used by updates or yotiapp to get ref-id and client-name based on uuid"
@@ -60,14 +60,20 @@
                                "N/A"
                                (clojure.string/join ", " [ad1 ad2 cntry])))))
           user-session (match-session-track-data-uuid user-tracking-id)
-          client-name (if (= "n/a" (:full_name user))
+          ; if there's no uuid it means it started only with refid and that's what got passed as first param in this fn
+          ref-id (if (nil? user-session) user-tracking-id nil)
+          client-name (if (and (= "n/a" (:full_name user)) ; if there's only ref-id we fallback on n/a and keep it
+                               (not ref-id))
                         (:client-name user-session)
                         (:full_name user))
-          admin-email (-> user-session
-                          :initiated-by-id
-                          match-authdata-initiated-by-id
-                          :admin-email
-                          )
+          admin-email (if (not ref-id) ; if there's refid instead of uuid, it means we already have initiated-by-id so we pass it directly to match-authdata
+                        (-> user-session
+                            :initiated-by-id
+                            match-authdata-initiated-by-id
+                            :admin-email)
+                        (-> ref-id
+                            match-authdata-initiated-by-id
+                            :admin-email))
           result (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
                       "\nMETHOD USED: " type
                       "\nFULL NAME: " client-name
@@ -83,7 +89,7 @@
                          "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
       (send-messages!
        admin-email
-       client-name 
+       client-name
        result
        ))))
 

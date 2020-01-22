@@ -64,7 +64,9 @@
             media-id (if-not failed?
                        (:id server-response))
             uuid (clojure.string/trim
-                     (:uuid server-response))
+                  (:uuid server-response))
+            ref-id (clojure.string/trim
+                    (:ref server-response))
             user (if-not failed?
                    (assoc (media-details session-id media-id)
                           :ok? true)
@@ -78,7 +80,7 @@
                       :description desc :recommendation recom
                       :ok? (:ok? server-response)}))]
         (timbre/info "[DOCSCAN] user to persist: " user)
-        (try (send-validation-email uuid user "DOCSCAN")
+        (try (send-validation-email (if (not uuid) ref-id uuid) user "DOCSCAN")
              (catch Exception e (timbre/info (str "Error sending Docscan emails : " e))))
         #_(persist-to-state! session-id user media-id doc-id))
       (timbre/info "users thus far: " @users))
