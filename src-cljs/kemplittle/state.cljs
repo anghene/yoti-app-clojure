@@ -108,11 +108,10 @@
 (xf/reg-event-fx
  :fetch-admin-token
  (fn [db [_ uname pass]]
-   {:http-post {:url (str "http://localhost:3000/login")
+   {:http-post {:url (str "https://identity.kemplittle.com/login")
                 :form-data {:username uname :password pass}
                 :on-ok :fetch-admin-ok
                 :on-failed :fetch-admin-failed}}))
-
 
 (xf/reg-event-fx
  :no-flash
@@ -149,7 +148,7 @@
  :initiate-client-action
  (fn [db [_ token client-email client-name add-msg]]
    (info "initiate client action called got: " token)
-   {:http-post {:url (str "http://localhost:3000/api/start-client")
+   {:http-post {:url (str "https://identity.kemplittle.com/api/start-client")
                 :form-data {:client-email client-email
                             :client-name client-name
                             :add-msg add-msg}
@@ -161,7 +160,7 @@
  :fetch-admin-access
  (fn [db [_ token]]
    (info "fetch-admin-access called got: " token)
-   {:http {:url (str "http://localhost:3000/api/get-access-level")
+   {:http {:url (str "https://identity.kemplittle.com/api/get-access-level")
            :on-ok :fetch-admin-access-ok
            :on-failed :fetch-admin-access-failed
            :tkn token}}))
@@ -170,16 +169,17 @@
  :fetch-admin-logs
  (fn [db [_ _]]
    (info "fetch-admin-logs gets token: " (-> db :app-state :admin :tkn))
-   {:http {:url (str "http://localhost:3000/api/get-info")
+   {:http {:url (str "https://identity.kemplittle.com/api/get-info")
            :on-ok :fetch-admin-logs-ok
            :on-failed :fetch-admin-logs-failed
            :tkn (-> db :app-state :admin :tkn)}}))
 
+; Calling backend with ref and uuid we got from the dispatch action.
 (xf/reg-event-fx
  :fetch-session
- (fn [db [_ ref]]
-  ;  (info "fetch-session called with got: " (name ref))
-   {:http {:url (str "http://localhost:3000/getsession?ref=" (name ref))
+ (fn [db [_ {:keys [ref uuid]}]]
+   (info "fetch-session called with got: " (some-> ref name) (some-> uuid name))
+   {:http {:url (str "https://identity.kemplittle.com/getsession?ref=" (some-> ref name) "&uuid=" (some-> uuid name))
            :on-ok :fetch-session-ok
            :on-failed :fetch-session-failed}}))
 

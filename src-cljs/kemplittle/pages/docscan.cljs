@@ -7,8 +7,8 @@
    [tailwind.core :refer [tw tw! spit-css!]]))
 
 (defn docscan-button
-  "used on frontpage"
-  [{:keys [text ref uuid]}]
+  "used on frontpage, gets uuid and ref from frontpage's params in match"
+  [{:keys [text uuid ref]}]
   [:div {:id "docscan" :style {"width" "300px"}
          :class (tw! "mb-6")}
    [:a {:href
@@ -21,7 +21,8 @@
      [:button {:class (str "yoti-button "
                            (tw! "w-full"))}
       (yoti-logo)
-      [:span {:class "yoti-button__text"} text]]]]])
+      [:span {:class "yoti-button__text"} 
+         text]]]]])
 
 (defn docscan-page [match]
   (let [{:keys [path query]} (:parameters match)

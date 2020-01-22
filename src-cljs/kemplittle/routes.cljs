@@ -36,20 +36,17 @@
                               (js/console.log "start" "frontpage controller"))
                      :stop (fn [a]
                              (do
-                               (.. js/window
-                                   -Yoti
-                                   -Share
-                                   -destroy)
                                (log-fn "stop" "frontpage controller")))}]}]
     ["docscan"
      {:name ::docscan
-      :parameters {:query {(s/optional-key :ref) s/Keyword}}
+      :parameters {:query {(s/optional-key :uuid) s/Keyword
+                           (s/optional-key :ref) s/Keyword}}
       :view docscan-page
       :controllers [{:params (fn [match]
                                (:query (:parameters match)))
                      :start
                      (fn [params]
-                       (xf/dispatch [:fetch-session (:ref params)]))
+                       (xf/dispatch [:fetch-session params]))
                      :stop (log-fn "stop" "docscan controller")}]}]
     ["items"
       ;; Shared data for sub-routes
