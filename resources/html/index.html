@@ -62,7 +62,8 @@
                         let endpoint = 'yotiapp?token=' + token + '&ref=' + getParameterByName('ref') + '&uuid=' + getParameterByName('uuid');
                         xhr.open("GET", endpoint);
                         xhr.send();
-                        done(); //done() will overwrite the closeDelay
+                        done(); //done() will overwrite the closeDelay;
+                        window.location.replace("https://identity.kemplittle.com/thankyou");
                     }
                 }
             }]
