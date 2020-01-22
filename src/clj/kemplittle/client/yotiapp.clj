@@ -182,7 +182,7 @@
 (defn pass-token
   "activated when received a token via yoti digital id.
    not using ref anymore, using just uuid"
-  [token uuid ref]
+  [{:keys [token uuid ref]}]
   (let [activity-details (.getActivityDetails client token)
         user (get-user activity-details)
         trimmed-ref-id (clojure.string/trim ref)]

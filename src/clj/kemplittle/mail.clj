@@ -4,7 +4,7 @@
             [taoensso.timbre :as timbre :refer [info]]
             [selmer.parser :as parser]
             [environ.core :refer [env]]
-            [kemplittle.db.core :refer [authdata match-authdata-initiated-by-id session-data]]))
+            [kemplittle.db.core :as db :refer [authdata match-authdata-initiated-by-id session-data]]))
 
 (defn smtp-settings []
   (let [host (env :kl-smtp-host)
@@ -88,10 +88,10 @@
                          "\nADDRESS: " address-line
                          "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
       (send-messages!
-       admin-email
-       client-name
-       result
-       ))))
+         admin-email
+         client-name
+         result
+         ))))
 
 (defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
   (as-> msg-map $

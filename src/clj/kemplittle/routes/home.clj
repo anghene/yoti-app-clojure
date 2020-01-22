@@ -25,7 +25,9 @@
    to send a token so we can retrieve a user from SDK."
   [{:keys [params]}]
   (timbre/info "Got request from Yoti App modal with token : " (:token params) "with uuid: " (:uuid params) "and ref: " ref)
-  (yotiapp/pass-token (:token params) (:uuid params) (:ref params))
+  (yotiapp/pass-token {:token (:token params)
+                       :uuid (:uuid params)
+                       :ref (:ref params)})
   {:status  200
    :headers {"Content-Type" "text/html; charset=utf-8"}
    :body    "ok"})
