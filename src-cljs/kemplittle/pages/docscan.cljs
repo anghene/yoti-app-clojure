@@ -2,7 +2,25 @@
   (:require
    [xframe.core.alpha :as xf :refer [<sub]]
    [taoensso.timbre :refer [info]]
+   [kemplittle.components.yoti :refer [yoti-logo]]
    [tailwind.core :refer [tw tw! spit-css!]]))
+
+(defn docscan-button
+  "used on frontpage"
+  [{:keys [text ref uuid]}]
+  [:div {:id "docscan" :style {"width" "300px"}
+         :class (tw! "mb-6")}
+   [:a {:href
+        (rfe/href
+         :kemplittle.routes/docscan
+         {}
+         {:ref ref})}
+    [:div {:class (str "yoti-button-layout "
+                       (tw! "items-center"))}
+     [:button {:class (str "yoti-button "
+                           (tw! "w-full"))}
+      (yoti-logo)
+      [:span {:class "yoti-button__text"} text]]]]])
 
 (defn docscan-page [match]
   (let [{:keys [path query]} (:parameters match)

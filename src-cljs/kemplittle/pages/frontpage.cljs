@@ -4,7 +4,8 @@
    [xframe.core.alpha :as xf :refer [<sub]]
    [cljsjs.emotion]
    [taoensso.timbre :refer [info]]
-   [kemplittle.components.yoti :refer [scan-doc-button yoti-app-button first-init-yoti-button]]
+   [kemplittle.components.yoti :refer [yoti-app-button first-init-yoti-button]]
+   [kemplittle.pages.docscan :refer [docscan-button]]
    [kemplittle.components.utils :refer [header footer flash-div not-found]]
    [clojure.browser.dom :as dom]))
 
@@ -21,7 +22,7 @@
       [:li "2. If you are already a user of the Yoti app, then click “Use Yoti” below to share your identity with us via the Yoti app."]]
      [:br]
      [:div {:class (tw! "flex flex-col items-center")}
-      [scan-doc-button {:text "DOC SCAN" :ref (-> query :ref) :uuid (-> query :uuid)}]
+      [docscan-button {:text "DOC SCAN" :ref (-> query :ref) :uuid (-> query :uuid)}]
       [yoti-app-button {:ref (-> query :ref) :unique-yoti-id uid}]]
      (do
       ;  (first-init-yoti-button uid)
