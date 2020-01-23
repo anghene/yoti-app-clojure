@@ -43,7 +43,7 @@
                        :access "admin"}
                :sylvia {:id "4"
                         :password "zenStone"
-                        :email "Chris.Gray@kemplittle.com"
+                        :email "Sylvia.Eghiayan@kemplittle.com"
                         :name "Sylvia Eghiayan"
                         :access "secretary"}
                :secretary1 {:id "5"
