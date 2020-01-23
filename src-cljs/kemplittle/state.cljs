@@ -132,6 +132,7 @@
 (xf/reg-event-db
  :set-flash
  (fn [db [_ value]]
+   (info "set flash: triggered with: " value)
    (assoc-in db [:app-state :flash] value)))
 
 (xf/reg-event-db
@@ -327,8 +328,8 @@
      (-> db
          (assoc-in  [:app-state :flash] new-flash)
          (assoc-in  [:app-state :admin :generated-uuids]
-                    (conj old-uuids (assoc {} :client-name client-name
-                                           :uuid new-uuid)))))))
+                    (conj old-uuids {:client-name client-name
+                                     :uuid new-uuid}))))))
 
 (xf/reg-event-db
  :get-new-uuid-failed
