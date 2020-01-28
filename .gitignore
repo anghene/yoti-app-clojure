@@ -22,4 +22,4 @@ privkey.pem
 dev-config.edn
 /.cpcache
 .rebel_readline_history
-
+/resources/public/cljs-out
