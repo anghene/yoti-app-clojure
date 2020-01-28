@@ -8,6 +8,10 @@
    [clojure.browser.dom :as dom]
    [taoensso.timbre :refer [info]]))
 
+(defn make-random-id
+  []
+  (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
+
 (defn not-found []
   (info "gets here")
   [:div {:class (tw! "w-1/2 m-auto")}

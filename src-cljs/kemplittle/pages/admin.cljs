@@ -6,11 +6,6 @@
    [xframe.core.alpha :as xf]
    [xframe.core.alpha :as xf :refer [<sub]]))
 
-
-(defn make-random-id
-  []
-  (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
-
 (do
   (deftype Cursor [ref path]
     IDeref
@@ -26,7 +21,7 @@
 (defn uuid-table [generated-uuids]
   (let [
         make-row (fn [name uuid]
-                   (let [id (make-random-id)]
+                   (let [id (kemplittle.components.utils/make-random-id)]
                      [:tr {:class (tw! "hover:bg-gray-lighter")}
                       [:td {:class (tw! "py-4 px-6 border-b border-gray-light")} name]
                       [:td {:class (tw! "py-4 px-6 border-b border-gray-light")}
@@ -107,7 +102,8 @@
      ]))
 
 (defn p-text [text]
-  [:div {:class (str (tw! "mb-4"))}
+  [:div {:id (kemplittle.components.utils/make-random-id)
+         :class (str (tw! "mb-4"))}
    [:div {:class (str (tw! "flex items-center justify-between
                                bg-gray-200 pl-3 pr-2 py-3 w-full rounded
                                text-gray-600 font-bold cursor-pointer
