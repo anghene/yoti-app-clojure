@@ -2,7 +2,7 @@
   (:require
    [xframe.core.alpha :as xf :refer [<sub]]
    [taoensso.timbre :refer [info]]
-   [reitit.frontend.easy :as rfe] 
+   [reitit.frontend.easy :as rfe]
    [kemplittle.components.yoti :refer [yoti-logo]]
    [tailwind.core :refer [tw tw! spit-css!]]))
 
@@ -21,7 +21,7 @@
      [:button {:class (str "yoti-button "
                            (tw! "w-full"))}
       (yoti-logo)
-      [:span {:class "yoti-button__text"} 
+      [:span {:class "yoti-button__text"}
          text]]]]])
 
 (defn docscan-page [match]
@@ -44,3 +44,4 @@
        :frameBorder "0"}]
      [:br]]))
 
+(spit-css! "resources/public/css/docscan.css")

@@ -4,7 +4,7 @@
    [xframe.core.alpha :as xf :refer [<sub]]
    [cljsjs.emotion]
    [taoensso.timbre :refer [info]]
-   [kemplittle.components.yoti :refer [yoti-app-button first-init-yoti-button]]
+   [kemplittle.components.yoti :refer [yoti-instantiated destroy]]
    [kemplittle.pages.docscan :refer [docscan-button]]
    [kemplittle.components.utils :refer [header footer flash-div not-found]]
    [clojure.browser.dom :as dom]))
@@ -23,11 +23,8 @@
      [:br]
      [:div {:class (tw! "flex flex-col items-center")}
       [docscan-button {:text "DOC SCAN" :ref (-> query :ref) :uuid (-> query :uuid)}]
-      [yoti-app-button {:ref (-> query :ref) :unique-yoti-id uid}]]
-     (do
-      ;  (first-init-yoti-button uid)
-       (info "ran init on yoti button :" uid))
-     [:br] [:br]]))
+      [:div {:id "yotiapp"}]
+      ]]))
 
 (defn main-page []
   (let [match (<sub [:current-page])
@@ -56,3 +53,4 @@
            [view match])))
      [footer]]))
 
+(spit-css! "resources/public/css/frontpage.css")
