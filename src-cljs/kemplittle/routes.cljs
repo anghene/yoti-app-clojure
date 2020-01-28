@@ -13,6 +13,7 @@
    [kemplittle.state :as state]
    [kemplittle.pages.items :as ki]
    [taoensso.timbre :refer [info]]
+   [kemplittle.components.yoti :refer [yoti-instantiated destroy]]
    [xframe.core.alpha :as xf]
    [tailwind.core :refer [spit-css!]]
   ;  [kemplittle.components.yoti :refer [init-yoti-button]]
@@ -29,13 +30,16 @@
      {:name ::frontpage
       :clear-flash true
       :view kf/front-page
-      :parameters {:path {(s/optional-key :id) s/Int}
+      :parameters {:path {(s/optional-key :admin) s/Int}
                    :query {(s/optional-key :ref) s/Keyword}}
-      :controllers [{:parameters {:query [:path]}
-                     :start (fn [a]
+      :controllers [{:parameters {:query [:path]
+                                  :path [:parameters]}
+                     :start (fn [{:keys [path]}]
+                              (js/setTimeout #(yoti-instantiated ) 100)
                               (js/console.log "start" "frontpage controller"))
-                     :stop (fn [a]
+                     :stop (fn [{:keys [path]}]
                              (do
+                               (@destroy)
                                (log-fn "stop" "frontpage controller")))}]}]
     ["docscan"
      {:name ::docscan
