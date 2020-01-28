@@ -15,7 +15,7 @@
   buddy/buddy-core {:mvn/version "1.6.0"}
   buddy/buddy-hashers {:mvn/version "1.4.0"}
   buddy/buddy-sign {:mvn/version "3.1.0"}
-;  ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
+;   ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
   cheshire {:mvn/version "5.7.0"}
   clj-http {:mvn/version "3.10.0"}
   clj-time {:mvn/version "0.15.2"}
@@ -58,6 +58,7 @@
   org.webjars.npm/material-icons {:mvn/version "0.3.1"}
   org.webjars/webjars-locator {:mvn/version "0.38"}
   org.xerial/sqlite-jdbc {:mvn/version "3.28.0"}
+  prone {:mvn/version "1.6.1"}
   reagent {:mvn/version "0.9.0-rc4"}
   ring-cors {:mvn/version "0.1.13"}
   ring-middleware-format {:mvn/version "0.7.4"}
@@ -70,7 +71,10 @@
   selmer {:mvn/version "1.12.17"}}
 
 
- :paths ["src" "src-cljs" "target" "resources"]
+ :paths ["src/clj" "src-cljs" "resources" "env/dev/clj"]
  ;; setup a helpful alias to start the build
- :aliases {:build-dev
-           {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}
+ :aliases {:build-dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
+           :uberdeps {:extra-deps {uberdeps {:mvn/version "0.1.8"}}
+                      :main-opts ["-m" "uberdeps.uberjar"]}
+           :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "0.2.4"}}
+                     :main-opts ["-m" "hf.depstar.uberjar"]}}}
