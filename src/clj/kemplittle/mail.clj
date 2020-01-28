@@ -22,7 +22,7 @@
   [admin-email client-name validation-result]
   (info "PREPARING TO SEND: admin-mail:" admin-email " client-name:" client-name " validation-result:" validation-result)
   (postal/send-message
-   (smtp-settings) {:from "hello@congruent.dev"
+   (smtp-settings) {:from (env :kl-from-email)
                     :to admin-email
                     :subject (str "Validation result for: " client-name)
                     :body [{:type "text/plain"
@@ -39,7 +39,7 @@
     session-data))
 
 (defn send-validation-email [user-tracking-id user type]
-  ; (info "send-validation-email gets called with this uuid: " user-tracking-id)
+  (info "send-validation-email gets called with this uuid: " user-tracking-id)
   (when (= "true" (:send-emails env))
     (let [failed? (not (:ok? user))
           address-line (if-not failed?
@@ -87,11 +87,11 @@
                          "\nEXPIRATION DATE: " (:expiration_date user)
                          "\nADDRESS: " address-line
                          "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
-      ; (info "SEND VALIDATION EMAIL ================")
-      ; (info "admin-email: " admin-email)
-      ; (info "client-name: " client-name)
-      ; (info "ref-id: " ref-id)
-      ; (info "user-session: " user-session)
+      (info "SEND VALIDATION EMAIL ================")
+      (info "admin-email: " admin-email)
+      (info "client-name: " client-name)
+      (info "ref-id: " ref-id)
+      (info "user-session: " user-session)
       (send-messages!
          admin-email
          client-name
@@ -113,7 +113,7 @@
   (info "prompts with ref-id: " ref-id " and user-tracking-id: " user-tracking-id)
   (postal/send-message
    (smtp-settings)
-   {:from "hello@congruent.dev"
+   {:from (env :kl-from-email)
     :to client-email
     :subject "Validation request from Kemp Little"
     :body [{:type "text/html"
