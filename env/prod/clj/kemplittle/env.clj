@@ -1,5 +1,5 @@
 (ns kemplittle.env
-  (:require ))
+  )
 
 (def defaults
   {:init
