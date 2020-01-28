@@ -23,10 +23,10 @@
         make-row (fn [name uuid]
                    (let [id (kemplittle.components.utils/make-random-id)]
                      [:tr {:class (tw! "hover:bg-gray-lighter")}
-                      [:td {:class (tw! "py-4 px-6 border-b border-gray-light")} name]
+                      [:td {:class (tw! "w-1/3 py-4 px-6 border-b border-gray-light")} name]
                       [:td {:class (tw! "py-4 px-6 border-b border-gray-light")}
                        [:input {:id (str id)
-                                :class (tw! "text-gray-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark")
+                                :class (tw! "w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer text-gray-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark")
                                 :value (str "https://identity.kemplittle.com/#/?uuid=" uuid)
                                 :on-click (fn [ev]
                                             (let [value (.. ev -target -value)

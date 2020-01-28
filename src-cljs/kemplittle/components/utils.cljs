@@ -68,10 +68,10 @@
                             [:div {:class (tw! "flex-shrink-0 text-white mr-6")}
                              [:button {:class (tw! "px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white")}
                               [:span "Server Logs"]]]]
-           customize-mail [:a {:href (rfe/href :kemplittle.routes/admin-email)}
-                           [:div {:class (tw! "flex-shrink-0 text-white mr-6")}
-                            [:button {:class (tw! "px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white")}
-                             [:span "Customize Mail"]]]]
+          ;  customize-mail [:a {:href (rfe/href :kemplittle.routes/admin-email)}
+          ;                  [:div {:class (tw! "flex-shrink-0 text-white mr-6")}
+          ;                   [:button {:class (tw! "px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white")}
+          ;                    [:span "Customize Mail"]]]]
            users-btn [:a {:href (rfe/href :kemplittle.routes/admin-users)}
                       [:div {:class (tw! "flex-shrink-0 text-white mr-6")}
                        [:button {:class (tw! "px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white")}
@@ -82,7 +82,7 @@
          [:<>
           server-logs-btn
           users-btn
-          customize-mail
+          ; customize-mail
           login-status
           logout]
          "secretary"
