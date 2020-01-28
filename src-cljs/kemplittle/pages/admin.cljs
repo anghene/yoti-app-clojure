@@ -7,6 +7,10 @@
    [xframe.core.alpha :as xf :refer [<sub]]))
 
 
+(defn make-random-id
+  []
+  (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
+
 (do
   (deftype Cursor [ref path]
     IDeref
@@ -20,11 +24,23 @@
   (uix/memo #(Cursor. ref path) [ref path]))
 
 (defn uuid-table [generated-uuids]
-  (let [make-row (fn [name uuid]
-                   [:tr {:class (tw! "hover:bg-gray-lighter")}
-                    [:td {:class (tw! "py-4 px-6 border-b border-gray-light")} name]
-                    [:td {:class (tw! "py-4 px-6 border-b border-gray-light")}
-                     [:code {:class (tw! "text-gray-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark")} (str "https://identity.kemplittle.com/#/?uuid=" uuid)]]])]
+  (let [
+        make-row (fn [name uuid]
+                   (let [id (make-random-id)]
+                     [:tr {:class (tw! "hover:bg-gray-lighter")}
+                      [:td {:class (tw! "py-4 px-6 border-b border-gray-light")} name]
+                      [:td {:class (tw! "py-4 px-6 border-b border-gray-light")}
+                       [:input {:id (str id)
+                                :class (tw! "text-gray-lighter font-bold py-1 px-3 rounded text-xs bg-blue hover:bg-blue-dark")
+                                :value (str "https://identity.kemplittle.com/#/?uuid=" uuid)
+                                :on-click (fn [ev]
+                                            (let [value (.. ev -target -value)
+                                                  el (. js/document querySelector (str "#" id))
+                                                  select (.getSelection js/window)]
+                                              (. el select)
+                                              (js/document.execCommand "copy")
+                                              (.. select empty)
+                                              (. el blur)))}]]]))]
     [:table {:class (tw! "text-left w-full border-collapse")}
      [:thead {}
       [:tr {} [:th {:class (tw! "py-4 px-6 bg-gray-lightest font-bold uppercase text-sm text-gray-dark border-b border-gray-light")} "Client Name"]
@@ -33,7 +49,7 @@
       (map
        (fn [{:keys [client-name uuid]}]
          (make-row client-name uuid))
-       generated-uuids)]]))
+       (reverse generated-uuids))]]))
 
 (defn secretary-panel [adm-details]
   (let [state* (uix/state {:client-email ""
@@ -242,6 +258,18 @@
                    :on-change #(reset! opt2-below-b (.. % -target -value))}]]]]
     ))
 
+(defn redirect! [loc]
+  (set! (.-location js/window) loc))
+
+(defn not-logged-in []
+  (do
+    (js/setTimeout
+     #(redirect! "/#/admin")
+     2000)
+    [:div {:class (tw! "lg:w-1/2 sm:w-full md:w-full m-auto")}
+     [:div {:class (tw! "my-10")}
+      [:p {:class (tw! "my-2")} "You are not logged in. Redirecting to login..."]]]))
+
 (defn show-customize-email []
   (let [adm-det (<sub [:admin-details])
         usr-access (:access adm-det)
@@ -250,8 +278,7 @@
       "admin" (customize-email-panel opts)
       "secretary" [:div  {:class (tw! "w-1/2 m-auto")}
                    "Only admins have access to emails."]
-      [:div  {:class (tw! "w-1/2 m-auto")}
-       "You are not logged in."])))
+      [not-logged-in])))
 
 (defn show-admin-users []
   (let [adm-det (<sub [:admin-details])
@@ -276,8 +303,7 @@
         "admin" (draw-table users)
         "secretary" [:div {:class (tw! "w-1/2 m-auto")}
                      "Only admins have access to users."]
-        [:div  {:class (tw! "w-1/2 m-auto")}
-         "You are not logged in."])]]))
+        [not-logged-in])]]))
 
 
 (defn show-admin-logs [log]
@@ -290,8 +316,7 @@
         "admin" (map para-text log)
         "secretary" [:div  {:class (tw! "w-1/2 m-auto")}
                      "Only admins have access to logs."]
-        [:div  {:class (tw! "w-1/2 m-auto")}
-         "You are not logged in."])]]))
+        [not-logged-in])]]))
 
 (defn admin-panel [adm-det]
   [:div {:class (tw! "whitespace-pre-wrap")}
@@ -303,12 +328,11 @@
         user* (derive-state state* [:user])
         pass* (derive-state state* [:pass])
         token (get adm-details [:tkn])]
-
     (info "adm details: " adm-details)
     (if token
       (xf/dispatch [:fetch-admin-access token])
       [:div
-       {:class "w-1/6 max-w-xs m-auto"}
+       {:class "lg:w-1/2 xl:w-1/3 sm:w-full md:w-full max-w-xs max-w-sm m-auto"}
        [:form {:class (tw! "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
                :on-submit #(do
                              (.preventDefault %)
@@ -346,3 +370,4 @@
         "admin" [admin-panel adm-det]
         [:div "Unknown user level"]))))
 
+(spit-css! "resources/public/css/admin.css")
