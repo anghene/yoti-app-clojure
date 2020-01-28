@@ -5,11 +5,12 @@
    [clojure.data.json :refer [read-json]]
    [kemplittle.db.core :refer [max-id users]]
    [kemplittle.client.session :refer [is-completed? parse-checks media-details]]
-   [kemplittle.mail :refer [send-validation-email]]))
+   [kemplittle.mail :refer [send-validation-email]])
+  (:gen-class))
 
 (defn is-admin? [name pass]
-  (and (= name "yotiupdate")
-       (= pass "3HHXmXZJfJT1fX@Yd6#r2%0nG")))
+  (and (= name (:webhook-usr env))
+       (= pass (:webhook-pw env))))
 
 (defn authenticated? [name pass]
   (if (is-admin? name pass)
