@@ -1,2 +1,4 @@
 {:main kemplittle.main
- :debug false}
+ :output-to "resources/public/cljs-out/dev-main.js"
+ :output-dir "resources/public/cljs-out/dev"
+ :asset-path "cljs-out/dev"}
