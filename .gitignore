@@ -21,3 +21,5 @@ privkey.pem
 /log
 dev-config.edn
 /.cpcache
+.rebel_readline_history
+
