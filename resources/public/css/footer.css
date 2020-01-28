@@ -5,11 +5,16 @@
     position: relative;
     z-index: 4;
     font: 0.875em/150% "Gotham A", "Gotham B", sans-serif;
+    /* font-family: "Gotham A", "Gotham B", sans-serif; */
     color: #fff;
     line-height: 170%;
     -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%
     /**** height: 100%; ****/
 }
+
+
+/* body{line-height:1; -webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%} */
 
 
 /** 14px **/
@@ -106,6 +111,8 @@
 .footer_col li {
     font-size: 0.850em;
     line-height: 130%;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .footer_col a {
