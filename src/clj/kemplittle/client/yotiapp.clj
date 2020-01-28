@@ -6,7 +6,8 @@
             )
   (:import [com.yoti.api.client ActivityDetails Date FileKeyPairSource
             HumanProfile Image YotiClient YotiClientBuilder DocumentDetails]
-           [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse]))
+           [com.yoti.api.client.spi.remote.call RawResourceFetcher SignedRequestResponse])
+  (:gen-class))
 
 
 
@@ -187,8 +188,8 @@
         user (get-user activity-details)
         trimmed-uuid (clojure.string/trim uuid)
         trimmed-ref-id (clojure.string/trim ref-id)
-        user-tracking-id (if (or (empty? trimmed-uuid) (nil? trimmed-uuid) (= "null" trimmed-uuid)) 
-                           trimmed-ref-id 
+        user-tracking-id (if (or (empty? trimmed-uuid) (nil? trimmed-uuid) (= "null" trimmed-uuid))
+                           trimmed-ref-id
                            uuid)]
     (info "Got a New YotiApp user with uuid: " uuid " and/or ref: " trimmed-ref-id)
     (persist-to-state! activity-details user)

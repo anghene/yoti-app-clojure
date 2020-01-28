@@ -51,5 +51,6 @@
         key-to-use (keys/private-key priv-key-path)
         signed (-> (dsa/sign request {:key key-to-use :alg :rsassa-pkcs15+sha256})
                    (base64encode))]
-   ;  (timbre/info "signature: " signed)
+    (timbre/info "signature: " signed)
+    (timbre/info "key to use: " priv-key-path)
     signed))

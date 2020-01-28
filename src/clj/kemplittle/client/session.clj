@@ -1,15 +1,15 @@
 (ns kemplittle.client.session
   (:require
+   [clj-http.client :as http]
    [clojure.data.json :refer [write-str read-json]]
    [environ.core :refer [env]]
    [kemplittle.db.core :refer [max-id users]]
    [kemplittle.certs.core :refer [sign base64encode]]
    [kemplittle.mail :as mail]
    [taoensso.timbre :as timbre]
-   [clj-http.client :as http]
    [buddy.core.nonce :refer [random-nonce]]
-   [clojure.data.json :as json]
    )
+  (:gen-class)
   (:import java.util.UUID))
 
 (defn add-my-server-confs [json confs]
@@ -30,7 +30,7 @@
                          :auth_token (str (:webhook-usr env) ":" (:webhook-pw env))}}
         usertracking-uuid (str uuid)
         base-url "https://api.yoti.com/idverify/v1"
-        json-payload (slurp (clojure.java.io/file "resources/request"))
+        json-payload (slurp (clojure.java.io/file (:kl-request-file env)))
         payload (-> (read-json json-payload)
                     (assoc :user_tracking_id usertracking-uuid)
                     (add-my-server-confs my-server-urls)
@@ -51,11 +51,11 @@
                  :headers {"X-Yoti-Auth-Digest" (get-digest request)
                            "Content-Type" "application/json"}}
         http-response (http/request options)]
-    ; (timbre/info "endpoint: " endpoint)
-    ; (timbre/info "Request for signing: " request)
-    ; (timbre/info "to send payload: " payload)
-    ; (timbre/info "nonce: " nonce)
-    ; (timbre/info "time: " timestamp)
+    (timbre/info "endpoint: " endpoint)
+    (timbre/info "Request for signing: " request)
+    (timbre/info "to send payload: " payload)
+    (timbre/info "nonce: " nonce)
+    (timbre/info "time: " timestamp)
     (-> (:body http-response)
         read-json)))
 
@@ -84,11 +84,10 @@
          parse-resp (fn [maybe-body]
                       (try (read-json maybe-body)
                            (catch Exception e maybe-body)))]
-   ;   (timbre/info "endpoint: " endpoint)
-   ;   (timbre/info "Request for signing: " request)
-    ; (timbre/info "to send payload: " payload)
-    ; (timbre/info "nonce: " nonce)
-    ; (timbre/info "time: " timestamp)
+     (timbre/info "endpoint: " endpoint)
+     (timbre/info "Request for signing: " request)
+    (timbre/info "nonce: " nonce)
+    (timbre/info "time: " timestamp)
      (some-> req
              (get :body req) ; either get :body req or return full req
              parse-resp))))
@@ -138,7 +137,7 @@
                                            :report
                                            :recommendation
                                            :reason)})]
-      ; (timbre/info "text-check: " text-check)
+      (timbre/info "text-check: " text-data-check)
       (merge result
              {:uuid (:user_tracking_id ses-details)
               :document-type document-type
