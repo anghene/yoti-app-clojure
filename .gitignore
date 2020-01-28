@@ -25,3 +25,4 @@ dev-config.edn
 /resources/public/cljs-out
 /resources/public/out-main
 /resources/useful.html
+new-server.log
