@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/kl.css">
     <link rel="stylesheet" href="css/yoti.css">
     <link rel="stylesheet" href="css/footer.css">
-    <title>Kemplittle Identity Verification</title>
+    <title>Kemp Little Identity Verification</title>
 </head>
 
 <body>
@@ -41,33 +41,6 @@
             return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
         console.log("Logging url param: ", getParameterByName('uuid')); // "ref"
-        window.Yoti.Share.init({
-            elements: [{
-                domId: "yotiapp",
-                scenarioId: "15f775ff-b8c4-42e7-b8d1-3c2df8e9010c",
-                clientSdkId: "8d26c691-0b72-4ddd-9b33-59a79f51eb96",
-                button: {
-                    label: "Use Yoti  ",
-                    align: "center", // "left" | "right"
-                    width: "full" // "auto"
-                },
-                modal: {
-                    zIndex: 9999 // default to 9999, min of 0 - max of 2147483647
-                },
-                shareComplete: {
-                    closeDelay: 4000, // default to 4000, min of 500 - max of 10000
-                    tokenHandler: (token, done) => {
-                        // console.log(`Received the token: ${token}`);
-                        let xhr = new XMLHttpRequest();
-                        let endpoint = 'yotiapp?token=' + token + '&ref=' + getParameterByName('ref') + '&uuid=' + getParameterByName('uuid');
-                        xhr.open("GET", endpoint);
-                        xhr.send();
-                        done(); //done() will overwrite the closeDelay;
-                        window.location.replace("https://identity.kemplittle.com/thankyou");
-                    }
-                }
-            }]
-        });
     </script>
 
 </body>
