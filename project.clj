@@ -8,7 +8,7 @@
   :test-paths ["test/clj"]
   :resource-paths ["resources"]
   :target-path "target/%s/"
-  :main ^:skip-aot kemplittle.core
+  :main kemplittle.core
 
   :plugins [[lein-tools-deps "0.4.5"]
             [lein-cljsbuild "1.1.7"]]
@@ -17,12 +17,7 @@
   :exclusions [ch.qos.logback/logback-classic
                org.slf4j.impl.StaticLoggerBinder]
   :profiles
-  {:uberjar {:omit-source true
-             :aot :all
-             :uberjar-name "kemplittle-latest.jar"
-             :source-paths ["env/prod/clj"]
-             :resource-paths ["env/prod/resources"]}
-   :dev           [:project/dev :profiles/dev]
+  {:dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
