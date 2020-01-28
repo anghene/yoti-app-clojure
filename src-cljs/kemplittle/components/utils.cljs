@@ -10,7 +10,8 @@
 
 (defn not-found []
   (info "gets here")
-  [:div "error page not found"])
+  [:div {:class (tw! "w-1/2 m-auto")}
+   [:p {:class (tw! "m-10")} "Not found."]])
 
 (defn flash-div [flash]
   [:div {:class
@@ -86,7 +87,6 @@
           logout]
          )))])
 
-
 (defn footer []
   (let [expanded? (uix/state false)]
     [:footer
@@ -143,72 +143,72 @@
            "Services"]
           [:ul {}
            [:li {}
-            [:a {:href "/services/commercial-technology/"}
+            [:a {:href "https://www.kemplittle.com/services/commercial-technology/"}
              "Commercial technology"]]
            [:li {}
-            [:a {:href "/services/consulting/"}
+            [:a {:href "https://www.kemplittle.com/services/consulting/"}
              "Consulting"]]
            [:li {}
-            [:a {:href "/services/disputes/"}
+            [:a {:href "https://www.kemplittle.com/services/disputes/"}
              "Disputes"]]
            [:li {}
-            [:a {:href "/services/intellectual-property/"}
+            [:a {:href "https://www.kemplittle.com/services/intellectual-property/"}
              "Intellectual property"]]
            [:li {}
-            [:a {:href "/services/employment/"}
+            [:a {:href "https://www.kemplittle.com/services/employment/"}
              "Employment"]]
            [:li {}
-            [:a {:href "/services/immigration/"}
+            [:a {:href "https://www.kemplittle.com/services/immigration/"}
              "Immigration"]]]]
          [:div {:class "footer_col"}
-          [:h3 {:class "mob_mask"}
-           " "]
+          [:h3
+           [:br]]
           [:ul {}
            [:li {}
-            [:a {:href "/services/sourcing/"}
+            [:a {:href "https://www.kemplittle.com/services/sourcing/"}
              "Sourcing"]]
            [:li {}
-            [:a {:href "/services/corporate/"}
+            [:a {:href "https://www.kemplittle.com/services/corporate/"}
              "Corporate"]]
            [:li {}
-            [:a {:href "/services/data-protection-privacy/"}
+            [:a {:href "https://www.kemplittle.com/services/data-protection-privacy/"}
              "Data protection & privacy"]]
            [:li {}
-            [:a {:href "/services/financial-regulation/"}
+            [:a {:href "https://www.kemplittle.com/services/financial-regulation/"}
              "Financial regulation"]]
            [:li {}
-            [:a {:href "/services/private-equity-venture-capital/"}
+            [:a {:href "https://www.kemplittle.com/services/private-equity-venture-capital/"}
              "Private equity & venture capital"]]
            [:li {}
-            [:a {:href "/services/tax/"}
+            [:a {:href "https://www.kemplittle.com/services/tax/"}
              "Tax"]]]]
          [:div {:class "footer_col"}
           [:h3 {}
            "Sitemap"]
           [:ul {}
            [:li {}
-            [:a {:href "/people/"}
+            [:a {:href "https://www.kemplittle.com/people/"}
              "Our people"]]
            [:li {}
-            [:a {:href "/insights/"}
+            [:a {:href "https://www.kemplittle.com/insights/"}
              "Insights"]]
            [:li {}
-            [:a {:href "/events/"}
+            [:a {:href "https://www.kemplittle.com/events/"}
              "Events"]]
            [:li {}
-            [:a {:href "/about/"}
+            [:a {:href "https://www.kemplittle.com/about/"}
              "About us"]]
            [:li {}
-            [:a {:href "/contact/"}
+            [:a {:href "https://www.kemplittle.com/contact/"}
              "Contact us"]]
            [:li {}
-            [:a {:href "/legal/"}
+            [:a {:href "https://www.kemplittle.com/legal/"}
              "Cookies"]]
            [:li {}
-            [:a {:href "/privacy/"}
+            [:a {:href "https://www.kemplittle.com/privacy/"}
              "Privacy"]]
            [:li {}
-            [:a {:href "/terms/"}
+            [:a {:href "https://www.kemplittle.com/terms/"}
              "Terms of use"]]
            [:li {}
             [:a {:href "https://www.kemplittle.com/compliants-policy/"}
@@ -333,3 +333,4 @@
           [:span {:class "logo_cell"}
            [:img {:src "https://www.kemplittle.com/wp-content/uploads/2019/02/Chambers-fintech-logo-bw.jpg"}]]]]]]]]))
 
+(spit-css! "resources/public/css/utils.css")
