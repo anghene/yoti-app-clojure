@@ -20,4 +20,4 @@ privkey.pem
 /node_modules
 /log
 dev-config.edn
-.cp-cache
+/.cp-cache
