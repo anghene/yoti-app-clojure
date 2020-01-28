@@ -1,14 +1,15 @@
 (ns kemplittle.handler
   (:require
-    [kemplittle.middleware :as middleware]
-    [kemplittle.layout :refer [error-page]]
-    [kemplittle.routes.home :refer [home-routes updates-routes]]
-    [kemplittle.routes.admin :refer [admin-routes login-route]]
-    [reitit.ring :as ring]
-    [ring.middleware.content-type :refer [wrap-content-type]]
-    [ring.middleware.webjars :refer [wrap-webjars]]
-    [kemplittle.env :refer [defaults]]
-    [mount.core :as mount]))
+   [kemplittle.middleware :as middleware]
+   [kemplittle.layout :refer [error-page]]
+   [kemplittle.routes.home :refer [home-routes updates-routes]]
+   [kemplittle.routes.admin :refer [admin-routes login-route]]
+   [reitit.ring :as ring]
+   [ring.middleware.content-type :refer [wrap-content-type]]
+   [ring.middleware.webjars :refer [wrap-webjars]]
+   [kemplittle.env :refer [defaults]]
+   [mount.core :as mount])
+  (:gen-class))
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))
