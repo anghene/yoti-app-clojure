@@ -15,7 +15,8 @@
    [taoensso.timbre :as timbre :refer [info]]
    [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
    [kemplittle.client.session :refer [get-new-session]]
-   [clojure.data.json :refer [write-str read-json]]))
+   [clojure.data.json :refer [write-str read-json]])
+  (:gen-class))
 
 (defn home-page [{:keys [params query-params] :as request}]
   (layout/render request "index.html"))

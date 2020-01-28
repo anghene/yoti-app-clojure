@@ -23,7 +23,8 @@
    [ring.middleware.cors :refer [wrap-cors]]
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
    [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
-   ))
+   )
+  (:gen-class))
 
 (defn wrap-internal-error [handler]
   (fn [req]

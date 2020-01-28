@@ -14,7 +14,8 @@
    [taoensso.timbre :as timbre :refer [info]]
    [cheshire.core :as json]
    [kemplittle.mail :as mail :refer [prompt-client-to-validate-himself]]
-   ))
+   )
+  (:gen-class))
 
 
 ;; Global var that stores valid users with their
@@ -105,7 +106,7 @@
 (defn prompt-client-via-email [{:keys [admin-name user-tracking-id admin-email client-email
                                        client-name add-msg client-type psc-names ref-id
                                        msg-map is-uk-inc? is-dir-sec-leg?]}]
-    ; (info "prompt function gets: " admin-email user-tracking-id client-email)
+    (info "prompt function gets: " admin-email user-tracking-id client-email)
     (try (do (prompt-client-to-validate-himself {:user-tracking-id user-tracking-id
                                                  :ref-id ref-id
                                                  :admin-email admin-email
@@ -174,7 +175,7 @@
             ; admin-name (:name admin-data)
             ref-id (:id admin-data)
             user-session (new-user-track-session! ref-id client-name)]
-        ; (info "this is admin-data: " admin-data)
+        (info "this is admin-data: " admin-data)
         (ok {:status "Ok"
              :message (str "Generated a new uuid for: " client-name)
              :new-uuid (:uuid user-session)
