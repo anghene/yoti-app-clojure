@@ -4,7 +4,7 @@
             [taoensso.timbre :as timbre :refer [info]]
             [selmer.parser :as parser]
             [environ.core :refer [env]]
-            [kemplittle.db.core :as db :refer [authdata match-authdata-initiated-by-id session-data]]))
+            [kemplittle.db.core :as db :refer [get-admin get-uuid]]))
 
 (defn smtp-settings []
   (let [host (env :kl-smtp-host)
@@ -20,27 +20,20 @@
 
 (defn send-messages!
   [admin-email client-name validation-result]
-  (info "PREPARING TO SEND: admin-mail:" admin-email " client-name:" client-name " validation-result:" validation-result)
+  (when (= "true" (env :kl-debug-email))
+    (info "PREPARING TO SEND: admin-mail:" admin-email " client-name:" client-name " validation-result:" validation-result))
   (postal/send-message
    (smtp-settings) {:from (env :kl-from-email)
                     :to admin-email
                     :subject (str "Validation result for: " client-name)
                     :body [{:type "text/plain"
                             :content (format validation-result)}]})
-  (timbre/info "Sent an mail to: " admin-email))
-
-
-(defn match-session-track-data-uuid
-  "Used by updates or yotiapp to get ref-id and client-name based on uuid"
-  [uuid]
-  (let [session-data (-> (filter #(= uuid (:uuid %))
-                                 @session-data)
-                         first)]
-    session-data))
+  (timbre/info "Sent a mail to: " admin-email))
 
 (defn send-validation-email [user-tracking-id user type]
-  (info "send-validation-email gets called with this uuid: " user-tracking-id)
-  (when (= "true" (:send-emails env))
+  (when (= "true" (env :kl-debug-email))
+    (info "send-validation-email gets called with this uuid: " user-tracking-id))
+  (if (= "true" (:send-emails env))
     (let [failed? (not (:ok? user))
           address-line (if-not failed?
                          (case type
@@ -59,21 +52,20 @@
                                      (and (nil? ad1) (nil? ad2)))
                                "N/A"
                                (clojure.string/join ", " [ad1 ad2 cntry])))))
-          user-session (match-session-track-data-uuid user-tracking-id)
-          ; if there's no uuid it means it started only with refid and that's what got passed as first param in this fn
-          ref-id (if (nil? user-session) user-tracking-id nil)
-          client-name (if (and (= "n/a" (:full_name user)) ; if there's only ref-id we fallback on n/a and keep it
+          user-session (get-uuid user-tracking-id)
+          ref-id (if (nil? user-session) user-tracking-id nil) ; if there's no uuid it means it started only with refid and that's what got passed as first param in this fn
+          client-name (if (and (= "n/a" (:full_name user))
                                (not ref-id))
                         (:client-name user-session)
-                        (:full_name user))
+                        (:full_name user)); if there's only ref-id we fallback on n/a and keep it
           admin-email (if (not ref-id) ; if there's refid instead of uuid, it means we already have initiated-by-id so we pass it directly to match-authdata
                         (-> user-session
                             :initiated-by-id
-                            match-authdata-initiated-by-id
-                            :admin-email)
+                            get-admin
+                            :email)
                         (-> ref-id
-                            match-authdata-initiated-by-id
-                            :admin-email))
+                            get-admin
+                            :email))
           result (str "\nRESULT OF VALIDATION: " (if failed? "FAILED." "SUCCESSFUL.")
                       "\nMETHOD USED: " type
                       "\nFULL NAME: " client-name
@@ -87,16 +79,18 @@
                          "\nEXPIRATION DATE: " (:expiration_date user)
                          "\nADDRESS: " address-line
                          "\nDATE OF BIRTH: " (get user :date_of_birth "N/A"))))]
-      (info "SEND VALIDATION EMAIL ================")
-      (info "admin-email: " admin-email)
-      (info "client-name: " client-name)
-      (info "ref-id: " ref-id)
-      (info "user-session: " user-session)
+      (when (= "true" (env :kl-debug-email))
+        (info "SEND VALIDATION EMAIL ================")
+        (info "admin-email: " admin-email)
+        (info "client-name: " client-name)
+        (info "ref-id: " ref-id)
+        (info "user-session: " user-session))
       (send-messages!
-         admin-email
-         client-name
-         result
-         ))))
+       admin-email
+       client-name
+       result
+       ))
+    (info "SEND_EMAILS is set to false.")))
 
 (defn filtered-opts [{:keys [is-uk-inc? is-dir-sec-leg? msg-map psc-names]}]
   (as-> msg-map $
