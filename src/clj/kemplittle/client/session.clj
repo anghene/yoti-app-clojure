@@ -86,7 +86,7 @@
                       (try (read-json maybe-body)
                            (catch Exception e maybe-body)))]
      (when (= "true" (env :kl-debug-docscan))
-       (timbre/info "===== " (if (is-media?) "MEDIA" "SESSION") " DETAILS =========")
+       (timbre/info "===== " (if is-media? "MEDIA" "SESSION") " DETAILS =========")
        (timbre/info (some-> req
                             (get :body req) ; either get :body req or return full req
                             parse-resp)))
