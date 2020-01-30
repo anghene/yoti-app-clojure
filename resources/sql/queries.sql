@@ -1,3 +1,9 @@
+-- :name create-uuid! :! :n
+-- :doc creates a new uuid record
+INSERT INTO uuid
+(id, uuid, initiated_by_id, client_name)
+VALUES (:id, :uuid, :initiated-by-id, :client_name)
+
 -- :name create-user! :! :n
 -- :doc creates a new user record
 INSERT INTO users
