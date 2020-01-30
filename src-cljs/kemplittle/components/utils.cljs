@@ -5,15 +5,16 @@
    [reitit.frontend.easy :as rfe]
    [uix.core.alpha :as uix]
    [xframe.core.alpha :as xf :refer [<sub]]
-   [clojure.browser.dom :as dom]
    [taoensso.timbre :refer [info]]))
 
 (defn make-random-id
   []
   (str "id" (clojure.string/join "" (take 4 (str (random-uuid))))))
 
+(defn redirect! [loc]
+  (set! (.-location js/window) loc))
+
 (defn not-found []
-  (info "gets here")
   [:div {:class (tw! "w-1/2 m-auto")}
    [:p {:class (tw! "m-10")} "Not found."]])
 
@@ -76,7 +77,6 @@
                       [:div {:class (tw! "flex-shrink-0 text-white mr-6")}
                        [:button {:class (tw! "px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white")}
                         [:span "Users"]]]]]
-       (info "is-admin? :" is-admin?)
        (case is-admin?
          "admin"
          [:<>
