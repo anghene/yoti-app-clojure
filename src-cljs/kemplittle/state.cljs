@@ -110,7 +110,7 @@
 (xf/reg-event-fx
  :fetch-admin-token
  (fn [db [_ uname pass]]
-   {:http-post {:url (str "http://localhost:3000/login")
+   {:http-post {:url (str "/login")
                 :form-data {:username uname :password pass}
                 :on-ok :fetch-admin-ok
                 :on-failed :fetch-admin-failed}}))
@@ -151,7 +151,7 @@
  :initiate-client-action
  (fn [db [_ token client-email client-name add-msg]]
    (info "initiate client action called got: " token)
-   {:http-post {:url (str "http://localhost:3000/api/start-client")
+   {:http-post {:url (str "/api/start-client")
                 :form-data {:client-email client-email
                             :client-name client-name
                             :add-msg add-msg}
@@ -163,7 +163,7 @@
  :fetch-admin-access
  (fn [db [_ token]]
    (info "fetch-admin-access called got: " token)
-   {:http {:url (str "http://localhost:3000/api/get-access-level")
+   {:http {:url (str "/api/get-access-level")
            :on-ok :fetch-admin-access-ok
            :on-failed :fetch-admin-access-failed
            :tkn token}}))
@@ -172,7 +172,7 @@
  :fetch-admin-logs
  (fn [db [_ _]]
    (info "fetch-admin-logs gets token: " (-> db :app-state :admin :tkn))
-   {:http {:url (str "http://localhost:3000/api/get-info")
+   {:http {:url (str "/api/get-info")
            :on-ok :fetch-admin-logs-ok
            :on-failed :fetch-admin-logs-failed
            :tkn (-> db :app-state :admin :tkn)}}))
@@ -180,11 +180,20 @@
 ; Calling backend with ref and uuid we got from the dispatch action.
 (xf/reg-event-fx
  :fetch-session
- (fn [db [_ {:keys [ref uuid]}]]
+ (fn [db [_ ref uuid]]
    (info "fetch-session called with got: " (some-> ref name) (some-> uuid name))
-   {:http {:url (str "http://localhost:3000/getsession?ref=" (some-> ref name) "&uuid=" (some-> uuid name))
+   {:http {:url (str "/getsession?ref=" (some-> ref name) "&uuid=" (some-> uuid name))
            :on-ok :fetch-session-ok
            :on-failed :fetch-session-failed}}))
+
+(xf/reg-event-fx
+ :fetch-uuids
+ (fn [db [_ token]]
+   (info "fetch-uuids called ")
+   {:http {:url "/api/get-generated-uuids"
+           :on-ok :fetch-uuids-ok
+           :on-failed :fetch-uuids-failed
+           :tkn (-> db :app-state :admin :tkn)}}))
 
 (xf/reg-event-db
  :setpage
@@ -202,6 +211,20 @@
    (update db assoc :flash
              {:msg "Not found"
               :type "error"})))
+
+(xf/reg-event-db
+ :fetch-uuids-ok
+ (fn [db [_ response]]
+   (assoc-in db [:app-state :admin :generated-uuids] (:uuids response))))
+
+(xf/reg-event-db
+ :fetch-uuids-failed
+ (fn [db [_ error]]
+   (info "gets to failed with got: " error)
+   #_(update db :app-state assoc
+           :flash {:msg error
+                   :type "error"}
+           :admin {:tkn nil})))
 
 (xf/reg-event-db
  :fetch-session-ok
@@ -248,7 +271,8 @@
        (update db :app-state
                assoc :admin
                {:tkn (:token response)
-                :access (xf/dispatch [:fetch-admin-access (:token response)])}
+                :access (xf/dispatch [:fetch-admin-access (:token response)])
+                }
                :flash {:msg "Login successful"
                        :type "success"})
        )))
@@ -292,7 +316,7 @@
                                               (:access response))]
                    (if (= "admin" (:access response))
                      (merge access-added (xf/dispatch [:fetch-admin-logs tkn]))
-                     access-added)))))))
+                     (merge access-added (xf/dispatch [:fetch-uuids tkn])))))))))
 
 (xf/reg-event-db
  :fetch-admin-access-failed
@@ -310,7 +334,7 @@
    (let [payload (if (empty? client-name)
                    nil
                    {:client-name client-name})]
-     {:http-post {:url (str "http://localhost:3000/api/start-session")
+     {:http-post {:url (str "/api/start-session")
                   :form-data payload
                   :on-ok :get-new-uuid-ok
                   :on-failed :get-new-uuid-failed
