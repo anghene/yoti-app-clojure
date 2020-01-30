@@ -38,6 +38,7 @@
   funcool/struct {:mvn/version "1.4.0"}
   hickory {:mvn/version "0.7.1"}
   http-kit {:mvn/version "2.4.0-alpha4"}
+  korma {:mvn/version "0.5.0-RC1"}
   luminus-http-kit {:mvn/version "0.1.6"}
   luminus-migrations {:mvn/version "0.6.6"}
   luminus-transit {:mvn/version "0.1.2"}
@@ -71,7 +72,7 @@
   selmer {:mvn/version "1.12.17"}}
 
 
- :paths ["src/clj" "src-cljs" "resources" "env/dev/clj"]
+ :paths ["src/clj" "src-cljs" "resources" "resources/public" "env/dev/clj" "env/dev/resources"]
  ;; setup a helpful alias to start the build
  :aliases {:build-dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
            :uberdeps {:extra-deps {uberdeps {:mvn/version "0.1.8"}}
