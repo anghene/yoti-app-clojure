@@ -3,7 +3,7 @@
    [kemplittle.routes.updates :refer [authenticated? notification-handler]]
    [kemplittle.layout :as layout]
    [kemplittle.mail :as mail]
-   [kemplittle.db.core :as db :refer [max-id users]]
+   [kemplittle.db.core :as db :refer [max-id users get-uuid]]
    [kemplittle.certs.core :as certs]
    [kemplittle.client.session :as session]
    [kemplittle.client.yotiapp :as yotiapp]
@@ -25,7 +25,8 @@
   "This route is used by the Yoti.Share.init() function on frontend,
    to send a token so we can retrieve a user from SDK."
   [{:keys [params]}]
-  (timbre/info "Got request from Yoti App modal with token : " (:token params) "with uuid: " (:uuid params) "and ref: " (:ref params))
+  (when (= "true" (env :kl-debug-yotiapp))
+    (timbre/info "Got request from Yoti App modal with token : " (:token params) "with uuid: " (:uuid params) "and ref: " (:ref params)))
   (yotiapp/pass-token {:token (:token params)
                        :uuid (:uuid params)
                        :ref-id (:ref params)})
@@ -66,9 +67,10 @@
                (:ref params)
                (:uuid params))
         session (get-new-session uuid)]
-    (timbre/info "session:" session)
+    (when (= "true" (env :kl-debug-docscan))
+      (timbre/info "YOTI [DOCSCAN] created a new session for us :" session))
     (layout/render request "docscan.html" {:session {:id (:session_id session)
-                                                   :token (:client_session_token session)}})))
+                                                     :token (:client_session_token session)}})))
 
 (defn new-session [{:keys [params query-params] :as request}]
   (let [missing-tracking-uuid? (or (empty? (:uuid params))
@@ -81,8 +83,8 @@
         sess (session/get-new-session trimmed-uuid)
         id (:session_id sess)
         tkn (:client_session_token sess)]
-    (timbre/info "Uuid:" trimmed-uuid)
-    (timbre/info "Started a new local session: " trimmed-uuid "for DOCSCAN that we just got: " sess)
+    (when (= "true" (env :kl-debug-uuid))
+      (timbre/info "Prompted a new session for DOCSCAN: \n" sess "\n tracking: " trimmed-uuid (if (not missing-tracking-uuid?) (str " on behalf of: " (-> (get-uuid trimmed-uuid) (dissoc :id) (dissoc :uuid))))))
     {:status (:status request)
      :headers {"Content-Type" "application/json"}
      :body (write-str {:id id :tkn tkn})}))
