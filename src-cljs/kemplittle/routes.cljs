@@ -30,13 +30,14 @@
      {:name ::frontpage
       :clear-flash true
       :view kf/front-page
-      :parameters {:path {(s/optional-key :admin) s/Int}
-                   :query {(s/optional-key :ref) s/Keyword}}
-      :controllers [{:parameters {:query [:path]
-                                  :path [:parameters]}
-                     :start (fn [{:keys [path]}]
-                              (js/setTimeout #(yoti-instantiated ) 100)
-                              (js/console.log "start" "frontpage controller"))
+      :parameters {:query {(s/optional-key :ref) s/Keyword
+                           (s/optional-key :uuid) s/Keyword}}
+      :controllers [{:parameters {:query [:uuid :ref]}
+                     :start (fn [{:keys [query]}]
+                              (let [uuid (or (some-> query :uuid name)
+                                             (some-> query :ref name))]
+                                (js/setTimeout #(yoti-instantiated uuid) 100)
+                                (js/console.log "start" "frontpage controller")))
                      :stop (fn [{:keys [path]}]
                              (do
                                (@destroy)
@@ -46,11 +47,11 @@
       :parameters {:query {(s/optional-key :uuid) s/Keyword
                            (s/optional-key :ref) s/Keyword}}
       :view docscan-page
-      :controllers [{:params (fn [match]
-                               (:query (:parameters match)))
-                     :start
-                     (fn [params]
-                       (xf/dispatch [:fetch-session params]))
+      :controllers [{:parameters {:query [:uuid :ref]}
+                     :start (fn [{:keys [query]}]
+                              (js/console.log "start" "docscan controller with query: " query)
+                              (xf/dispatch [:fetch-session (:ref query)
+                                              (:uuid query)]))
                      :stop (log-fn "stop" "docscan controller")}]}]
     ["items"
       ;; Shared data for sub-routes
