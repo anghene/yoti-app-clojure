@@ -22,7 +22,9 @@
       [:li "2. If you are already a user of the Yoti app, then click “Use Yoti” below to share your identity with us via the Yoti app."]]
      [:br]
      [:div {:class (tw! "flex flex-col items-center")}
-      [docscan-button {:text "DOC SCAN" :ref (-> query :ref) :uuid (-> query :uuid)}]
+      [docscan-button {:text "DOC SCAN"
+                       :ref-id (-> query :ref)
+                       :uuid (-> query :uuid)}]
       [:div {:id "yotiapp"}]
       ]]))
 
