@@ -1,16 +1,29 @@
 (ns kemplittle.db.core
   (:require
-    [clojure.java.jdbc :as jdbc]
-    [conman.core :as conman]
-    [java-time.pre-java8 :as jt]
-    [mount.core :refer [defstate]]
-    [kemplittle.config :refer [env]]))
+   [korma.db :as db]
+   [korma.core
+    :refer :all
+    :rename {update dbupdate}]
+   [clojure.java.jdbc :as jdbc]
+   [conman.core :as conman]
+   [taoensso.timbre :refer [info]]
+   [java-time.pre-java8 :as jt]
+   [mount.core :refer [defstate]]
+   [kemplittle.config :refer [env]]))
+
+(defn start-db []
+  (db/defdb kemplittledb (db/sqlite3 {:db "kemplittle_dev.db"})))
 
 (defstate ^:dynamic *db*
-          :start (conman/connect! {:jdbc-url (env :database-url)})
-          :stop (conman/disconnect! *db*))
+          :start (start-db)
+          :stop nil)
 
-(conman/bind-connection *db* "sql/queries.sql")
+(defentity admin)
+
+(defentity uuid
+  (pk :id)
+  (table :uuid)
+  (has-one admin (fk :id)))
 
 (def max-id (atom 0))
 
@@ -19,87 +32,85 @@
 (def act (atom []))
 
 
-  ; "Need to be generated when secretary starts process : 
+  ; "Need to be generated when secretary starts process :
   ;    initiated-by-id is the old ref-id - we use it to get admin email
   ;    uuid - randomly generated when start
   ;    client-name - need to get this from form submitted by admin at start"
   ; ; {:uuid "23l5n25-235l-2nnn64nb" :initiated-by-id "1" :client-name ""}
-(def session-data (atom []))
 
-(def authdata {:admin {:id "1"
-                       :password "open4me"
-                       :email "vlad.anghene@gmail.com"
-                       :name "Vlad"
-                       :access "admin"}
-               :gerard {:id "2"
-                        :password "greentree"
-                        :email "Gerard.Frith@kemplittle.com"
-                        :name "Gerard Frith"
-                        :access "admin"}
-               :chris {:id "3"
-                       :password "whitesnow"
-                       :email "Chris.Gray@kemplittle.com"
-                       :name "Chris Gray"
-                       :access "admin"}
-               :sylvia {:id "4"
-                        :password "zenStone"
-                        :email "Sylvia.Eghiayan@kemplittle.com"
-                        :name "Sylvia Eghiayan"
-                        :access "secretary"}
-               :secretary1 {:id "5"
-                            :password "secret"
-                            :email "Gerard.Frith@kemplittle.com"
-                            :name "Gerard Frith"
-                            :access "secretary"}
-               :secretary2 {:id "6"
-                            :password "nuclear"
-                            :email "Chris.Gray@kemplittle.com"
-                            :name "Chris Gray"
-                            :access "secretary"}
-               :secretary3 {:id "7"
-                            :password "thisthat"
-                            :email ""
-                            :name "John"
-                            :access "secretary"}
-               :vlad {:id "8"
-                      :password "open4me"
-                      :email "vlad.anghene@gmail.com"
-                      :name "VladSECRETARY"
-                      :access "secretary"}})
+(defn delete-uuid
+  ([]
+   (info "deleted all uuids")
+   (delete uuid
+           (where {:id [> 0]})))
+  ([id]
+   (delete uuid
+           (where {:id [= id]}))))
 
-(defn match-authdata-initiated-by-id
-  "get user-data from state based on initiated-by-id from session-data"
-  [ref-id]
-  (let [user-data (second (first (filter #(= ref-id (:id (val %)))
-                                         authdata)))]
-    {:admin-name (:name user-data)
-     :admin-email (:email user-data)}))
+(defn delete-admin
+  ([]
+   (info "deleted all admins")
+   (delete admin
+           (where {:id [> 0]})))
+  ([id]
+   (delete admin
+           (where {:id [= id]}))))
 
-(extend-protocol jdbc/IResultSetReadColumn
-  java.sql.Timestamp
-  (result-set-read-column [v _2 _3]
-    (.toLocalDateTime v))
-  java.sql.Date
-  (result-set-read-column [v _2 _3]
-    (.toLocalDate v))
-  java.sql.Time
-  (result-set-read-column [v _2 _3]
-    (.toLocalTime v)))
+(defn get-admin
+  ([]
+    (get-admin nil))
+  ([id]
+   (if (= id nil)
+     (->
+      (select admin))
+     (-> (select admin
+                 (where {:id [= id]}))
+         first))))
 
-(extend-protocol jdbc/ISQLValue
-  java.util.Date
-  (sql-value [v]
-    (java.sql.Timestamp. (.getTime v)))
-  java.time.LocalTime
-  (sql-value [v]
-    (jt/sql-time v))
-  java.time.LocalDate
-  (sql-value [v]
-    (jt/sql-date v))
-  java.time.LocalDateTime
-  (sql-value [v]
-    (jt/sql-timestamp v))
-  java.time.ZonedDateTime
-  (sql-value [v]
-    (jt/sql-timestamp v)))
+(defn get-admin-by-username [uname]
+  (-> (select admin
+              (where {:username [= uname]}))
+      first))
+
+(defn get-uuid
+  ([]
+   (get-uuid nil))
+  ([ask-uuid]
+   (if (= ask-uuid nil)
+     (->
+      (select uuid))
+     (-> (select uuid
+
+                 (where {:uuid [= ask-uuid]})
+                 )
+         first))))
+
+(defn get-uuid-by-initiator
+  "returns all uuids by that initator"
+  [id]
+  (-> (select uuid
+              (where {:initiated-by-id [= id]})
+              )
+      ))
+
+(defn insert-uuid [{recvd-uuid :uuid cn :client-name ibid :initiated-by-id}]
+  (insert uuid
+          (values {:uuid recvd-uuid
+                   :client-name cn
+                   :initiated-by-id ibid})))
+
+(defn insert-admin [{:keys [username password email name access]}]
+  (insert
+   admin
+   (values {:username username :password password :email email :name name :access access})))
+
+; (def authdata (get-admin))
+
+; (defn match-authdata-initiated-by-id
+;   "get user-data from state based on initiated-by-id from session-data"
+;   [ref-id]
+;   (let [user-data (second (first (filter #(= ref-id (:id (val %)))
+;                                          authdata)))]
+;     {:admin-name (:name user-data)
+;      :admin-email (:email user-data)}))
 
