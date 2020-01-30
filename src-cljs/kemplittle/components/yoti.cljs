@@ -7,6 +7,7 @@
    [uix.core.alpha :as uix]
    [cljs-bean.core :as bean]
    [clojure.browser.dom :as dom]
+   [kemplittle.components.utils :refer [redirect!]]
    [taoensso.timbre :refer [info]]))
 
 (defn yoti-logo []
@@ -27,13 +28,14 @@
 
 (def destroy (atom nil))
 
-(defn yoti-instantiated []
-    (let [tkn-handler (fn [token uuid]
-                      (info "got uuid: " uuid)
-                      (.send goog.net.XhrIo
-                             (str "yotiapp?token="
-                                  token
-                                  "&uuid=" uuid)))
+(defn yoti-instantiated [uuid]
+    (let [tkn-handler (fn [token]
+                        (info "Got token and uuid: " token " " uuid)
+                        (.send goog.net.XhrIo
+                               (str "yotiapp?token="
+                                    token
+                                    "&uuid=" uuid))
+                        (redirect! "/thankyou"))
         elements {:elements [{:domId "yotiapp"
                               :scenarioId "15f775ff-b8c4-42e7-b8d1-3c2df8e9010c"
                               :clientSdkId "8d26c691-0b72-4ddd-9b33-59a79f51eb96"
