@@ -18,7 +18,7 @@
     (uncaughtException [_ thread ex]
       (timbre/info {:what :uncaught-exception
                   :exception ex
-                  :where (str "Uncaught exception on" (.getName thread))}))))
+                  :where (str "Uncaught exception on " (.getName thread))}))))
 
 (def cli-options
   [["-p" "--port PORT" "Port number"
