@@ -130,18 +130,33 @@
                                   #(= (:type %)
                                       "ID_DOCUMENT_TEXT_DATA_CHECK")
                                   all-checks))
-          result (if (is-approved-and-done? text-data-check)
+          gen-media-id (some->> (first (filter
+                                        #(= (:type %)
+                                            "ID_DOCUMENT_TEXT_DATA_EXTRACTION")
+                                        (:tasks id-document-used)))
+                                :generated_media
+                                (filter
+                                 #(= (:type %)
+                                     "JSON"))
+                                first
+                                :id)
+          result (if
+                  (and (not (nil? text-data-check))
+                       (is-approved-and-done? text-data-check))
                    {:ok? true :id (-> text-data-check
                                       :generated_media
                                       first
                                       :id)}
-                   {:ok? false :reason (-> text-data-check
-                                           :report
-                                           :recommendation
-                                           :reason)})]
+                   (if (not (nil? gen-media-id))
+                     {:ok? true :id gen-media-id}
+                     {:ok? false :reason (-> text-data-check
+                                             :report
+                                             :recommendation
+                                             :reason)}))]
       (when (= "true" (env :kl-debug-docscan))
         (if (not (nil? text-data-check))
           (timbre/info "ID_DOCUMENT_TEXT_DATA_CHECK : " text-data-check)
+          (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK")
           (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK")))
       (merge result
              {:uuid (:user_tracking_id ses-details)
