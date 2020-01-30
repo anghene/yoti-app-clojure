@@ -51,11 +51,12 @@
                  :headers {"X-Yoti-Auth-Digest" (get-digest request)
                            "Content-Type" "application/json"}}
         http-response (http/request options)]
-    (timbre/info "endpoint: " endpoint)
-    (timbre/info "Request for signing: " request)
-    (timbre/info "to send payload: " payload)
-    (timbre/info "nonce: " nonce)
-    (timbre/info "time: " timestamp)
+    ;   (timbre/info "===== Getting new session for the iframe =========")
+    ;   (timbre/info "endpoint: " endpoint)
+    ;   (timbre/info "Request for signing: " request)
+    ;   (timbre/info "to send payload: " payload)
+    ;   (timbre/info "nonce: " nonce)
+    ;   (timbre/info "time: " timestamp)
     (-> (:body http-response)
         read-json)))
 
@@ -84,10 +85,11 @@
          parse-resp (fn [maybe-body]
                       (try (read-json maybe-body)
                            (catch Exception e maybe-body)))]
-     (timbre/info "endpoint: " endpoint)
-     (timbre/info "Request for signing: " request)
-    (timbre/info "nonce: " nonce)
-    (timbre/info "time: " timestamp)
+     (when (= "true" (env :kl-debug-docscan))
+       (timbre/info "===== " (if (is-media?) "MEDIA" "SESSION") " DETAILS =========")
+       (timbre/info (some-> req
+                            (get :body req) ; either get :body req or return full req
+                            parse-resp)))
      (some-> req
              (get :body req) ; either get :body req or return full req
              parse-resp))))
@@ -137,7 +139,10 @@
                                            :report
                                            :recommendation
                                            :reason)})]
-      (timbre/info "text-check: " text-data-check)
+      (when (= "true" (env :kl-debug-docscan))
+        (if (not (nil? text-data-check))
+          (timbre/info "ID_DOCUMENT_TEXT_DATA_CHECK : " text-data-check)
+          (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK")))
       (merge result
              {:uuid (:user_tracking_id ses-details)
               :document-type document-type
