@@ -4,6 +4,7 @@
    [uix.core.alpha :as uix]
    [taoensso.timbre :refer [info]]
    [xframe.core.alpha :as xf]
+   [kemplittle.components.utils :refer [make-random-id redirect!]]
    [xframe.core.alpha :as xf :refer [<sub]]))
 
 (do
@@ -102,7 +103,7 @@
      ]))
 
 (defn p-text [text]
-  [:div {:id (kemplittle.components.utils/make-random-id)
+  [:div {:id (make-random-id)
          :class (str (tw! "mb-4"))}
    [:div {:class (str (tw! "flex items-center justify-between
                                bg-gray-200 pl-3 pr-2 py-3 w-full rounded
@@ -254,9 +255,6 @@
                    :on-change #(reset! opt2-below-b (.. % -target -value))}]]]]
     ))
 
-(defn redirect! [loc]
-  (set! (.-location js/window) loc))
-
 (defn not-logged-in []
   (do
     (js/setTimeout
@@ -324,12 +322,11 @@
         user* (derive-state state* [:user])
         pass* (derive-state state* [:pass])
         token (get adm-details [:tkn])]
-    (info "adm details: " adm-details)
     (if token
       (xf/dispatch [:fetch-admin-access token])
       [:div
-       {:class "lg:w-1/2 xl:w-1/3 sm:w-full md:w-full max-w-xs max-w-sm m-auto"}
-       [:form {:class (tw! "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
+       {:class "m-auto"}
+       [:form {:class (tw! "lg:w-1/2 xl:w-1/2 sm:w-full md:w-full max-w-xs max-w-sm m-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4")
                :on-submit #(do
                              (.preventDefault %)
                              (xf/dispatch [:fetch-admin-token @user* @pass*]))}
