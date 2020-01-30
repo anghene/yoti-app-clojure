@@ -155,7 +155,7 @@
                                              :reason)}))]
       (when (= "true" (env :kl-debug-docscan))
           (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK")
-          (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK")))
+          (timbre/info "RESPONSE HAD NO ID_DOCUMENT_TEXT_DATA_CHECK"))
       (merge result
              {:uuid (:user_tracking_id ses-details)
               :document-type document-type
