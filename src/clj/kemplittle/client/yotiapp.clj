@@ -186,12 +186,13 @@
   [{:keys [token uuid ref-id]}]
   (let [activity-details (.getActivityDetails client token)
         user (get-user activity-details)
-        trimmed-uuid (clojure.string/trim uuid)
-        trimmed-ref-id (clojure.string/trim ref-id)
+        trimmed-uuid (some-> uuid (clojure.string/trim))
+        trimmed-ref-id (some-> ref-id (clojure.string/trim))
         user-tracking-id (if (or (empty? trimmed-uuid) (nil? trimmed-uuid) (= "null" trimmed-uuid))
                            trimmed-ref-id
                            uuid)]
-    (info "Got a New YotiApp user with uuid: " uuid " and/or ref: " trimmed-ref-id)
+    (when (= "true" (env :kl-debug-yotiapp))
+      (info "Got a New YotiApp user with uuid: " uuid " and/or ref: " trimmed-ref-id))
     (persist-to-state! activity-details user)
     (try (send-validation-email user-tracking-id user "YOTIAPP")
          (catch Exception e (timbre/info (str "Error sending yotiapp emails : " e))))
