@@ -55,7 +55,8 @@
         client-name* (derive-state state* [:client-name])
         ; add-msg* (derive-state state* [:add-msg])
         token (-> adm-details :tkn)
-        generated-uuids (-> adm-details :generated-uuids)]
+        old-uuids (js->clj (-> adm-details :old-uuids) :keywordize-keys true)
+        generated-uuids (into [] (concat old-uuids (-> adm-details :generated-uuids)))]
     [:div
      {:class (tw! "w-1/2 m-auto")}
      [:p {:class (tw! "pt-10 text-gray-600")}

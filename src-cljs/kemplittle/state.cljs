@@ -215,7 +215,7 @@
 (xf/reg-event-db
  :fetch-uuids-ok
  (fn [db [_ response]]
-   (assoc-in db [:app-state :admin :generated-uuids] (:uuids response))))
+   (assoc-in db [:app-state :admin :old-uuids] (:uuids response))))
 
 (xf/reg-event-db
  :fetch-uuids-failed
