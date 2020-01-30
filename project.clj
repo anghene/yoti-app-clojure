@@ -36,6 +36,7 @@
                                                    :output-dir "resources/public/out-main"
                                                    :output-to "resources/public/cljs-out/dev-main.js"
                                                    :optimizations :advanced
+                                                   :externs ["Yoti-externs.js"]
                                                    :pretty-print false}}]}
                   :resource-paths ["env/dev/resources"]
                   :repl-options {:init-ns user}
