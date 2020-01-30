@@ -5,7 +5,7 @@
    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
    [buddy.sign.jwt :as jwt]
    [clj-time.core :as time]
-   [kemplittle.db.core :refer [users authdata session-data]]
+   [kemplittle.db.core :refer [users insert-uuid get-admin-by-username get-uuid-by-initiator]]
    [clojure.data.json :refer [write-str read-json]]
    [environ.core :refer [env]]
    [kemplittle.middleware :as middleware :refer [secret]]
@@ -30,18 +30,9 @@
         new-track-session {:uuid uuid
                            :initiated-by-id ref-id
                            :client-name client-name}]
-    (swap! session-data conj new-track-session)
+    (insert-uuid new-track-session)
     (info "started new user-track-session on: " uuid " for ref-id:" ref-id " tracking: " client-name)
     new-track-session))
-
-(defn match-session-data-uuid
-  "Used by updates or yotiapp to get ref-id and client-name based on uuid"
-  [uuid]
-  (let [sdata (-> (filter #(= uuid (:uuid %))
-                                 @session-data)
-                         first)
-        ]
-    sdata))
 
 (def admin-msg-opts
   (atom {:opt1 {:desc {:above {:a "In order to assist you with the process we will obtain any relevant company documents which are available from Companies House. To this end, we have reviewed the Persons of Significant Control (PSC) register of"
@@ -84,25 +75,6 @@
 ;; If incoming user is not authenticated it raises a not authenticated
 ;; exception, else it simply shows a hello world message.
 
-(defn match-authdata-usr-header
-  "get name from state based on :username from header"
-  [local-user]
-  (let [user-name (get-in authdata [(keyword local-user) :name])
-        user-email (get-in authdata [(keyword local-user) :email])
-        user-id (get-in authdata [(keyword local-user) :id])]
-    {:name user-name
-     :email user-email
-     :id user-id}
-    ))
-
-(defn match-header-usr-access
-  "get access from state based on :username from header"
-  [local-user]
-  (let [
-        access-level (get-in authdata [(keyword local-user) :access])]
-    access-level
-    ))
-
 (defn prompt-client-via-email [{:keys [admin-name user-tracking-id admin-email client-email
                                        client-name add-msg client-type psc-names ref-id
                                        msg-map is-uk-inc? is-dir-sec-leg?]}]
@@ -132,10 +104,10 @@
       (let [client-email (get-in request [:body :client-email])
             client-name (get-in request [:body :client-name])
             add-msg (get-in request [:body :add-msg])
-            local-user (-> request
+            username (-> request
                            :identity
                            :user)
-            admin-data (match-authdata-usr-header local-user)
+            admin-data (get-admin-by-username username)
             admin-email (:email admin-data)
             admin-name (:name admin-data)
             ref-id (:id admin-data)
@@ -167,10 +139,10 @@
       (bad-request {:status "Failed"
            :message "No data sent."})
       (let [client-name (get-in request [:body :client-name])
-            local-user (-> request
+            username (-> request
                            :identity
                            :user)
-            admin-data (match-authdata-usr-header local-user)
+            admin-data (get-admin-by-username username)
             ; admin-email (:email admin-data)
             ; admin-name (:name admin-data)
             ref-id (:id admin-data)
@@ -185,11 +157,24 @@
   [request]
   (if-not (authenticated? request)
     (unauthorized {:message "Unauthorized"})
-    (let [local-user (-> request
-                         :identity
-                         :user)
-          lvl (match-header-usr-access local-user)]
+    (let [username (-> request
+                       :identity
+                       :user)
+          lvl (some-> (get-admin-by-username username)
+                      :access)]
       (ok {:access lvl}))))
+
+(defn retrieve-uuids
+  [request]
+  (if-not (authenticated? request)
+    (unauthorized {:message "Unauthorized"})
+    (let [username (-> request
+                       :identity
+                       :user)
+          initiator-id (some-> (get-admin-by-username username)
+                               :id)
+          uuids (some-> (get-uuid-by-initiator initiator-id))]
+      (ok {:uuids uuids}))))
 
 (defn parse-log [text]
   (->>
@@ -249,8 +234,8 @@
   (info "gets to login: " (:body request))
   (let [username (get-in request [:body :username])
         password (get-in request [:body :password])
-        valid? (some-> authdata
-                       (get (keyword username))
+        valid? (some-> username
+                       get-admin-by-username
                        :password
                        (= password))]
     (if valid?
@@ -266,7 +251,8 @@
    ["/get-info" {:get admin-info-page}]
    ["/start-client" {:post start-client}]
    ["/start-session" {:post start-session}]
-   ["/get-access-level" {:get access-level}]])
+   ["/get-access-level" {:get access-level}]
+   ["/get-generated-uuids" {:get retrieve-uuids}]])
 
 (defn login-route []
   [""
