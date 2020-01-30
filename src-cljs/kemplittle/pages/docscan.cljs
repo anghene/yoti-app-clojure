@@ -8,31 +8,31 @@
 
 (defn docscan-button
   "used on frontpage, gets uuid and ref from frontpage's params in match"
-  [{:keys [text uuid ref]}]
+  [{:keys [text uuid ref-id]}]
   [:div {:id "docscan" :style {"width" "300px"}
          :class (tw! "mb-6")}
-   [:a {:href
-        (rfe/href
-         :kemplittle.routes/docscan
-         {}
-         {:ref ref :uuid uuid})}
+   [:a
+    {:href
+     (rfe/href
+      :kemplittle.routes/docscan
+      {}
+      {:ref ref-id :uuid uuid})}
     [:div {:class (str "yoti-button-layout "
                        (tw! "items-center"))}
      [:button {:class (str "yoti-button "
                            (tw! "w-full"))}
       (yoti-logo)
       [:span {:class "yoti-button__text"}
-         text]]]]])
+       text]]]]])
 
 (defn docscan-page [match]
   (let [{:keys [path query]} (:parameters match)
-        {:keys [id]} path
         ref (-> query :ref)
         uuid (-> query :uuid)
         session (<sub [:session :docscan])
         idsess (-> session :docscan :id)
         tkn (-> session :docscan :tkn)]
-    ; (info "id: " id " & tkn: " tkn)
+    (info "uuid: " uuid " & tkn: " tkn " & ref: " ref)
     [:div {:class (tw! "w-full m-auto p-6")}
      [:h1 {:class (tw! "text-lg font-semibold")} (str  "Verify your identity with Doc Scan powered by Yoti ")]
      [:p "Let’s get started! In order to verify your identity we’ll need you to take a photo of your identity document using the camera or webcam on your device. We will perform a “liveness” check by asking you to interact with your device’s camera or webcam."]
