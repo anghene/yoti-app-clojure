@@ -173,7 +173,8 @@
                        :user)
           initiator-id (some-> (get-admin-by-username username)
                                :id)
-          uuids (some-> (get-uuid-by-initiator initiator-id))]
+          uuids (some->> (get-uuid-by-initiator initiator-id)
+                         (mapv #(dissoc % :id)))]
       (ok {:uuids uuids}))))
 
 (defn parse-log [text]
