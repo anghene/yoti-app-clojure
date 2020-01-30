@@ -56,7 +56,8 @@
 
 (defn notification-handler [req]
   (let [webhook (:body req)]
-    (timbre/info "got params on webhook: " webhook)
+    (when (= "true" (env :kl-debug-docscan))
+      (timbre/info "YOTI [DOCSCAN] passed us params on webhook: " webhook))
     (when (is-completed? webhook)
       (let [session-id (:session_id webhook)
             server-response (parse-checks webhook)
