@@ -98,5 +98,3 @@ When developing and you want to control emails sending:
 When you have env vars setup, use the following to run the jar
 
     java -Dconf="dev-config.edn"  -cp [filename.jar] clojure.main -m kemplittle.core
-
-Copyright © 2020 Kemp Little
