@@ -1,4 +1,6 @@
-# kemplittle
+# Yoti App integration in Clojure Server/Client
+
+App uses Clojure on backend, and CLJS with UIX library on frontend. It's an example of implementing Yoti App verification (Age verification and Identity Verification flows) in Clojure. I developed this for a client who no longer wanted it and they were acquired by a different firm.
 
 ## Prerequisites
 
